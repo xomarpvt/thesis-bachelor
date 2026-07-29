@@ -4,7 +4,7 @@
 %% Valori ammessi per target: bach (tesi triennale), mst (tesi magistrale), phd (tesi di dottorato).
 %% Valori ammessi per aauheader: '' (vuoto -> nessun header Alpen Adria Univeristat), aics (Department of Artificial Intelligence and Cybersecurity), informatics (Department of Informatics Systems). Il nome del dipartimento è allineato con la versione inglese del logo UniUD.
 %% Valori ammessi per style: '' (vuoto -> stile moderno), old (stile tradizionale).
-\documentclass[target=mst,aauheader=,style=]{thud}
+\documentclass[target=bach,aauheader=,style=]{thud}
 
 %% --- Informazioni sulla tesi ---
 %% Per tutti i tipi di tesi
@@ -13,18 +13,19 @@
 %\course{Internet of Things, Big Data e Web}
 %\course{Matematica}
 %\course{Comunicazione Multimediale e Tecnologie dell'Informazione}
-\title{La supercazzola prematurata \\ con scappellamento a destra \\ (come se fosse antani)}
-\author{Conte Raffaello Mascetti}
-\supervisor{Prof.\ Alfeo Sassaroli}
-\cosupervisor{Arch.\ Rambaldo Melandri \and Dott.\ Giorgio Perozzi}
-\tutor{Guido Necchi}
+\title{Generazione automatica di moduli \\ per l'intercettazione delle comunicazioni \\ Command-and-Control dei malware}
+% Automatic Generation of Modules for Intercepting Malware Command-and-Control Communications
+\author{Omar Paviotti}
+\supervisor{Prof.\ Marino Miculan}
+\cosupervisor{Dott.\ Matteo Paier \and Dott.\ Matteo Paier}
+%\tutor{Guido Necchi}
 %% Campi obbligatori: \title, \author e \course.
 %% Altri campi disponibili: \reviewer, \tutor, \chair, \date (anno accademico, calcolato in automatico), \rights
 %% Con \supervisor, \cosupervisor, \reviewer e \tutor si possono indicare più nomi separati da \and.
 %% Per le sole tesi di dottorato:
-\phdnumber{313}
-\cycle{XXVIII}
-\contacts{Via della Sintassi Astratta, 0/1\\65536 Gigatera --- Italia\\+39 0123 456789\\\texttt{http://www.example.com}\\\texttt{inbox@example.com}}
+%\phdnumber{313}
+%\cycle{XXVIII}
+%\contacts{Via della Sintassi Astratta, 0/1\\65536 Gigatera --- Italia\\+39 0123 456789\\\texttt{http://www.example.com}\\\texttt{inbox@example.com}}
 
 %% --- Pacchetti consigliati ---
 %% pdfx: per generare il PDF/A per l'archiviazione. Necessario solo per la versione finale
@@ -37,6 +38,8 @@
 %% sfbig (predefinito): Apertura delle parti e dei capitoli col numero grande; titoli delle parti e dei capitoli e intestazioni di pagina in sans serif.
 %% big: Come "sfbig", solo serif.
 %% plain: Apertura delle parti e dei capitoli tradizionali di LaTeX; intestazioni di pagina come "big".
+
+\setcounter{tocdepth}{4} % REMOVEREMOVE
 
 \begin{document}
 \maketitle
@@ -103,7 +106,233 @@ Phasellus feugiat neque sed risus faucibus tristique nec sit amet magna. Fusce l
 Sed dapibus augue rutrum augue ultrices, in tristique lectus malesuada. Praesent pharetra at arcu eu pellentesque. Cras ac est arcu. Suspendisse euismod pellentesque diam, id porta metus. Donec porta ex vel ornare tincidunt. Nunc non tortor sodales, lacinia diam quis, malesuada lectus. Cras a ultrices massa, a semper ligula.
 
 
+iplookup, template (parser, botnet, message), json (message (ip info))
 
+\addcontentsline{toc}{chapter}{2. Background e scenario}
+
+\addcontentsline{toc}{chapter}{3. Problema e requisiti}
+
+BotNetInterface.py (sniff connect)
+MessageSchema.json (empty)
+
+\addcontentsline{toc}{chapter}{4. Progettazione}
+
+\addcontentsline{toc}{chapter}{5. Implementazione}
+
+\addcontentsline{toc}{section}{5.1 Ambiente di sviluppo}
+\addcontentsline{toc}{subsection}{5.1.1 Python}
+
+\addcontentsline{toc}{section}{5.2 Riconoscimento Campione}
+\addcontentsline{toc}{subsection}{5.2.1 Virus Total (?)}
+\addcontentsline{toc}{subsection}{5.2.2 YARA Rules (?)}
+
+\addcontentsline{toc}{section}{5.3 Ambiente Reverse Engineering}
+\addcontentsline{toc}{subsection}{5.3.1 Ghidra}
+\addcontentsline{toc}{subsection}{5.3.2 Import}
+\addcontentsline{toc}{subsection}{5.3.3 MCP Plugin (Github)}
+\addcontentsline{toc}{subsection}{5.3.4 MCP Server (bridge)}
+\addcontentsline{toc}{subsection}{5.3.5 Selezione Tools Analisi Statica}
+
+\addcontentsline{toc}{section}{5.4 Ambiente Isolato Sandbox}
+\addcontentsline{toc}{subsection}{5.4.1 Dockerfile}
+\addcontentsline{toc}{subsection}{5.4.2 MCP Server}
+\addcontentsline{toc}{subsubsection}{Scrittura}
+\addcontentsline{toc}{subsubsection}{Esecuzione}
+
+\addcontentsline{toc}{section}{5.5 MCP Client}
+\addcontentsline{toc}{subsection}{5.5.1 Parse Tool MCP -> LLM}
+
+\addcontentsline{toc}{section}{5.6 LLM Client}
+\addcontentsline{toc}{subsection}{5.6.1 Logging}
+\addcontentsline{toc}{subsection}{5.6.2 Tool Calls Dispatching}
+
+\addcontentsline{toc}{section}{5.7 Schema}
+\addcontentsline{toc}{subsection}{5.7.1 Message Classification}
+\addcontentsline{toc}{subsection}{5.7.2 Message JSON Schema}
+\addcontentsline{toc}{subsubsection}{IP JSON Schema}
+\addcontentsline{toc}{subsubsection}{IP Lookup}
+
+\addcontentsline{toc}{section}{5.8 Template}
+\addcontentsline{toc}{subsection}{5.8.1 Botnet}
+\addcontentsline{toc}{subsection}{5.8.2 Parser}
+
+\addcontentsline{toc}{section}{5.9 Prompt Engineering}
+\addcontentsline{toc}{subsection}{5.9.1 Renaming}
+\addcontentsline{toc}{subsubsection}{Start}
+\addcontentsline{toc}{subsubsection}{Continue}
+\addcontentsline{toc}{subsection}{5.9.2 Reversing}
+\addcontentsline{toc}{subsubsection}{Pt. 1}
+\addcontentsline{toc}{subsubsection}{Pt. 2}
+\addcontentsline{toc}{subsection}{5.9.3 Coding}
+\addcontentsline{toc}{subsubsection}{Botnet}
+\addcontentsline{toc}{subsubsection}{Parser}
+\addcontentsline{toc}{subsubsection}{YAML}
+
+\addcontentsline{toc}{section}{5.10 Orchestrazione / Esecuzione}
+\addcontentsline{toc}{subsection}{5.10.1 Filtro}
+\addcontentsline{toc}{subsection}{5.10.2 Malware Reversing}
+\addcontentsline{toc}{subsubsection}{Knowledge Base}
+\addcontentsline{toc}{subsection}{5.10.3 Code Generation}
+
+\addcontentsline{toc}{chapter}{6. Validazione e test}
+\addcontentsline{toc}{section}{6.1 Obiettivi della validazione}
+\addcontentsline{toc}{subsection}{6.1.1 Strategia di validazione}
+\addcontentsline{toc}{subsection}{(NO) Prestazioni}
+
+\addcontentsline{toc}{section}{6.2 Ambiente sperimentale}
+\addcontentsline{toc}{subsection}{6.2.1 Hardware}
+\addcontentsline{toc}{subsubsection}{(?) GPU: A100 e 4*H100}
+\addcontentsline{toc}{subsubsection}{(?) CPU e RAM}
+\addcontentsline{toc}{subsection}{6.2.2 Software}
+\addcontentsline{toc}{subsubsection}{(?) vLLM}
+\addcontentsline{toc}{subsection}{6.2.3 Large Language Models}
+\addcontentsline{toc}{subsubsection}{Qwen 3.6 27B (\textit{Architettura, Parametri, Contesto})}
+\addcontentsline{toc}{subsubsection}{DeepSeek-V4-Flash-Preview (\textit{Recipe, Caratteristiche Varie, Temperature})}
+
+\addcontentsline{toc}{section}{6.3 Definizione delle metriche di valutazione}
+\addcontentsline{toc}{subsection}{6.3.1 Complessità del campione}
+\addcontentsline{toc}{subsection}{6.3.2 Efficacia dell'attività di rinomina}
+\addcontentsline{toc}{subsection}{6.3.3 Accuratezza del recupero degli artefatti}
+\addcontentsline{toc}{subsection}{6.3.4 Qualità del codice generato}
+
+\addcontentsline{toc}{section}{6.4 Campagna sperimentale}
+\addcontentsline{toc}{subsection}{6.4.1 Dataset}
+\addcontentsline{toc}{subsubsection}{Famiglia Gafgyt}
+\addcontentsline{toc}{subsubsection}{Famiglia Mirai}
+\addcontentsline{toc}{subsubsection}{Snippet MD K.B.}
+\addcontentsline{toc}{subsubsection}{Provenienza}
+\addcontentsline{toc}{subsubsection}{(?) Criteri di selezione}
+\addcontentsline{toc}{subsection}{6.4.2 Descrizione dei campioni}
+\addcontentsline{toc}{subsubsection}{Hash, architettura, dimensione, famiglia}
+\addcontentsline{toc}{subsubsection}{Descrizioni testuali (\textit{Elia/YAML})}
+\addcontentsline{toc}{subsubsection}{Difficoltà}
+
+\addcontentsline{toc}{section}{6.5 Risultati sperimentali}
+\addcontentsline{toc}{subsection}{6.5.1 Statistiche di esecuzione}
+\addcontentsline{toc}{subsubsection}{Token}
+\addcontentsline{toc}{subsubsection}{(?) Tempi}
+\addcontentsline{toc}{subsection}{6.5.2 Metriche}
+\addcontentsline{toc}{subsubsection}{Tabelle}
+\addcontentsline{toc}{subsubsection}{Grafici}
+
+\addcontentsline{toc}{section}{6.6 Discussione dei risultati}
+\addcontentsline{toc}{subsection}{6.6.1 Casi di successo}
+\addcontentsline{toc}{subsection}{6.6.2 Casi di insuccesso}
+\addcontentsline{toc}{subsection}{6.6.3 Confronto tra i LLM}
+\addcontentsline{toc}{subsection}{6.6.4 Limitazioni dei LLM}
+
+\addcontentsline{toc}{chapter}{7. Conclusioni}
+
+
+% long horizon one shots ai agents + chain of thought (native reasoning)
+% https://arxiv.org/html/2509.09677v3
+
+Sto realizzando una tesi triennale sperimentale sull'argomento "Generazione automatica di moduli per l'intercettazione delle comunicazioni Command-and-Control dei malware".
+
+Descrizione: esegue il reverse engineering di malware Mirai attraverso agenti LLM, per poi generare il codice di intercettazione dei comandi.
+
+Capitolo Tesi (6): Validazione e test
+
+Obiettivo capitolo: verificare il raggiungimento dei requisiti
+
+
+% https://people.uniud.it/sites/default/files/Linee%20guida%20per%20la%20richiesta%20e%20la%20stesura%20della%20tesi%20di%20laurea.pdf
+% https://people.uniud.it/sites/default/files/Indicazioni%20per%20la%20compilazione%20della%20tesi%20di%20laurea.pdf
+% https://www.unisalento.it/documents/20143/327281/Linee+Guida+per+tesi+di+laurea.pdf/0ec39d16-e32f-40dd-1b73-c46b6ffb2458?version=1.1
+
+
+\section{Indicazioni Miculan}
+
+\subsection{Struttura}
+
+\begin{enumerate}
+    % 1
+    \item Introduzione. Si introduce il problema a grandi linee, si descrive la sua importanza, e come e perché lo si affronta in questa tesi. L'introduzione si scrive per ULTIMA!
+    Contesto generale in cui si colloca questa ricerca
+    Problema specifico che si vuole affrontare
+    Soluzione proposta
+    Metodo seguito
+    Riassunto del resto della tesi
+
+    è un capitolo che deve avere vita propria. Il suo scopo è quello di fungere da riassunto di tutto e quindi deve coprire tutto. Una persona deve poterla leggere e, solo nel caso in cui si incuriosisca continuare e approfondire la lettura.
+    % 2
+    \item Capitolo di background sul contesto del problema:
+    Lo scenario, il problema
+    Lavori precedenti (se ce ne sono)
+
+    Deve includere i cenni teorici, di modo da fare arrivare una persona non esperta al mio stesso livello prima di cominciare la lettura. è un riassunto di quello che serve per affrontare il problema e quindi non presenterà niente di nuovo (ai generativa, malware, botnet).
+    % 3
+    \item Analisi del problema, definizione requisiti
+    
+    Si individua qual è il problema, insieme ai requisiti. Es: voglio un sistema che faccia x, y, z \dots. A volte potrebbero essere incluse anche scelte progettuali.
+    % 4
+    \item Progettazione della soluzione
+    architettura, moduli, funzionalità
+    algoritmi e protocolli principali, se necessari
+
+    Copre gli argomenti dell'ingegneria del software. Ad esempio qui bisogna includere la scelta fatta di ricorrere a un LLM (tutte le attività potrebbero essere anche fatte a mano).
+    % 5
+    \item Implementazione
+    Scelte implementative
+    perché uso un LLM rispetto ad un altro. Prende ogni singolo modulo e spiega cosa è stato fatto. Ad esempio per gli IP Lookup io ho usato un database locale, perché io ho deciso di implementarlo in questo modo, ma ad esempio avrei potuto usare una API. L'implementazione descrive solamente quello che è stato fatto per questa versione in particolare. A partire dall'architettura, un'altra persona avrebbe potuto fare un'altra implementazione.
+    % 6
+    \item Validazione e test
+    Si verifica il raggiungimento dei requisiti dal 3 in poi.
+    % 7
+    \item Conclusioni
+    Riassunto di cosa è stato fatto
+    Cosa rimane da fare
+    Sviluppi futuri
+\end{enumerate}
+
+\subsection{Stile}
+
+\begin{itemize}
+    \item Usare l'impersonale. Non si dice "In questa tesi, spiegherò la soluzione che ho sviluppato per...", bensì "In questa tesi verrà descritta la soluzione che è stata sviluppata per...".
+    \item Tempo verbale costante (Presente vs. Passato): Usa il presente per descrivere verità scientifiche, dati nei grafici o la struttura della tesi. Usa il passato per descrivere le azioni compiute durante gli esperimenti o i test passati.
+    Esempio: "La Figura 2 mostra i risultati..." (non "ha mostrato").
+    Esempio: "I campioni sono stati inseriti nell'incubatore per 24 ore."
+    \item Precisione assoluta e quantificazione: Evita aggettivi vaghi come molto, poco, grande, veloce, circa. Sostituisci la vaghezza con i dati numerici e le unità di misura del Sistema Internazionale.
+    \item Lessico formale e denotativo: Elimina i sinonimi letterari o i termini emotivi (es. incredibile, deludente, purtroppo). Usa termini univoci e tecnici. La ripetizione della stessa parola tecnica è corretta se serve a non generare ambiguità. Evita le metafore o il linguaggio figurato.
+    \item Gestione di acronimi e formule: Definisci gli acronimi la prima volta che compaiono nel testo, poi usa solo la sigla. Isola le formule matematiche importanti al centro della riga e numera ciascuna formula sul margine destro per poterne fare riferimento nel testo.
+    Esempio: "...utilizzando le reti neurali artificiali (ANN). Le ANN permettono di..."
+    \item Sintassi lineare (Frasi corte): Limita le subordinate e le frasi incastrate l'una dentro l'altra. Usa la struttura Soggetto + Verbo + Oggetto. Spezza i periodi più lunghi di due righe. La prosa scientifica deve essere fluida e facile da scansionare mentalmente.
+\end{itemize}
+
+\subsubsection{Prova}
+
+metterei le keyword così:
+
+English
+Command-and-Control (C2) Communications
+Protocol Reverse Engineering
+Automated Module Generation
+Agentic Malware Analysis
+Generative AI for Cybersecurity
+Italiano
+Comunicazioni Command-and-Control (C2)
+Reverse Engineering dei Protocolli
+Generazione Automatica di Moduli
+Analisi Agentica del Malware
+Intelligenza Artificiale Generativa per la Cybersecurity
+
+
+Generazione automatica di moduli per l'intercettazione delle comunicazioni command-and-control dei malware
+Automatic Generation of Modules for Intercepting Malware Command-and-Control Communications
+
+Cybersecurity
+Generative AI
+Malware Analysis
+Reverse Engineering
+C2 Communications
+
+Italiano
+
+Cybersecurity
+Reverse Engineering
+Analisi del Malware
+Intelligenza Artificiale Generativa
+Comunicazioni C2
 
 %% Fine dei capitoli normali, inizio dei capitoli-appendice (opzionali)
 \appendix
