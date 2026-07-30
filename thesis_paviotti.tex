@@ -69,9 +69,11 @@ Nunc ac dignissim ipsum, quis pulvinar elit. Mauris congue nec leo ornare lobort
 %% Corpo principale del documento
 \mainmatter
 
+\iffalse
+
 %% Parte
 %% La suddivisione in parti è opzionale; solitamente sono sufficienti i capitoli.
-%\part{Parte}
+\part{Parte}
 
 %% Capitolo
 \chapter{Titolo del primo capitolo}
@@ -105,139 +107,263 @@ Phasellus feugiat neque sed risus faucibus tristique nec sit amet magna. Fusce l
 
 Sed dapibus augue rutrum augue ultrices, in tristique lectus malesuada. Praesent pharetra at arcu eu pellentesque. Cras ac est arcu. Suspendisse euismod pellentesque diam, id porta metus. Donec porta ex vel ornare tincidunt. Nunc non tortor sodales, lacinia diam quis, malesuada lectus. Cras a ultrices massa, a semper ligula.
 
+\fi
 
-\addcontentsline{toc}{chapter}{2. Background e scenario}
+\iffalse
+Sto realizzando una tesi triennale sperimentale sull'argomento "Generazione automatica di moduli per l'intercettazione delle comunicazioni Command-and-Control dei malware".
 
-\addcontentsline{toc}{chapter}{3. Problema e requisiti}
+Descrizione software: esegue il reverse engineering di malware Mirai attraverso agenti LLM, per poi generare il codice di intercettazione dei comandi ricevuti dal C2 server.
 
-BotNetInterface.py (sniff connect)
-MessageSchema.json (empty)
+Indice: \fi
 
-\addcontentsline{toc}{chapter}{4. Progettazione}
+\chapter{Introduzione} % 1
 
-\addcontentsline{toc}{chapter}{5. Implementazione}
+\section{Problema} % 1.1
 
-\addcontentsline{toc}{section}{5.1 Ambiente di sviluppo}
-\addcontentsline{toc}{subsection}{5.1.1 Python}
+\section{Struttura della tesi} % 1.2
 
-\addcontentsline{toc}{section}{5.2 Riconoscimento Campione}
-\addcontentsline{toc}{subsection}{5.2.1 Virus Total (?)}
-\addcontentsline{toc}{subsection}{5.2.2 YARA Rules (?)}
+\cite{Knu86}
 
-\addcontentsline{toc}{section}{5.3 Ambiente Reverse Engineering}
-\addcontentsline{toc}{subsection}{5.3.1 Ghidra}
-\addcontentsline{toc}{subsection}{5.3.2 Import}
-\addcontentsline{toc}{subsection}{5.3.3 MCP Plugin (Github)}
-\addcontentsline{toc}{subsection}{5.3.4 MCP Server (bridge)}
-\addcontentsline{toc}{subsection}{5.3.5 Selezione Tools Analisi Statica}
+\chapter{Background} % 2
 
-\addcontentsline{toc}{section}{5.4 Ambiente Isolato Sandbox}
-\addcontentsline{toc}{subsection}{5.4.1 Dockerfile}
-\addcontentsline{toc}{subsection}{5.4.2 MCP Server}
-\addcontentsline{toc}{subsubsection}{Scrittura}
-\addcontentsline{toc}{subsubsection}{Esecuzione}
+\section{Malware} % 2.1
+\subsection{Botnet} % 2.1.1
+\subsubsection{Botnet IoT}
+\subsection{Command-and-Control} % 2.1.2
+\subsubsection{Handshake, profiling e beaconing}
+\subsubsection{Attacchi}
 
-\addcontentsline{toc}{section}{5.5 MCP Client}
-\addcontentsline{toc}{subsection}{5.5.1 Parse Tool MCP -> LLM}
+\section{Malware Analysis} % 2.2
+\subsection{Analisi statica} % 2.2.1
+\subsubsection{Analisi dinamica}
+\subsection{Disassembly e decompiling} % 2.2.2
+\subsection{Reverse engineering} % 2.2.3
+\subsubsection{Assistito}
 
-\addcontentsline{toc}{section}{5.6 LLM Client}
-\addcontentsline{toc}{subsection}{5.6.1 Logging}
-\addcontentsline{toc}{subsection}{5.6.2 Tool Calls Dispatching}
+\section{Large Language Models} % 2.3
 
-\addcontentsline{toc}{section}{5.7 Schema}
-\addcontentsline{toc}{subsection}{5.7.1 Message Classification}
-\addcontentsline{toc}{subsection}{5.7.2 Message JSON Schema}
-\addcontentsline{toc}{subsubsection}{IP JSON Schema}
-\addcontentsline{toc}{subsubsection}{IP Lookup}
+Generative AI
 
-\addcontentsline{toc}{section}{5.8 Template}
-\addcontentsline{toc}{subsection}{5.8.1 Botnet}
-\addcontentsline{toc}{subsection}{5.8.2 Parser}
+\subsection{AI Agents e Tool Calling} % 2.3.1
+% Intelligent Agent
+\subsection{Model Context Protocol} % 2.3.2
 
-\addcontentsline{toc}{section}{5.9 Prompt Engineering}
-\addcontentsline{toc}{subsection}{5.9.1 Renaming}
-\addcontentsline{toc}{subsubsection}{Start}
-\addcontentsline{toc}{subsubsection}{Continue}
-\addcontentsline{toc}{subsection}{5.9.2 Reversing}
-\addcontentsline{toc}{subsubsection}{Pt. 1}
-\addcontentsline{toc}{subsubsection}{Pt. 2}
-\addcontentsline{toc}{subsection}{5.9.3 Coding}
-\addcontentsline{toc}{subsubsection}{Botnet}
-\addcontentsline{toc}{subsubsection}{Parser}
-\addcontentsline{toc}{subsubsection}{YAML}
+\chapter{Problema} % 3
 
-\addcontentsline{toc}{section}{5.10 Orchestrazione / Esecuzione}
-\addcontentsline{toc}{subsection}{5.10.1 Filtro}
-\addcontentsline{toc}{subsection}{5.10.2 Malware Reversing}
-\addcontentsline{toc}{subsubsection}{Knowledge Base}
-\addcontentsline{toc}{subsection}{5.10.3 Code Generation}
+\section{Definizione del problema} % 3.1
 
-\addcontentsline{toc}{chapter}{6. Validazione e test}
-\addcontentsline{toc}{section}{6.1 Obiettivi della validazione}
-\addcontentsline{toc}{subsection}{6.1.1 Strategia di validazione}
-\addcontentsline{toc}{subsection}{(NO) Prestazioni}
+Dato campione malware botnet (file qualsiasi ?), produrre automaticamente un modulo software in grado di intercettare le comunicazioni C2 ricevute dal C2 server e trasformarle in messaggi strutturati.
 
-\addcontentsline{toc}{section}{6.2 Ambiente sperimentale}
-\addcontentsline{toc}{subsection}{6.2.1 Hardware}
-\addcontentsline{toc}{subsubsection}{(?) GPU: A100 e 4*H100}
-\addcontentsline{toc}{subsubsection}{(?) CPU e RAM}
-\addcontentsline{toc}{subsection}{6.2.2 Software}
-\addcontentsline{toc}{subsubsection}{(?) vLLM}
-\addcontentsline{toc}{subsection}{6.2.3 Large Language Models}
-\addcontentsline{toc}{subsubsection}{Qwen 3.6 27B (\textit{Architettura, Parametri, Contesto})}
-\addcontentsline{toc}{subsubsection}{DeepSeek-V4-Flash-Preview (\textit{Recipe, Caratteristiche Varie, Temperature})}
+Fare i moduli a mano è lento e dispendioso.
 
-\addcontentsline{toc}{section}{6.3 Definizione delle metriche di valutazione}
-\addcontentsline{toc}{subsection}{6.3.1 Complessità del campione}
-\addcontentsline{toc}{subsection}{6.3.2 Efficacia dell'attività di rinomina}
-\addcontentsline{toc}{subsection}{6.3.3 Accuratezza del recupero degli artefatti}
-\addcontentsline{toc}{subsection}{6.3.4 Qualità del codice generato}
+\subsection{Ambito del lavoro} % 3.2
 
-\addcontentsline{toc}{section}{6.4 Campagna sperimentale}
-\addcontentsline{toc}{subsection}{6.4.1 Dataset}
-\addcontentsline{toc}{subsubsection}{Famiglia Gafgyt}
-\addcontentsline{toc}{subsubsection}{Famiglia Mirai}
-\addcontentsline{toc}{subsubsection}{Snippet MD K.B.}
-\addcontentsline{toc}{subsubsection}{Provenienza}
-\addcontentsline{toc}{subsubsection}{(?) Criteri di selezione}
-\addcontentsline{toc}{subsection}{6.4.2 Descrizione dei campioni}
-\addcontentsline{toc}{subsubsection}{Hash, architettura, dimensione, famiglia}
-\addcontentsline{toc}{subsubsection}{Descrizioni testuali (\textit{Elia/YAML})}
-\addcontentsline{toc}{subsubsection}{Difficoltà}
+Cosa il sistema fa e cosa non fa.
 
-\addcontentsline{toc}{section}{6.5 Risultati sperimentali}
-\addcontentsline{toc}{subsection}{6.5.1 Statistiche di esecuzione}
-\addcontentsline{toc}{subsubsection}{Token}
-\addcontentsline{toc}{subsubsection}{(?) Tempi}
-\addcontentsline{toc}{subsection}{6.5.2 Metriche}
-\addcontentsline{toc}{subsubsection}{Tabelle}
-\addcontentsline{toc}{subsubsection}{Grafici}
+\subsection{Obiettivi del sistema (?)} % 3.2.1
 
-\addcontentsline{toc}{section}{6.6 Discussione dei risultati}
-\addcontentsline{toc}{subsection}{6.6.1 Casi di successo}
-\addcontentsline{toc}{subsection}{6.6.2 Casi di insuccesso}
-\addcontentsline{toc}{subsection}{6.6.3 Confronto tra i LLM}
-\addcontentsline{toc}{subsection}{6.6.4 Limitazioni dei LLM}
+\section{Vincoli del problema} % 3.2.2
 
-\addcontentsline{toc}{chapter}{7. Conclusioni}
+Compatibilità framework codebase
+astrazione delle comunicazioni c2
+intercettazione passiva
+DURING ANALYSIS DOES NOT GO ROGUE LIKE GPT 5.6 SOL
+indipendenza famiglia malware botnet
+totale autonomia, arrivando al modulo finale in modo automatico, senza intervento umano. l'umano al massimo corregge gli errori alla fine. assenza di implementazione manuale
 
+\section{Input e output del sistema} % 3.3
+
+\subsection{Input} % 3.3.1
+
+File generico, probabilmente malware, senza alcuna altra informazione.
+Il sistema non assume alcuna conoscenza preliminare sul campione, quali famiglia malware, architettura, protocollo di comunicazione o formato del binario.
+
+\subsection{Output} % 3.3.2
+
+Modulo, linguaggio python, integrabile, conforme all'interfaccia definita e con tutto il necessario per implementare e svolgere le funzioni previste.
+Autoconsistente (self-contained)
+
+\section{Interfaccia del modulo} % 3.4
+
+BotNetInterface.py (connect e sniff)
+MessageSchema.json (classificazione e informazioni)
+
+\section{Diagramma di Contesto (?)} % 3.5
+
+\iffalse
+@startuml
+left to right direction
+
+rectangle "Sistema\n(Black Box)" as S
+
+artifact "File" as F
+artifact "Modulo di intercettazione" as M
+
+F --> S : input
+S --> M : output
+
+note
+Il sistema produce un modulo di intercettazione quando il campione analizzato viene riconosciuto come pertinente al dominio considerato.
+endnote
+
+@enduml
+//www.plantuml.com/plantuml/png/JOynJiH034Lxd-8h5HHx0GgqsY9TgYbP2clYB1RE39hn8CI9k0SNmuI6pl_fwKa-T-VcOpSosHnUqVJsubYrINQjXUZtu78pmPIqk-nyBNSNu_oAI_sudy0TYIWokd5sJBEQ77J-1vUw3glHXHQNbiMTFwF_Pov4CqwdHoGyXF0sdDAnbzXrU81hUUer2bsWXarDyFs5dKtU0pyJdQMiySWF
+\fi
+
+\chapter{Progettazione} % 4
+
+\section{Architettura generale sistema} % 4.1
+
+\section{Componenti del sistema} % 4.2
+
+\subsection{Orchestratore} % 4.2.1
+\subsection{Filtro Iniziale} % 4.2.2
+\subsection{Agenti renaming/reversing} % 4.2.3
+\subsubsection{Ghidra}
+\subsubsection{Sanbox}
+\subsubsection{Knowledge Base}
+\subsection{Agenti generazione codice} % 4.2.4
+
+\section{Template} % 4.3
+\subsection{Botnet e parser} % 4.3.1
+\subsection{Schema} % 4.3.2
+
+\chapter{Implementazione} % 5
+
+\section{Ambiente di sviluppo} % 5.1
+\subsection{Python} % 5.1.1
+
+\section{Riconoscimento Campione} % 5.2
+\subsection{Virus Total (?)} % 5.2.1
+\subsection{YARA Rules (?)} % 5.2.2
+
+\section{Ambiente Reverse Engineering} % 5.3
+\subsection{Ghidra} % 5.3.1
+\subsection{Import} % 5.3.2
+\subsection{MCP Plugin (Github)} % 5.3.3
+\subsection{MCP Server (bridge)} % 5.3.4
+\subsection{Selezione Tools Analisi Statica} % 5.3.5
+
+\section{Ambiente Isolato Sandbox} % 5.4
+\subsection{Dockerfile} % 5.4.1
+\subsection{MCP Server} % 5.4.2
+\subsubsection{Scrittura File}
+\subsubsection{Esecuzione PY}
+
+\section{MCP Client} % 5.5
+\subsection{Parse Tool MCP -> LLM} % 5.5.1
+
+\section{LLM Client} % 5.6
+\subsection{Logging} % 5.6.1
+\subsection{Tool Calls Handling} % 5.6.2
+
+\section{Schema} % 5.7
+\subsection{Message Classification} % 5.7.1
+\subsection{Message JSON Schema} % 5.7.2
+\subsubsection{IP JSON Schema}
+
+Lo schema JSON definisce il formato utilizzato dal sistema per rappresentare le informazioni associate ad un indirizzo IP. Il suo scopo è uniformare l'output prodotto dai moduli di intercettazione, indipendentemente dalla famiglia malware analizzata.
+
+La struttura è suddivisa in cinque sezioni principali: informazioni geografiche (geo), dati di localizzazione (location), caratteristiche della rete (network), informazioni DNS (dns) e metadati (meta). Lo schema, sviluppato secondo lo standard JSON Schema Draft 2020-12, consente inoltre di validare la correttezza della struttura prodotta e di garantire la compatibilità tra tutti i componenti del sistema.
+
+\subsubsection{IP Lookup}
+
+La classe IPLookup centralizza l'arricchimento delle informazioni relative agli indirizzi IP osservati durante l'analisi. A partire da un indirizzo IPv4, vengono interrogate basi dati locali per recuperare informazioni geografiche e di rete, mentre una componente dedicata esegue interrogazioni DNS per ottenere il record PTR e verificarne la corrispondenza tramite Forward-Confirmed Reverse DNS (FCrDNS).
+
+Le informazioni raccolte vengono restituite in un oggetto conforme allo schema descritto nella sezione precedente. L'utilizzo di un'unica classe dedicata evita duplicazioni di codice e garantisce un formato uniforme dei dati prodotti da tutti i moduli generati automaticamente.
+
+\section{Template} % 5.8
+\subsection{Botnet} % 5.8.1
+\subsection{Parser} % 5.8.2
+\subsection{Aggiornamento Interface (?)} % 5.8.3
+
+Visto che per la botnet è stato anche aggiunto un minimo di logging e che IPLookup è centralizzato, l'interfaccia è aggiornata con un costruttore nuovo.
+
+\section{Prompt Engineering} % 5.9
+\subsection{Renaming} % 5.9.1
+\subsubsection{Start}
+\subsubsection{Continue}
+\subsection{Reversing} % 5.9.2
+\subsubsection{Pt. 1}
+\subsubsection{Pt. 2}
+\subsection{Coding} % 5.9.3
+\subsubsection{Botnet}
+\subsubsection{Parser}
+\subsubsection{YAML}
+
+\section{Orchestrazione / Esecuzione} % 5.10
+\subsection{Filtro} % 5.10.1
+\subsection{Malware Reversing} % 5.10.2
+\subsubsection{Knowledge Base}
+\subsection{Code Generation} % 5.10.3
+\subsubsection{Context Injection}
+
+\chapter{Validazione e test} % 6
+\section{Obiettivi della validazione} % 6.1
+\subsection{Strategia di validazione} % 6.1.1
+
+Le prestazioni non sono oggetto della valutazione.
+
+\section{Ambiente sperimentale} % 6.2
+\subsection{Hardware} % 6.2.1
+\subsubsection{(?) GPU: A100 e 4*H100}
+\subsubsection{(?) CPU e RAM}
+\subsection{Software} % 6.2.2
+\subsubsection{(?) vLLM}
+\subsection{Large Language Models} % 6.2.3 
+\subsubsection{Qwen 3.6 27B}
+\subsubsection{DeepSeek-V4-Flash-Preview}
+
+\begin{itemize}
+    \item Architettura
+    \item Parametri
+    \item Contesto
+    \item VLLM Recipe
+    \item Usage Parameters
+    \item Varie
+\end{itemize}
+
+\section{Definizione delle metriche di valutazione} % 6.3
+\subsection{Complessità del campione} % 6.3.1
+\subsection{Efficacia dell'attività di rinomina} % 6.3.2
+\subsection{Accuratezza del recupero degli artefatti} % 6.3.3
+\subsection{Qualità del codice generato} % 6.3.3
+
+\section{Campagna sperimentale} % 6.4
+\subsection{Dataset} % 6.4.1
+\subsubsection{Famiglia Gafgyt}
+\subsubsection{Famiglia Mirai}
+\subsubsection{Snippet MD K.B.}
+\subsubsection{Provenienza}
+\subsubsection{(?) Criteri di selezione}
+\subsection{Descrizione dei campioni} % 6.4.2
+\subsubsection{Hash, architettura, dimensione, famiglia}
+\subsubsection{Descrizioni testuali (\textit{Elia/YAML})}
+\subsubsection{Difficoltà}
+
+\section{Risultati sperimentali}  % 6.5
+\subsection{Statistiche di esecuzione} % 6.5.1
+\subsubsection{Token}
+\subsubsection{(?) Tempi}
+\subsection{Metriche} % 6.5.2
+\subsubsection{Tabelle}
+\subsubsection{Grafici}
+
+\section{Discussione dei risultati} % 6.6
+\subsection{Casi di successo} % 6.6.1
+\subsection{Casi di insuccesso} % 6.6.2
+\subsection{Confronto tra i LLM} % 6.6.3
+\subsection{Limitazioni dei LLM} % 6.6.4
+
+\chapter{Conclusioni} % 7
 
 % long horizon one shots ai agents + chain of thought (native reasoning)
 % https://arxiv.org/html/2509.09677v3
-
-Sto realizzando una tesi triennale sperimentale sull'argomento "Generazione automatica di moduli per l'intercettazione delle comunicazioni Command-and-Control dei malware".
-
-Descrizione: esegue il reverse engineering di malware Mirai attraverso agenti LLM, per poi generare il codice di intercettazione dei comandi.
-
-Capitolo Tesi (6): Validazione e test
-
-Obiettivo capitolo: verificare il raggiungimento dei requisiti
-
-
 % https://people.uniud.it/sites/default/files/Linee%20guida%20per%20la%20richiesta%20e%20la%20stesura%20della%20tesi%20di%20laurea.pdf
 % https://people.uniud.it/sites/default/files/Indicazioni%20per%20la%20compilazione%20della%20tesi%20di%20laurea.pdf
 % https://www.unisalento.it/documents/20143/327281/Linee+Guida+per+tesi+di+laurea.pdf/0ec39d16-e32f-40dd-1b73-c46b6ffb2458?version=1.1
 
+\iffalse 
 
 \section{Indicazioni Miculan}
 
@@ -297,40 +423,7 @@ Obiettivo capitolo: verificare il raggiungimento dei requisiti
     \item Sintassi lineare (Frasi corte): Limita le subordinate e le frasi incastrate l'una dentro l'altra. Usa la struttura Soggetto + Verbo + Oggetto. Spezza i periodi più lunghi di due righe. La prosa scientifica deve essere fluida e facile da scansionare mentalmente.
 \end{itemize}
 
-\subsubsection{Prova}
-
-metterei le keyword così:
-
-English
-Command-and-Control (C2) Communications
-Protocol Reverse Engineering
-Automated Module Generation
-Agentic Malware Analysis
-Generative AI for Cybersecurity
-Italiano
-Comunicazioni Command-and-Control (C2)
-Reverse Engineering dei Protocolli
-Generazione Automatica di Moduli
-Analisi Agentica del Malware
-Intelligenza Artificiale Generativa per la Cybersecurity
-
-
-Generazione automatica di moduli per l'intercettazione delle comunicazioni command-and-control dei malware
-Automatic Generation of Modules for Intercepting Malware Command-and-Control Communications
-
-Cybersecurity
-Generative AI
-Malware Analysis
-Reverse Engineering
-C2 Communications
-
-Italiano
-
-Cybersecurity
-Reverse Engineering
-Analisi del Malware
-Intelligenza Artificiale Generativa
-Comunicazioni C2
+\fi
 
 %% Fine dei capitoli normali, inizio dei capitoli-appendice (opzionali)
 \appendix
