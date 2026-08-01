@@ -39,6 +39,28 @@
 %% big: Come "sfbig", solo serif.
 %% plain: Apertura delle parti e dei capitoli tradizionali di LaTeX; intestazioni di pagina come "big".
 
+%% --- Pacchetti aggiuntivi ---
+%$ listings + xcolor: inserimento dinamico di codice.
+\usepackage{listings}
+\usepackage{xcolor}
+%% graphics: resizing di figure e/o contenuto.
+\usepackage{graphicx}
+%% cleveref: gestisce in modo intelligente riferimenti a figure e tabelle
+\usepackage[italian]{cleveref}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black}\itshape,
+    showstringspaces=false,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true
+}
+
 \setcounter{tocdepth}{4} % REMOVEREMOVE
 
 \begin{document}
@@ -61,10 +83,10 @@ Nunc ac dignissim ipsum, quis pulvinar elit. Mauris congue nec leo ornare lobort
 \tableofcontents
 
 %% Lista delle tabelle (se presenti)
-%\listoftables
+\listoftables
 
 %% Lista delle figure (se presenti)
-%\listoffigures
+\listoffigures
 
 %% Corpo principale del documento
 \mainmatter
@@ -122,8 +144,6 @@ Indice: \fi
 
 \section{Struttura della tesi} % 1.2
 
-\cite{Knu86}
-
 \chapter{Background} % 2
 
 \section{Malware} % 2.1
@@ -132,6 +152,8 @@ Indice: \fi
 \subsection{Command-and-Control} % 2.1.2
 \subsubsection{Handshake, profiling e beaconing}
 \subsubsection{Attacchi}
+
+* (not) stripped
 
 \section{Malware Analysis} % 2.2
 \subsection{Analisi statica} % 2.2.1
@@ -150,45 +172,171 @@ Generative AI
 
 \chapter{Problema} % 3
 
+Questo capitolo ha l'obiettivo di descrivere il problema, le sue caratteristiche e i suoi requisiti.
+
 \section{Definizione del problema} % 3.1
 
 Dato campione malware botnet (file qualsiasi ?), produrre automaticamente un modulo software in grado di intercettare le comunicazioni C2 ricevute dal C2 server e trasformarle in messaggi strutturati.
 
-Fare i moduli a mano è lento e dispendioso.
+Una delle motivazioni principali per lo sviluppo è quella dell'automatizzazione, visto che fare i moduli a mano è lento e dispendioso; si vuole ridurre il tempo e automatizzare tutto.
 
 \subsection{Ambito del lavoro} % 3.2
 
 Cosa il sistema fa e cosa non fa.
 
+Il sistema NON (queste sono responsabilità che non rientrano nel sistema):
+
+\begin{itemize}
+    \item si occuperà di capire a fondo il malware, per arrivare a capire come funziona tutto il malware. Deve acquisire le conoscenze sufficienti a creare il modulo.
+    \item Non verifica la correttezza del modulo generato in ambienti reali, limitandosi alla sua produzione.
+\end{itemize}
+
 \subsection{Obiettivi del sistema (?)} % 3.2.1
 
 \section{Vincoli del problema} % 3.2.2
 
-Compatibilità framework codebase
-astrazione delle comunicazioni c2
-intercettazione passiva
-DURING ANALYSIS DOES NOT GO ROGUE LIKE GPT 5.6 SOL
-indipendenza famiglia malware botnet
-totale autonomia, arrivando al modulo finale in modo automatico, senza intervento umano. l'umano al massimo corregge gli errori alla fine. assenza di implementazione manuale
+Mentre l'architettura del sistema non ha particolari requisiti e, rispetto al problema, può essere costruita e formulata liberamente.
+
+La progettazione e l'implementazione devono però rispettare alcuni vincoli:
+
+\begin{itemize}
+    \item Indipendenza dalla famiglia: Applicabilità a diverse \textbf{famiglie} di botnet, senza quindi essere per forza legati a una famiglia specifica.
+    \item Astrazione rispetto al protocollo c2 (?): oltre all'indipendenza dalla famiglia, anche indipendneza da come avvengono le comunicazione c2, in grado quindi di supportare diversi protocolli. (qui meno enfasi rispetto all'indipendenza, visto che è basato su socket).
+    \item Natura difensiva del modulo: Intercettazione \textbf{passiva} dei comandi del C2 ricevuti, con la ricezione appunto, la classificazione, il parsing e senza svolgere alcuna altra azione di tipo attivo. L'unica cosa possibile è lo scambio di messaggi per C2 stabilire e mantere la sessione.
+    Assolutamente non esecuzione di alcun tipo di attacco e azioni offensive.
+    \item Natura difensiva/sicura dell'analisi: l'analisi deve essere sicura, senza avere compromissione per il sistema di analisi o altri sistemi (riferimento a GPT-6)
+    \item Natura statica dell'analisi: l'analisi del campione può essere solo statica, senza avere possibilità di eseguire il campione o fare debugging (?).
+    \item Autonomia dell'analisi: l'analisi deve essere idealmente completamente autonoma e non richiedere, durante alcun suo step l'intervento umano. L'umano deve fornire il file di input all'inizio dell'analisi e, nel caso malevolo, ricevere l'output alla fine di essa. C'è totale assenza di implementazione manuale. L'umano può solo agire al termine dell'analisi, eseguendo il modulo oppure andando a correggere errori all'interno di esso (se vuole o se è necessario). A questo scopo è importante che abbia dove agire, guardando i ragionamenti del sistema e correggendo le aree dove è carente, venendo magari puntato all'area interessata.
+    \item Compatibilità codebase: facilità di essere integrabile in altri framework, in code base. modularità.
+\end{itemize}
+
+\begin{description}
+    \item[] 
+\end{description}
 
 \section{Input e output del sistema} % 3.3
 
 \subsection{Input} % 3.3.1
 
-File generico, probabilmente malware, senza alcuna altra informazione.
-Il sistema non assume alcuna conoscenza preliminare sul campione, quali famiglia malware, architettura, protocollo di comunicazione o formato del binario.
+Il sistema dovrà essere progettato per accettare come unico dato di ingresso un file binario arbitrario. Nella pratica operativa, tale file corrisponderà generalmente a un campione di malware in formato eseguibile appartenente a una botnet; tuttavia, il sistema non dovrà imporre alcun vincolo sulla natura o sul formato del file fornito.
+
+Un requisito fondamentale dell'architettura è la capacità di operare in completa autonomia, senza disporre di alcuna conoscenza preliminare sul campione analizzato. Di conseguenza, al sistema non potranno essere fornite informazioni aggiuntive relative al file di ingresso, quali, ad esempio, la famiglia di appartenenza, descrizioni del comportamento o delle funzionalità del malware, oppure il protocollo di comunicazione utilizzato.
 
 \subsection{Output} % 3.3.2
 
-Modulo, linguaggio python, integrabile, conforme all'interfaccia definita e con tutto il necessario per implementare e svolgere le funzioni previste.
-Autoconsistente (self-contained)
+La natura dell'output che verrà restituito dal sistema dipenderà strettamente dall'esito della fase di analisi preliminare che sarà effettuata sul file ricevuto in ingresso.
+
+Nel caso in cui il sistema determini che il file analizzato non sia malevolo oppure che non appartenga a una botnet, allora interromperà il processo di analisi e il file sarà scartato.
+
+Al contrario, qualora il file di input sia identificato come un campione malevolo, il sistema dovrà svolgere tutte le attività di malware analysis necessarie per costruire un modulo di intercettazione sviluppato ad hoc sulle caratteristiche del malware in esame.
+
+Il modulo generato dovrà essere implementato nel linguaggio \textit{Python} e dovrà essere \textit{self-contained}, ovvero completamente autoconsistente. Il codice prodotto dovrà contenere al suo interno tutte le definizioni, le classi e le dipendenze necessarie per implementare autonomamente i metodi richiesti per l'intercettazione del traffico, l'elaborazione dei comandi C2 e, più in generale, tutte le funzionalità previste dal modulo.
+
+La scelta di utilizzare \textit{Python} come linguaggio target è dovuta a diversi aspetti, tra cui due in particolare. Il primo riguarda il fatto che tale linguaggio rappresenta uno \textit{standard de facto} nell'ambito della \textit{Cybersecurity} e della \textit{NetworkForensic} \cite{sans2020taxonomy} [citazione 1], grazie alla disponibilità di un ampio ecosistema di librerie e strumenti dedicati all'analisi \dots.
+
+Il secondo aspetto riguarda un requisito tecnico legato alla gestione del traffico di rete in tempo reale. L'impiego di costrutti avanzati di Python, come generatori e flussi di dati, attraverso l'istruzione \texttt{yield}, consente un'elaborazione continua dei messaggi C2 in maniera efficiente, sia dal punto di vista computazionale sia, soprattutto, dal punto di vista dell'occupazione di memoria. Tale approccio permette infatti di minimizzare la \textit{memory footprint} del modulo \cite{sans2020taxonomy} [citazione 2] \dots, facilitandone l'integrazione con altri sistemi e rendendolo idoneo a operare per periodi di tempo prolungati.
+
+\iffalse
+[1] TJ O'Connor, Violent Python: A Cookbook for Hackers, Forensic Analysts, Penetration Testers and Security Engineers, Syngress / Elsevier, 2012.
+[2] SANS Institute (2020), FOR572: Advanced Network Forensics: Threat Hunting, Analysis, and Incident Response.
+(Nelle premesse del corso viene specificato che Python è il linguaggio primario per l'automazione della Network Forensic e l'estrazione di manufatti di rete).
+[3] Ramalho, L. (2022). Fluent Python: Clear, Concise, and Effective Programming (2ª ed.). O'Reilly Media.
+\fi
 
 \section{Interfaccia del modulo} % 3.4
 
-BotNetInterface.py (connect e sniff)
-MessageSchema.json (classificazione e informazioni)
+Al fine di consentire l'integrazione del sistema all'interno di workflow esterni e pipeline di automazione più ampie, è indispensabile che l'output prodotto rispetti alcuni vincoli strutturali e comportamentali predefiniti.
+
+Per questo motivo, si è scelto di definire tali vincoli già durante la fase di analisi dei requisiti, anticipandoli rispetto alle successive fasi di progettazione e implementazione.
+
+In particolare, la conformità dell'output si articola su due livelli distinti:
+
+\begin{description}
+    \item[\textbf{Schema dei messaggi}] \texttt{MessageSchema}
+    \begin{description}
+        \item[\textbf{Schema dei messaggi}] \texttt{MessageSchema}
+    \end{description}
+    \item[\textbf{Altro campo}] \texttt{AltroValore}
+\end{description}
+
+\begin{description}
+    \item[\textbf{Interfaccia del modulo}] \hspace{1em} \texttt{BotNetInterface}
+    
+    Al fine di consentire ai moduli generati di essere immediatamente utilizzabili da sistemi esterni, è necessario definire un'interfaccia standardizzata. In questo modo, qualsiasi componente che ne conosca la struttura potrà caricare e utilizzare direttamente il modulo prodotto, senza conoscerne i dettagli interni e senza richiedere alcun adattamento.
+
+    Per tale motivo, ogni modulo generato dal sistema dovrà implementare l'interfaccia astratta \texttt{BotNetInterface}. Tale interfaccia impone la presenza nel modulo di due metodi fondamentali:
+    
+    \begin{itemize}
+        % \item[Metodo \texttt{connect}]
+        \item Metodo \texttt{connect}. Ha lo scopo di inizializzare o, eventualmente, ripristinare la connessione con il server C2. Verà eseguito all'avvio del modulo, prima dell'inizio dell'attività di intercettazione, e successivamente ogni volta che il metodo \texttt{sniff} terminerà la propria esecuzione a causa della chiusura della connessione o di un errore non recuperabile.
+        % \item[Metodo \texttt{sniff}]
+        \item Metodo \texttt{sniff}. Ha lo scopo di mantenere attiva la connessione con il server C2 ed eseguire l'intercettazione dei messaggi. Il metodo è progettato per rimanere in esecuzione indefinitamente e dovrà essere implementato come un generatore \textit{Python}, restituendo mediante l'istruzione \texttt{yield} gli oggetti corrispondenti ai messaggi intercettati, non appena questi sono stati ricevuti e decodificati.
+    \end{itemize}
+
+    % Figura~\ref{fig:botnet_interface}
+    L'interfaccia astratta che ogni modulo generato dovrà implementare è riportata in \Cref{fig:botnet_interface}.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{minipage}{0.5\linewidth}
+            \begin{lstlisting}[frame=single]
+from abc import ABC, abstractmethod
+class BotNetInterface(ABC):
+    @abstractmethod
+    def connect(self):
+        pass
+    @abstractmethod
+    def sniff(self):
+        pass
+            \end{lstlisting}
+        \end{minipage}
+        \caption{Interfaccia astratta \texttt{BotNetInterface}}
+        \label{fig:botnet_interface}
+    \end{figure}
+    
+    % Figura~\ref{fig:botnet_main}
+    La \Cref{fig:botnet_main} mostra invece un possibile esempio di utilizzo di un modulo conforme all'interfaccia definita.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{minipage}{0.5\linewidth}
+            \begin{lstlisting}[frame=single]
+b = BotNet()
+while True:
+    try:
+        b.connect()
+        for message in b.sniff():
+            pass
+    except:
+        pass
+            \end{lstlisting}
+        \end{minipage}
+        \caption{Esempio di uso di un generico modulo BotNet}
+        \label{fig:botnet_main}
+    \end{figure}
+
+    \item[\textbf{Schema dei messaggi}] \hspace{1em} \texttt{MessageSchema}
+    
+    Considerando la natura eterogenea delle botnet che il sistema dovrà analizzare, appartenenti a famiglie differenti e caratterizzate da protocolli di comunicazione e formati dei messaggi diversi, risulta indispensabile adottare un modello dati unificato per rappresentare le informazioni intercettate. 
+    
+    Per tale motivo, tutti gli oggetti restituiti dal metodo \texttt{sniff} dovranno essere conformi a uno schema comune, definito all'interno del file \texttt{MessageSchema}. La standardizzazione della rappresentazione dei messaggi costituisce un prerequisito essenziale affinché eventuali componenti successive possano elaborare i dati in modo uniforme, indipendentemente dalla botnet da cui essi provengono. % elaborazioni statistiche e scienza dei dati
+
+    A differenza della \texttt{BotNetInterface}, per la quale vengono definiti già in questa fase i metodi e il comportamento atteso, l'analisi dei requisiti non impone alcun vincolo sulla struttura interna del \texttt{MessageSchema}. L'unico requisito consiste nell'esistenza di uno schema fisso e condiviso, la cui effettiva definizione potrà essere gestita direttamente nella fase di implementazione del sistema.
+\end{description}
+
+Pertanto, l'output prodotto dal sistema non dovrà più limitarsi a essere funzionalmente corretto, ma dovrà rispettare entrambi i vincoli architetturali descritti. La conformità a questi due nuovi requisiti permetterà infatti di assicurare l'interoperabilità, la riusabilità e la scalabilità del processo di intercettazione.
+
+% cambiare interfaccia con contratto
 
 \section{Diagramma di Contesto (?)} % 3.5
+
+Considerando il sistema come una generica \textit{black box}, la descrizione del problema può essere riassunta con il seguente diagramma di contesto.
+
+\begin{figure}[ht]
+    \centering
+    \fbox{File $\to$ Sistema $\to$ Modulo Intercettazione}
+    \caption{Prova}
+\end{figure}
 
 \iffalse
 @startuml
