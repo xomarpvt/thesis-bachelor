@@ -1,12 +1,27 @@
 \chapter{Il background} % 2
 
 \section{Malware} % 2.1
+
+Fonti Bibliografiche: Practical Malware Analysis
+
 \subsection{Botnet} % 2.1.1
+
+Fonti Bibliografiche: Botnets: A survey, Understanding the Mirai Botnet (IoT)
+
 \subsubsection{Botnet IoT}
 \subsection{Command-and-Control} % 2.1.2
 \subsubsection{Handshake, profiling e beaconing}
 \subsubsection{Attacchi}
 
+\subsubsection{Esempio Breve Mirai}
+
+Fonti Bibliografiche: Understanding the Mirai Botnet
+
+Argomenti da trattare:
+
+\begin{itemize}
+    \item Brevissimo esempio Mirai
+\end{itemize}
 
 \section{Malware Analysis} % 2.2
 
@@ -29,7 +44,7 @@ Argomenti da trattare:
 \begin{itemize}
     \item Tecniche di analisi statica base e avanzate
     \item Efficacia e limitazioni dell'analisi statica
-    \item Rimozione della tabella dei simboli / stripping del malware (fonte?)
+    \item Rimozione della tabella dei simboli / stripping del malware
 \end{itemize}
 
 \subsection{Analisi dinamica} % 2.2.2
@@ -40,7 +55,7 @@ Argomenti da trattare:
 
 \begin{itemize}
     \item Tecniche di analisi dinamica base e avanzate
-    \item Ostacoli e rischi dell'analisi dinamica (fonte?)
+    \item Ostacoli e rischi dell'analisi dinamica
 \end{itemize}
 
 \subsection{Disassembly e decompiling} % 2.2.3
@@ -54,29 +69,9 @@ Argomenti da trattare:
     \item Strumenti di reversing, Ghidra e IDA
 \end{itemize}
 
-\subsection{Reverse engineering} % 2.2.4
-
-Fonti Bibliografiche: ???
-
-Argomenti da trattare:
-
-\begin{itemize}
-    \item Definizione Generica?
-\end{itemize}
-
-\subsubsection{Assistito}
-
-Fonti Bibliografiche: LLM4Decompile: Decompiling Binary Code with Large Language Models; ReCopilot: Reverse Engineering Copilot in Binary Analysis; Decompiling the Synergy: An Empirical Study of Human--LLM Teaming in Software Reverse Engineering
-
-Argomenti da trattare:
-
-\begin{itemize}
-    \item Esempi di come il reverse engineering può essere assistito dai large language models
-\end{itemize}
-
 \section{Large Language Models} % 2.3
 
-Fonti Bibliografiche: ???
+Fonti Bibliografiche: Introduction to Generative AI
 
 Argomenti da trattare:
 
@@ -87,7 +82,7 @@ Argomenti da trattare:
 
 \subsection{Prompt Engineering} % 2.3.1
 
-Fonti Bibliografiche: ???
+Fonti Bibliografiche: Introduction to Generative AI
 
 Argomenti da trattare:
 
@@ -97,14 +92,14 @@ Argomenti da trattare:
 
 \subsection{AI Agents e Tools} % 2.3.2
 
-Fonti Bibliografiche: ???, ReAct: Synergizing Reasoning and Acting in Language Models, ???
+Fonti Bibliografiche: From System 1 to System 2: A Survey of Reasoning Large Language Models; ReAct: Synergizing Reasoning and Acting in Language Models; Towards Long-Horizon Agents: A Survey; Tool Learning with Large Language Models: A Survey
 
 Argomenti da trattare:
 
 \begin{itemize}
     \item Reasoning e chain of thought
     \item Intelligent Agents
-    \item Long horizon / one-shot tasks (?)
+    \item Long horizon / one-shot tasks
     \item Tools e tool calls
 \end{itemize}
 
@@ -119,5 +114,22 @@ Argomenti da trattare:
     \item Architettura di host, server e client.
 \end{itemize}
 
-% long horizon one shots ai agents + chain of thought (native reasoning)
-% https://arxiv.org/html/2509.09677v3
+\section{Reverse engineering} % 2.4
+
+Fonti Bibliografiche: LLM4Decompile: Decompiling Binary Code with Large Language Models; ReCopilot: Reverse Engineering Copilot in Binary Analysis; Decompiling the Synergy: An Empirical Study of Human--LLM Teaming in Software Reverse Engineering
+
+Argomenti da trattare:
+
+\begin{itemize}
+    \item Esempi di come il reverse engineering può essere assistito dai large language models
+\end{itemize}
+
+\subsection{Assistito} % 2.4.1
+
+Fonti Bibliografiche: SoK: AI-Augmented Binary Reversing; Challenges and Future Directions in Agentic Reverse Engineering Systems; 
+
+Argomenti da trattare:
+
+\begin{itemize}
+    \item Agentic reverse engineering. definizione e limitazioni
+\end{itemize}
