@@ -1,29 +1,77 @@
-\chapter{Il background} % 2
+\chapter{Lo stato dell'arte} % 2
 
-\section{Malware} % 2.1
+Questo capitolo ha l'obiettivo di presentare i principali concetti teorici e le nozioni fondamentali necessarie per comprendere gli argomenti trattati nei capitoli successivi. Saranno introdotti gli aspetti essenziali su cui si fonda lo sviluppo del lavoro descritto in questa tesi.
 
-Fonti Bibliografiche: Practical Malware Analysis
+\section{Botnet} % 2.1
 
-\subsection{Botnet} % 2.1.1
+In generale, qualsiasi software progettato per compromettere la riservatezza, l'integrità o la disponibilità di un sistema informatico, di una rete o dei dati di un utente può essere classificato come \textit{malware}. Il malware può assumere diverse forme, come programmi eseguibili, \textit{script} o codice incorporato in altri software e può essere sviluppato con differenti finalità, tra cui il furto di informazioni, il danneggiamento dei sistemi o l'accesso a dispositivi non autorizzato. In base al proprio obiettivo, un malware può appartenere a una o più categorie, tra cui \textit{backdoor}, \textit{downloader}, \textit{information stealer}, \textit{launcher}, \textit{worm}, \textit{virus} e altre. \cite{sikorski2012practical} % Capitolo 0
 
-Fonti Bibliografiche: Botnets: A survey, Understanding the Mirai Botnet (IoT)
+L'evoluzione di Internet, l'aumento del numero di dispositivi permanentemente connessi alla rete e la crescente diffusione di sistemi vulnerabili hanno favorito la nascita e la continua evoluzione delle botnet, oggi considerate una delle principali minacce nel panorama della sicurezza informatica.
 
-\subsubsection{Botnet IoT}
-\subsection{Command-and-Control} % 2.1.2
-\subsubsection{Handshake, profiling e beaconing}
-\subsubsection{Attacchi}
+Nel corso degli anni, l'evoluzione delle infrastrutture di rete e il cambiamento delle abitudini tecnologiche hanno portato a un aumento del numero di dispositivi connessi e del tempo durante il quale essi rimangono online. Questo fenomeno, unito alla presenza di vulnerabilità nei sistemi di sicurezza, ha favorito lo sviluppo e la diffusione di nuove minacce informatiche, tra cui le botnet, oggi considerate una delle principali minacce nel panorama della sicurezza informatica.
 
-\subsubsection{Esempio Breve Mirai}
+Una \textit{botnet} è una rete di host compromessi, detti \textit{bot}, controllati remotamente da uno o più attaccanti, chiamati \textit{botmaster}. Il malware installato sul dispositivo consente al botmaster di controllare da remoto i dispositivi e di eseguire azioni malevole. \cite{silva2013botnets} % Capitolo 1-2
 
-Fonti Bibliografiche: Understanding the Mirai Botnet
+Dal punto di vista degli attaccanti, le botnet rappresentano uno strumento estremamente redditizio, poiché consentono di ottenere un ritorno economico attraverso lo sfruttamento dei dispositivi compromessi. Una volta infettati, tali dispositivi possono essere impiegati simultaneamente per eseguire attività malevole su larga scala, causando danni economici a utenti, aziende e Internet Service Provider (ISP), oltre a supportare numerose attività criminali online.
 
-Argomenti da trattare:
+Le botnet possono essere impiegate per numerose attività, tra cui l'invio di spam, la distribuzione di malware, il furto di informazioni, frodi informatiche, estorsioni e attacchi \textit{Distributed Denial of Service} (DDoS). Tra queste, gli attacchi DDoS rappresentano uno degli utilizzi più diffusi, poiché consentono di sfruttare la capacità trasmissiva complessiva dei dispositivi compromessi per sovraccaricare il bersaglio e renderne indisponibili i servizi.
 
-\begin{itemize}
-    \item Brevissimo esempio Mirai
-\end{itemize}
+\subsection{Botnet IoT} % 2.1.1
 
-\section{Malware Analysis} % 2.2
+Parallelamente alla crescita delle botnet, si sono ovviamente evolute anche le tecniche di difesa, che possono essere di tipo reattivo, intervenendo dopo la compromissione, oppure preventivo, con l'obiettivo di impedire o limitare l'infezione prima che questa si verifichi. Tuttavia, la continua evoluzione delle tecnologie e dei dispositivi connessi ha offerto nuove opportunità agli attaccanti.
+
+Tuttavia, nonostante l'evoluzione dei meccanismi di protezione, le botnet hanno continuato a evolversi sfruttando le nuove tecnologie. La rapida diffusione dei dispositivi appartenenti all'\textit{Internet of Things} (IoT) ha ampliato notevolmente la superficie d'attacco disponibile, a causa di risorse hardware limitate e configurazioni di sicurezza spesso inadeguate, creando un ambiente favorevole alla creazione e alla diffusione di botnet su larga scala.
+
+% Internet of Things botnets: A survey on Artificial Intelligence based detection techniques
+
+Nel 2016 Internet è stata interessata dalla diffusione della botnet \textit{Mirai}, composta principalmente da dispositivi embedded e IoT compromessi, che nel giro di poco tempo è stata responsabile di alcuni dei più grandi attacchi DDoS mai registrati.
+
+La rapida espansione di Mirai è stata resa possibile dalla combinazione di diversi fattori, tra cui un'implementazione relativamente semplice del malware, una scansione estremamente efficiente della rete, la capacità di infettare dispositivi eterogenei e, soprattutto, lo sfruttamento della presenza di credenziali predefinite deboli o mai modificate sui dispositivi IoT. \cite{antonakakis2017mirai}
+
+\subsection{Architettura} % 2.1.2
+
+Il componente fondamentale di una botnet è l'infrastruttura di \textit{command-and-control} (C\&C), che permette la comunicazione tra il botmaster e i bot compromessi, coordinandone le attività. Attraverso il canale C\&C vengono trasmessi i comandi, che i bot interpretano ed eseguono sul dispositivo infetto.
+
+Per realizzare tale comunicazione possono essere impiegati diversi protocolli di rete. Oltre alla trasmissione dei comandi, il canale C\&C consente di mantenere il controllo dei bot, distribuire aggiornamenti del malware e raccogliere informazioni dai dispositivi compromessi. I protocolli utilizzati, così come le funzionalità implementate, variano in funzione degli obiettivi della botnet.
+
+L'architettura dell'infrastruttura C\&C influenza direttamente la robustezza e la capacità di sopravvivenza della botnet. Le principali architetture adottate sono quelle centralizzate, caratterizzate da un modello client-server con uno o pochi server C\&C, e quelle decentralizzate, generalmente basate su reti \textit{peer-to-peer} (P2P), ma esistono anche architetture ibride che combinano caratteristiche di entrambi gli approcci.
+
+\subsection{Ciclo di vita} % 2.1.3
+
+Il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi concatenate:
+
+% \begin{enumerate}[label=Fase (\arabic*)., leftmargin=*]\end{enumerate}
+
+\begin{description}
+    \item[Infezione iniziale.] Un host viene compromesso attraverso vettori di attacco comuni e diventa un potenziale bot.
+    \item[Infezione secondaria.] Il malware iniziale (che può essere un dropper o downloader) scarica o attiva il componente principale della botnet, trasformano il dispositivo in un bot controllabile dal botmaster. 
+    \item[Connessione C\&C.] Il nuovo bot deve stabilire una connessione comunicazione con l'infrastruttura C\&C per registrare la propria presenta e per mettersi in attesa di istruzioni o aggiornamenti. La risoluzione dell'indirizzo del server C\&C avviene tramite metodi statici (indirizzi IP o nomi di dominio \textit{hardcoded} nel binario) oppure mediante tecniche più sofisticate, come i \textit{Domain Generation Algorithm} (DGA). 
+    \item[Attività malevole.] Il bot è ora nella fase operativa, è pronto per ricevere i \textit{payload} di comando ed eseguire le attività malevole ordinate dal botmaster.
+    \item[Manutenzione e aggiornamento.] Alla fine la botnet entra nella fase di manutenzione, che ha l'obiettivo di garantire la sopravvivenza della botnet nel lungo periodo. Il botmaster può inviare aggiornamenti del malware, con lo scopo di correggere vulnerabilità o aggiungere nuove funzionalità.
+\end{description}
+
+Il modello C\&C introduce tuttavia una vulnerabilità intrinseca: la necessità per i bot di comunicare con l'infrastruttura di comando espone l'attività malevola all'osservazione, costituendo un punto debole sfruttato dalle metodologie di detection \cite{silva2013botnets}. I segnali analizzati includono l'\textit{handshake} iniziale (scambio di identificativi ed eventuale \textit{profiling}, ovvero la raccolta di informazioni sulle caratteristiche dell'host compromesso), il \textit{beaconing} periodico verso un \textit{endpoint} C\&C (che funge da \textit{keepalive} per segnalare la disponibilità del bot) e i payload di comando.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=.25]{img/botnet.png}
+    \caption{BOTNET}
+    \label{fig:botnet}
+\end{figure}
+
+% \subsection{Command-and-Control} % 2.1.2
+% \subsubsection{Handshake, profiling e beaconing}
+% \subsubsection{Attacchi}
+% \subsubsection{Esempio Mirai (???)}
+% Fonti Bibliografiche: Understanding the Mirai Botnet
+
+\section{Malware analysis} % 2.2
+
+La \textit{malware analysis} (analisi del malware) è la disciplina che si occupa di (dissezionare????) i malware con lo scopo di identificarlo (?), capire il funzionamento e (proteggersi / difendersi / meglio contromisure).
+
+
+
+\cite{sikorski2012practical}
 
 Fonti Bibliografiche: Practical Malware Analysis: The Hands-On Guide to Dissecting Malicious Software
 
@@ -71,24 +119,35 @@ Argomenti da trattare:
 
 \section{Large Language Models} % 2.3
 
-Fonti Bibliografiche: Introduction to Generative AI
+I \textit{Large Language Model} (LLM) appartengono alla famiglia della \textit{Generative Artificial Intelligence} (GenAI), un sottocampo dell'intelligenza artificiale che comprende modelli in grado di generare nuovi contenuti, quali testo, immagini, audio e dati sintetici, a partire dai pattern appresi durante l'addestramento su grandi quantità di dati. I LLM rappresentano la specializzazione della GenAI nel dominio del linguaggio naturale.
 
-Argomenti da trattare:
+Un LLM è un modello di \textit{Deep Learning}, basato su reti neurali artificiali di grandi dimensioni, addestrato su enormi collezioni di testo. Durante l'addestramento il modello apprende le strutture e i pattern linguistici, acquisendo la capacità di comprendere e generare testo in linguaggio naturale.
 
-\begin{itemize}
-    \item Generative AI
-    \item Large Language Models
-\end{itemize}
+% TODOTODOTODO
 
-\subsection{Prompt Engineering} % 2.3.1
+L'architettura alla base dei moderni LLM è il \textit{Transformer}, introdotto da Google nel 2017. Il Transformer impiega un meccanismo di \textit{self-attention}, che consente al modello di individuare le relazioni tra i token di una sequenza indipendentemente dalla loro distanza. Nell'architettura originale, composta da encoder e decoder, gli encoder trasformano la sequenza di token in rappresentazioni vettoriali (\textit{embeddings}), mentre i decoder generano iterativamente il token successivo sulla base delle rappresentazioni ottenute e dei token precedentemente prodotti. I Transformer per il linguaggio possono essere di tipo \textit{encoder-only}, \textit{encoder-decoder} oppure \textit{decoder-only}. La maggior parte dei moderni LLM adotta un'architettura \textit{decoder-only}, particolarmente adatta alla generazione autoregressiva del testo. \cite{dhamani2026genai} % Capitolo 1.2
 
-Fonti Bibliografiche: Introduction to Generative AI
+% TODOTODOTODO
 
-Argomenti da trattare:
+La natura \textit{general-purpose} dei LLM li rende utilizzabili per un ampio insieme di compiti. Tra le attività più comuni rientrano la conversazione in linguaggio naturale, la risposta a domande, la classificazione del testo, la traduzione automatica e il riassunto. I LLM vengono inoltre impiegati per attività più complesse, come la generazione di codice, la produzione di contenuti testuali e l'esecuzione di compiti di \textit{reasoning} (ragionamenti), basati sulla capacità di trarre conclusioni a partire dalle informazioni fornite. \cite{dhamani2026genai} % Capitolo 1.4
 
-\begin{itemize}
-    \item Prompt engineering (in breve)
-\end{itemize}
+Nonostante i notevoli progressi degli ultimi anni, i LLM presentano ancora importanti limitazioni. Tra le principali vi sono la disponibilità e la qualità dei dati di addestramento, con problematiche legate alla privacy, alla presenza di contenuti protetti da copyright e alla rappresentatività dei dati. Oltre a questi aspetti, rimangono criticità legate all'introduzione di \textit{bias} derivanti dai dati utilizzati durante il training e alla possibilità di produrre informazioni errate o inventate, con la generazione di risposte plausibili ma fattualmente scorrette, fenomeno noto come \textit{hallucination}. \cite{dhamani2026genai} % Capitolo 1.5
+
+\subsection{Prompt engineering} % 2.3.1
+
+Poiché il comportamento di un LLM dipende molto dagli input ricevuti, anche piccole variazioni nella composizione del \textit{prompt}, ossia l'input fornito al modello, possono produrre differenze significative nella qualità e nella tipologia delle risposte generate. Per questo motivo il \textit{prompt engineering} riveste un ruolo fondamentale nell'utilizzo efficace dei modelli linguistici.
+
+Il \textit{prompt engineering} è la pratica di progettare e formulare dei prompt che consentano ai LLM di raggiungere specifici obiettivi. L'obiettivo del prompt engineering è quello di tradurre l'intento dell'utente in istruzioni chiare e strutturate, che il modello possa interpretare correttamente durante la fase di inferenza, ossia la fase in cui il modello genera la risposta. \cite{dhamani2026genai} % Capitolo 7
+
+Oltre alle istruzioni esplicite, assume un ruolo importante anche il contesto fornito al modello e la cronologia della conversazione. Le principali tecniche di prompting sono:
+
+\begin{description}
+    \item[Zero-shot prompting.] Il LLM riceve esclusivamente le istruzioni necessarie per svolgere il compito, senza alcun esempio. La risposta si baserà interamente sulla conoscenza acquisita dal LLM durante l'addestramento.
+    \item[Few-shot prompting.] Il LLM, oltre al compito da svolgere, riceve un piccolo gruppo di esempi, con l'obiettivo di mostrare al modello il formato o il patter da seguire durante la generazione della risposta.
+    \item[Multi-turn prompting.] Il LLM riceve anche la cronologia dei turni conversazionali precedenti, mantenendo il contesto dell'interazione, così da avere conversazioni più naturali e coerenti. Tuttavia, conversazioni molto lunghe possono introdurre difficoltà legate ai limiti della finestra di contesto e alla riduzione dell'attenzione del modello verso parte dell'informazione.
+\end{description}
+
+\cite{dhamani2026genai} % Capitolo 7.2
 
 \subsection{AI Agents e Tools} % 2.3.2
 
@@ -105,14 +164,34 @@ Argomenti da trattare:
 
 \subsection{Model Context Protocol} % 2.3.3
 
-Fonti Bibliografiche: What is the Model Context Protocol (MCP)
+Il \textit{Model Context Protocol} (MCP) è uno standard \textit{open-source}, introdotto da Anthropic nel 2024, che permette di connettere le \textit{AI application} con sistemi esterni. \cite{mcp}
 
-Argomenti da trattare:
+L'obiettivo del MCP è quello di fornire un'interfaccia standardizzata per collegare le AI application a fonti di informazioni, strumenti e altri flussi di lavoro, consentendo ai modelli di accedere a dati esterni e di svolgere operazioni attraverso sistemi terzi.
 
-\begin{itemize}
-    \item Cos'è il protocollo MCP (obiettivo)
-    \item Architettura di host, server e client.
-\end{itemize}
+Il MCP è stato introdotto per risolvere il problema dell'integrazione tra AI application e sistemi esterni. Prima della sua introduzione, gli sviluppatori dovevano implementare connettori specifici per ciascuna sorgente di dati o strumento, spesso dipendenti dal singolo fornitore (\textit{vendor-specific}), con conseguenti problemi di integrazione  e interoperabilità.
+
+\subsubsection{Architettura}
+
+Il protocollo distingue tre ruoli principali:
+
+\begin{description}
+    \item[MCP Host.] L'AI application, com un ambiente di sviluppo o un chatbot avanzato in cui risiede il LLM e che coordina il flusso di lavoro, creando uno o più Client per interfacciarsi con i Server.
+
+    \item[MCP Client.] Un modulo integrato nell'Host che agisce come intermediario, mantenendo una connessione uno-a-uno con un singolo Server, instradando le richieste dell'Host e restituendo i risultati ottenuti.
+
+    \item[MCP Server.] Un programma che espone funzionalità specifiche a uno o più Client. Ogni server può mettere a disposizione una o più \textit{capability} (capacità), classificate in \textit{tools} e \textit{resources}.
+\end{description}
+
+I \textit{tools} rappresentano operazioni invocabili dal LLM e sono descritti tramite interfacce basate su JSON Schema, che definiscono in modo esplicito gli input e gli output previsti. Le \textit{resources}, invece, forniscono accesso strutturato a informazioni esterne; sono identificate mediante URI, associate a un tipo MIME e possono essere fornite al LLM come contesto aggiuntivo durante l'esecuzione.
+
+Dal punto di vista dei livelli di comunicazione, il \textit{data layer} definisce il protocollo di scambio tra client e server, basato su JSON-RPC 2.0, specificando il formato dei messaggi e la relativa semantica. Il \textit{transport layer}, invece, definisce il meccanismo di trasporto e il canale attraverso cui avviene lo scambio dei messaggi, occupandosi della gestione della connessione e del \textit{message framing}. Attualmente il protocollo supporta due meccanismi di trasporto: lo \textit{stdio transport}, che utilizza gli stream di input e output standard per la comunicazione tra processi locali sulla stessa macchina e lo \textit{Streamable HTTP transport}, basato su richieste HTTP, che consente la comunicazione con server remoti.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=.25]{img/mcp.png}
+    \caption{MCP}
+    \label{fig:mcp}
+\end{figure}
 
 \section{Reverse engineering} % 2.4
 

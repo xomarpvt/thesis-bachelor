@@ -45,8 +45,10 @@
 \usepackage{xcolor}
 %% graphics: resizing di figure e/o contenuto.
 \usepackage{graphicx}
-%% cleveref: gestisce in modo intelligente riferimenti a figure e tabelle
+%% cleveref: gestisce in modo intelligente riferimenti a figure e tabelle.
 \usepackage[italian]{cleveref}
+%% enumitem: permette di personalizzare gli elenchi.
+\usepackage{enumitem} 
 
 \usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, backgrounds}
@@ -65,6 +67,7 @@
 }
 
 \setcounter{tocdepth}{4} % REMOVEREMOVE
+\includeonly{chapter_2}
 
 \begin{document}
 \maketitle
@@ -116,246 +119,7 @@ Indice: \fi
 
 \include{chapter_2}
 
-\chapter{Il problema} % 3
-
-Questo capitolo ha l'obiettivo di introdurre il problema affrontato nella tesi. Dopo una prima definizione generale, verranno analizzati in dettaglio gli input e gli output attesi dal sistema, evidenziandone le principali caratteristiche. Successivamente, saranno identificati i requisiti e i vincoli progettuali che guideranno lo sviluppo della soluzione. Il capitolo si concluderà con una rappresentazione sintetica del sistema con un diagramma di contesto.
-
-\section{Definizione del problema} % 3.1
-
-Il problema oggetto di studio e sviluppo in questa tesi consiste nella progettazione e nella successiva implementazione di un sistema in grado di ricevere in ingresso un file binario arbitrario e, qualora questo appartenga a una botnet, generare automaticamente un modulo software capace di intercettare le comunicazioni C2 (\textit{Command-and-Control}) ricevute dal server C2 e di tradurle in una rappresentazione strutturata.
-
-La motivazione principale alla base di questo lavoro consiste nell'automatizzare e velocizzare, ove possibile, le attività di analisi del malware e di generazione del codice richiesto. Quando svolte manualmente da un esperto di cybersecurity, tali attività richiedono competenze specialistiche, un grande investimento di tempo e un significativo impegno operativo.
-
-La responsabilità primaria del sistema consiste pertanto nell'analizzare in maniera autonoma campioni di malware appartenenti a diverse botnet, al fine di ricavare tutte le informazioni necessarie alla generazione di un modulo di intercettazione. Tale modulo dovrà soddisfare sia i requisiti derivanti dalla definizione iniziale del problema, sia quelli che verranno progressivamente individuati e formalizzati nel corso del presente capitolo e delle successive fasi di progettazione e implementazione.
-
-Il processo di analisi dovrà quindi essere orientato a raggiungere l'obiettivo finale di generazione del modulo, concentrandosi sull'acquisizione delle conoscenze strettamente necessarie a ricostruire il protocollo di comunicazione utilizzato. 
-
-Di conseguenza, tra le responsabilità del sistema non rientra la comprensione completa delle caratteristiche e del funzionamento interno del malware analizzato. Nonostante il processo di analisi possa, come effetto collaterale, portare alla ricostruzione di ulteriori dettagli sul comportamento del campione, tali informazioni non costituiscono un obiettivo del sistema.
-
-Analogamente, il sistema non avrà il compito di verificare o garantire il corretto funzionamento del modulo prodotto e quindi l'analisi si concluderà con la generazione del modulo stesso. La successiva validazione del modulo e la valutazione dei risultati ottenuti resteranno invece di competenza dell'utente finale. Quest'ultimo potrà utilizzare il modulo generato come preferisce, secondo le proprie necessità, potendolo modificare estendere e infine eseguire.
-
-% \subsection{Ambito del lavoro (?)} % 3.1.1
-% \subsection{Obiettivi del sistema (?)} % 3.1.2
-% \subsection{Responsabilità del sistema (?)} % 3.1.3
-
-\section{Input e output del sistema} % 3.2
-
-\subsection{Input} % 3.2.1
-
-Il sistema dovrà essere progettato per accettare come unico dato di ingresso un file binario arbitrario. Nella pratica operativa, tale file corrisponderà generalmente a un campione di malware in formato eseguibile appartenente a una botnet; tuttavia, il sistema non dovrà imporre alcun vincolo sulla natura o sul formato del file fornito.
-
-Un requisito fondamentale dell'architettura è la capacità di operare in completa autonomia, senza disporre di alcuna conoscenza preliminare sul campione analizzato. Di conseguenza, al sistema non potranno essere fornite informazioni aggiuntive relative al file di ingresso, quali, ad esempio, la famiglia di appartenenza, descrizioni del comportamento o delle funzionalità del malware, oppure il protocollo di comunicazione utilizzato.
-
-\subsection{Output} % 3.2.2
-
-La natura dell'output che verrà restituito dal sistema dipenderà strettamente dall'esito della fase di analisi preliminare che sarà effettuata sul file ricevuto in ingresso.
-
-Nel caso in cui il sistema determini che il file analizzato non sia malevolo oppure che non appartenga a una botnet, allora interromperà il processo di analisi e il file sarà scartato.
-
-Al contrario, qualora il file di input sia identificato come un campione malevolo, il sistema dovrà svolgere tutte le attività necessarie per arrivare a costruire un modulo di intercettazione sviluppato ad hoc sulle caratteristiche del malware in esame.
-
-Il modulo generato dovrà essere implementato nel linguaggio \textit{Python} e dovrà essere \textit{self-contained}, ovvero completamente autoconsistente. Il codice prodotto dovrà contenere al suo interno tutte le definizioni, le classi e le dipendenze necessarie per implementare autonomamente i metodi richiesti per l'intercettazione del traffico, l'elaborazione e il parsing dei comandi C2 e, più in generale, tutte le funzionalità previste dal modulo.
-
-La scelta di utilizzare \textit{Python} come linguaggio target è dovuta a diversi aspetti, tra cui due in particolare. Il primo riguarda il fatto che tale linguaggio rappresenta uno \textit{standard de facto} nell'ambito della \textit{Cybersecurity} e della \textit{NetworkForensic} \cite{sans2020taxonomy} [citazione 1], grazie alla disponibilità di un ampio ecosistema di librerie e strumenti dedicati all'analisi \dots.
-
-Il secondo aspetto riguarda un requisito tecnico legato alla gestione del traffico di rete in tempo reale. L'impiego di costrutti avanzati di Python, come generatori e flussi di dati, attraverso l'istruzione \texttt{yield}, consente un'elaborazione continua dei messaggi C2 in maniera efficiente, sia dal punto di vista computazionale sia, soprattutto, dal punto di vista dell'occupazione di memoria. Tale approccio permette infatti di minimizzare la \textit{memory footprint} del modulo \cite{sans2020taxonomy} [citazione 2] \dots, facilitandone l'integrazione con altri sistemi e rendendolo idoneo a operare per periodi di tempo prolungati.
-
-\iffalse
-[1] TJ O'Connor, Violent Python: A Cookbook for Hackers, Forensic Analysts, Penetration Testers and Security Engineers, Syngress / Elsevier, 2012.
-[2] SANS Institute (2020), FOR572: Advanced Network Forensics: Threat Hunting, Analysis, and Incident Response.
-(Nelle premesse del corso viene specificato che Python è il linguaggio primario per l'automazione della Network Forensic e l'estrazione di manufatti di rete).
-[3] Ramalho, L. (2022). Fluent Python: Clear, Concise, and Effective Programming (2ª ed.). O'Reilly Media.
-\fi
-
-\section{Requisiti del problema} % 3.3
-
-Una volta definiti il problema, gli obiettivi del sistema e le caratteristiche dell'input e dell'output attesi, la progettazione dell'architettura gode di un ampio margine di libertà. In linea di principio, non sono infatti imposti specifici vincoli riguardo agli strumenti, alle tecniche o ai componenti da impiegare per la realizzazione della soluzione.
-
-Tuttavia, tale libertà progettuale non è assoluta, poiché ogni soluzione proposta dovrà soddisfare un gruppo di requisiti che dovrà essere preso in considerazione durante l'intero processo di progettazione e implementazione del sistema.
-
-Per chiarezza espositiva, tali requisiti possono essere suddivisi in due categorie principali: requisiti funzionali e requisiti di sicurezza.
-
-\begin{description}
-    \item[\textbf{Requisiti funzionali}]
-    
-    \begin{itemize}
-        \item \textbf{Indipendenza dalla famiglia di botnet}.
-
-        Il sistema dovrà essere progettato in modo da poter essere applicato a campioni appartenenti a differenti famiglie di botnet, senza introdurre dipendenze specifiche da una particolare tipologia o dalle caratteristiche peculiari di una singola famiglia.
-
-        Lo stesso principio di indipendenza dovrà essere applicato anche al protocollo di comunicazione C2. La soluzione proposta dovrà essere in grado di gestire differenti modalità di interazione tra il malware e l'infrastruttura di comando e controllo, indipendentemente dal protocollo di comunicazione, dalle tecnologie di trasporto o dai formati dei messaggi utilizzati.
-
-        \item \textbf{Autonomia del processo di analisi}.
-        
-        Il sistema dovrà operare in maniera completamente autonoma, senza richiedere interventi da parte dell'utente durante le diverse fasi dell'analisi. Un utente del sistema dovrà fornire esclusivamente il file binario in ingresso e, nel caso in cui questo appartenga a una botnet, si limiterà a ricevere il risultato prodotto dal sistema al termine del processo di analisi.
-        
-        L'utente potrà poi intervenire solo a processo concluso, eseguendo il modulo generato o operando su di esso, apportando correzioni, adattamenti o miglioramenti. A tal fine, è fondamentale garantire un adeguato livello di trasparenza rispetto alle operazioni svolte dal sistema durante l'analisi, mantenendo traccia delle attività eseguite. Ciò consentirà di agevolare l'utente nella comprensione del processo seguito dal sistema e di semplificare le eventuali modifiche che vorrà apportare al modulo generato.
-
-    \end{itemize}
-
-    \item[\textbf{Requisiti di sicurezza}]
-    
-    \begin{itemize}
-        \item \textbf{Natura difensiva del modulo generato}.
-        
-        Il modulo prodotto dal sistema dovrà avere esclusivamente finalità difensive e dovrà limitarsi a intercettare passivamente le comunicazioni provenienti dal server C2. Le funzionalità implementate dovranno essere circoscritte alla gestione della connessione e alle fasi di ricezione, decodifica, parsing e classificazione dei messaggi ricevuto. Non dovranno essere inclusi comportamenti offensivi, né meccanismi volti a eseguire attacchi o altre azioni malevole. Le uniche comunicazioni attive consentite saranno quelle strettamente necessarie all'instaurazione e al mantenimento della sessione con il server C2.
-        
-        \item \textbf{Sicurezza del processo di analisi}.
-        
-        Il processo di analisi del file di input dovrà essere progettato in modo tale da garantire la protezione dell'ambiente di esecuzione. L'elaborazione dei campioni potenzialmente malevoli non dovrà in alcun modo esporre il sistema di analisi, né eventuali sistemi esterni coinvolti, a rischi di compromissione o alterazione del loro funzionamento.
-    \end{itemize}
-
-\end{description}
-
-Oltre ai requisiti precedentemente individuati, la progettazione dell'architettura dovrà seguire i principi dell'\textit{Ingegneria del Software}, preferendo soluzioni che garantiscano la qualità, la manutenibilità e l'estensibilità del sistema. Pur non essendo requisiti funzionali, queste proprietà condizioneranno le scelte di progettazione e implementazione.
-
-In particolare, l'architettura proposta dovrà adottare un approccio modulare, favorendo una chiara separazione delle responsabilità tra i componenti del sistema. La soluzione dovrà inoltre essere progettata per potersi integrare facilmente con eventuali pipeline di analisi e framework già esistenti. Infine, dovranno essere previste adeguate funzionalità di logging, utili a tracciare le principali operazioni svolte dal sistema e a supportare le attività di monitoraggio e debugging.
-
-\section{Interfaccia del modulo di output} % 3.4
-
-Al fine di consentire l'integrazione del sistema all'interno di workflow esterni e pipeline di automazione più ampie, è indispensabile che l'output prodotto rispetti alcuni vincoli strutturali e comportamentali predefiniti.
-
-Per questo motivo, si è scelto di definire tali vincoli già durante la fase di analisi dei requisiti, anticipandoli rispetto alle successive fasi di progettazione e implementazione.
-
-In particolare, la conformità dell'output si articola su due livelli distinti:
-
-\begin{description}
-    \item[\textbf{Interfaccia del modulo}] \hspace{1em} \texttt{BotNetInterface}
-    
-    Al fine di consentire ai moduli generati di essere immediatamente utilizzabili da sistemi esterni, è necessario definire un'interfaccia standardizzata. In questo modo, qualsiasi componente che ne conosca la struttura potrà caricare e utilizzare direttamente il modulo prodotto, senza conoscerne i dettagli interni e senza richiedere alcun adattamento.
-
-    Per tale motivo, ogni modulo generato dal sistema dovrà implementare l'interfaccia astratta \texttt{BotNetInterface}. Tale interfaccia impone la presenza nel modulo di due metodi fondamentali:
-    
-    \begin{itemize}
-        % \item[Metodo \texttt{connect}]
-        \item Metodo \texttt{connect}. Ha lo scopo di inizializzare o, eventualmente, ripristinare la connessione con il server C2. Verrà eseguito all'avvio del modulo, prima dell'inizio dell'attività di intercettazione, e successivamente ogni volta che il metodo \texttt{sniff} terminerà la propria esecuzione a causa della chiusura della connessione o di un errore non recuperabile.
-        % \item[Metodo \texttt{sniff}]
-        \item Metodo \texttt{sniff}. Ha lo scopo di mantenere attiva la connessione con il server C2 ed eseguire l'intercettazione dei messaggi. Il metodo è progettato per rimanere in esecuzione indefinitamente e dovrà essere implementato come un generatore \textit{Python}, restituendo mediante l'istruzione \texttt{yield} gli oggetti corrispondenti ai messaggi intercettati, non appena questi sono stati ricevuti e decodificati.
-    \end{itemize}
-
-    L'interfaccia astratta che ogni modulo generato dovrà implementare è riportata in \Cref{fig:botnet_interface}.
-
-    \begin{figure}[ht]
-        \centering
-        \begin{minipage}{0.5\linewidth}
-            \begin{lstlisting}[frame=single]
-from abc import ABC, abstractmethod
-class BotNetInterface(ABC):
-    @abstractmethod
-    def connect(self):
-        pass
-    @abstractmethod
-    def sniff(self):
-        pass
-            \end{lstlisting}
-        \end{minipage}
-        \caption{Interfaccia astratta \texttt{BotNetInterface}}
-        \label{fig:botnet_interface}
-    \end{figure}
-    
-    La \Cref{fig:botnet_main} mostra invece un possibile esempio di utilizzo di un modulo conforme all'interfaccia definita.
-
-    \begin{figure}[ht]
-        \centering
-        \begin{minipage}{0.5\linewidth}
-            \begin{lstlisting}[frame=single]
-b = BotNet()
-while True:
-    try:
-        b.connect()
-        for message in b.sniff():
-            pass
-    except:
-        pass
-            \end{lstlisting}
-        \end{minipage}
-        \caption{Esempio di uso di un generico modulo BotNet}
-        \label{fig:botnet_main}
-    \end{figure}
-
-    \item[\textbf{Schema dei messaggi}] \hspace{1em} \texttt{MessageSchema}
-    
-    Considerando la natura eterogenea delle botnet che il sistema dovrà analizzare, appartenenti a famiglie differenti e caratterizzate da protocolli di comunicazione e formati dei messaggi diversi, risulta indispensabile adottare un modello dati unificato per rappresentare le informazioni intercettate. 
-    
-    Per tale motivo, tutti gli oggetti restituiti dal metodo \texttt{sniff} dovranno essere conformi a uno schema comune, definito all'interno del file \texttt{MessageSchema}. La standardizzazione della rappresentazione dei messaggi costituisce un prerequisito essenziale affinché eventuali componenti successive possano elaborare i dati in modo uniforme, indipendentemente dalla botnet da cui essi provengono. % elaborazioni statistiche e scienza dei dati
-
-    A differenza della \texttt{BotNetInterface}, per la quale vengono definiti già in questa fase i metodi e il comportamento atteso, l'analisi dei requisiti non impone alcun vincolo sulla struttura interna del \texttt{MessageSchema}. L'unico requisito consiste nell'esistenza di uno schema fisso e condiviso, la cui effettiva definizione potrà essere gestita direttamente nella fase di implementazione del sistema.
-\end{description}
-
-Pertanto, l'output prodotto dal sistema non dovrà più limitarsi a essere funzionalmente corretto, ma dovrà rispettare entrambi i vincoli architetturali descritti. La conformità a questi due nuovi requisiti permetterà infatti di assicurare l'interoperabilità, la riusabilità e la scalabilità del processo di intercettazione.
-
-% cambiare interfaccia con contratto
-
-\section{Diagramma di Contesto (?)} % 3.5
-
-Considerando il sistema come una generica \textit{black box}, la descrizione del problema può essere riassunta con il seguente diagramma di contesto.
-
-Per concludere la trattazione del problema, la \Cref{fig:context_diagram} fornisce una rappresentazione sintetica del sistema e del suo contesto operativo. Il diagramma evidenzia le due fasi principali in cui si articola il processo: la \textit{fase di analisi e generazione} (competenza del sistema sviluppato) e la \textit{fase di intercettazione} (competenza del modulo generato).
-
-\begin{figure}[ht]
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \begin{tikzpicture}[
-        % Stili
-        actor/.style={rectangle, draw, thick, fill=gray!10, minimum width=2.5cm, minimum height=1cm, align=center, rounded corners},
-        system/.style={rectangle, draw, thick, fill=blue!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
-        module/.style={rectangle, draw, thick, fill=green!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
-        server/.style={cylinder, shape border rotate=90, aspect=0.3, draw, thick, fill=red!10, minimum width=2cm, minimum height=1.5cm, align=center},
-        arrow/.style={-{Stealth[scale=1.2]}, thick},
-        dashed_arrow/.style={-{Stealth[scale=1.2]}, thick, dashed}
-    ]
-
-    % Nodi Fase 1 (Generazione)
-    \node[actor] (user) {Utente};
-    \node[system, right=2.5cm of user] (sys) {\textbf{Sistema di Analisi}\\\textit{e Generazione}};
-    \node[module, right=2.5cm of sys] (mod) {\textbf{Modulo Python}\\\textit{(BotNetInterface)}};
-
-    % Nodi Fase 2 (Esecuzione)
-    \node[server, right=2.5cm of mod] (c2) {\textbf{Server}\\\textbf{C2}};
-    \node[actor, below=2cm of mod] (output) {Messaggi\\Strutturati\\\textit{(MessageSchema)}};
-
-    % Connessioni Fase 1
-    \draw[arrow] (user) -- node[above] {\footnotesize File binario} node[below] {\footnotesize\textit{(Input)}} (sys);
-    \draw[arrow] (sys) -- node[above] {\footnotesize Modulo generato} node[below] {\footnotesize\textit{(Output)}} (mod);
-
-    % Connessioni Fase 2
-    \draw[dashed_arrow] (user.south) |- ++(0,-1) -| node[pos=0.25, below] {\footnotesize Esecuzione (post-generazione)} (mod.south);
-    \draw[arrow] (mod) -- node[above] {\footnotesize Comandi C2} (c2);
-    \draw[arrow] (c2) to[bend right=20] node[above, sloped] {\footnotesize Traffico intercettato} (mod);
-    \draw[arrow] (mod) -- node[right] {\footnotesize \texttt{yield} Messaggi} (output);
-
-    % Box per evidenziare le fasi
-    \begin{scope}[on background layer]
-        % Modificata la label qui sotto per centrarla sopra il box
-        \node[fit=(user) (sys) (mod), draw, dashed, inner sep=20pt, label={[yshift=-0.4cm]north:\textbf{Fase 1: Sviluppo (Automatizzato)}}] {};
-        \node[fit=(mod) (c2) (output), draw, dashed, inner sep=20pt, label={[yshift=-0.4cm]north:\textbf{Fase 2: Esecuzione (Operativa)}}] {};
-    \end{scope}
-
-    \end{tikzpicture}%
-    }
-    \caption{Diagramma di contesto del sistema e del modulo generato.}
-    \label{fig:context_diagram}
-\end{figure}
-
-\iffalse
-@startuml
-left to right direction
-
-rectangle "Sistema\n(Black Box)" as S
-
-artifact "File" as F
-artifact "Modulo di intercettazione" as M
-
-F --> S : input
-S --> M : output
-
-note
-Il sistema produce un modulo di intercettazione quando il campione analizzato viene riconosciuto come pertinente al dominio considerato.
-endnote
-
-@enduml
-//www.plantuml.com/plantuml/png/JOynJiH034Lxd-8h5HHx0GgqsY9TgYbP2clYB1RE39hn8CI9k0SNmuI6pl_fwKa-T-VcOpSosHnUqVJsubYrINQjXUZtu78pmPIqk-nyBNSNu_oAI_sudy0TYIWokd5sJBEQ77J-1vUw3glHXHQNbiMTFwF_Pov4CqwdHoGyXF0sdDAnbzXrU81hUUer2bsWXarDyFs5dKtU0pyJdQMiySWF
-\fi
+\include{chapter_3}
 
 \chapter{Progettazione} % 4
 
