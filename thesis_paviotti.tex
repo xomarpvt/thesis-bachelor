@@ -128,6 +128,29 @@ L'architettura proposta:
 \textbf{Natura statica dell'analisi}.
 L'intero processo di analisi del campione dovrà essere basato esclusivamente su tecniche di analisi statica. Il sistema non dovrà quindi richiedere l'esecuzione del campione, né ricorrere a tecniche di analisi dinamica, debugging o osservazione diretta del comportamento durante l'esecuzione.
 
+\iffalse
+L'architettura basata su **Python MCP e Ghidra MCP con sole capacità statiche** rappresenta un approccio orientato al reverse engineering assistito da LLM, in cui i due componenti assumono ruoli complementari. Ghidra fornisce al modello una rappresentazione strutturata del programma analizzato, mettendo a disposizione informazioni quali funzioni, decompilato, riferimenti incrociati, grafi delle chiamate, stringhe e porzioni di memoria o byte selezionati. Python MCP agisce invece come ambiente di elaborazione generale, permettendo al modello di costruire ed eseguire strumenti personalizzati per trasformare, analizzare e interpretare le informazioni estratte da Ghidra.
+Uno dei principali vantaggi di questa architettura è la flessibilità offerta da Python. Poiché il modello linguistico può generare codice Python durante l'analisi, è in grado di creare strumenti specifici per il problema affrontato senza richiedere un supporto predefinito. Ad esempio, quando viene individuata una struttura dati cifrata o una tabella di simboli offuscata, Ghidra può fornire i byte rilevanti mentre Python può essere utilizzato per implementare algoritmi di decodifica, testare ipotesi, confrontare risultati o ricostruire il formato dei dati. Questo rende il sistema particolarmente efficace in attività come l'analisi di configurazioni nascoste, il riconoscimento di pattern, la manipolazione di dati binari e la generazione automatica di strumenti di analisi.
+L'utilizzo congiunto di Ghidra statico e Python permette inoltre di automatizzare attività complesse che richiederebbero normalmente numerosi passaggi manuali da parte di un analista. Ghidra consente di navigare la struttura del binario e identificare aree di interesse, mentre Python permette di effettuare elaborazioni più generali, come analisi statistiche, clustering, confronto tra campioni, generazione di report o integrazione con librerie esterne. In questo senso, Python MCP non sostituisce le capacità di reverse engineering di Ghidra, ma estende il sistema fornendo al modello la possibilità di creare procedure personalizzate sulla base delle informazioni recuperate.
+Un confronto con un'architettura più completa, composta da **Python MCP e Ghidra MCP con capacità dinamiche di debugging ed esecuzione tramite P-code emulator**, evidenzia una differenza principalmente legata alla possibilità di osservare il comportamento runtime del programma. L'integrazione di strumenti dinamici permetterebbe al modello di eseguire porzioni di codice, osservare registri, memoria e flusso di esecuzione, verificando direttamente ipotesi formulate durante l'analisi statica. Questa capacità risulta particolarmente utile in presenza di codice offuscato, routine di unpacking, algoritmi di decrittazione con chiavi generate dinamicamente o comportamenti difficili da ricostruire esclusivamente dal codice.
+Tuttavia, l'aggiunta di capacità dinamiche non rende superata l'architettura basata esclusivamente sull'analisi statica. La maggior parte delle attività preliminari di reverse engineering consiste infatti nella comprensione della struttura del programma, nell'identificazione delle funzioni rilevanti e nella ricostruzione delle relazioni tra componenti. In questi scenari, l'analisi statica combinata con un ambiente di scripting flessibile può essere più efficiente rispetto all'esecuzione diretta del codice, soprattutto quando è necessario analizzare numerosi campioni o creare pipeline automatizzate.
+In conclusione, le due architetture possono essere considerate complementari. L'approccio **Python MCP + Ghidra statico** fornisce un ambiente versatile per l'analisi, la trasformazione dei dati e la costruzione automatica di strumenti, risultando sufficiente per molte attività di reverse engineering assistito. L'aggiunta delle capacità dinamiche di Ghidra introduce invece un ulteriore livello di verifica sperimentale, permettendo al modello di passare dalla deduzione del comportamento alla sua osservazione diretta. Un sistema completo potrebbe quindi utilizzare l'analisi statica come fase principale di comprensione e ricorrere all'esecuzione dinamica solo quando necessario per validare ipotesi o analizzare comportamenti non osservabili staticamente.
+\fi
+
+\iffalse
+Ma c'è anche un aspetto spesso sottovalutato: dare a un LLM un debugger completo non significa automaticamente ottenere un agente migliore. Aggiungere capacità dinamiche aumenta anche la complessità:
+deve decidere cosa eseguire;
+deve preparare un ambiente corretto;
+deve interpretare trace molto grandi;
+deve evitare di perdersi in dettagli irrilevanti;
+deve gestire casi in cui l'esecuzione non è rappresentativa.
+Un agente con molti strumenti non è necessariamente più efficace di un agente con gli strumenti giusti.
+La tua scelta ha anche un vantaggio progettuale: hai separato bene i ruoli.
+Ghidra statico: fonte autorevole della conoscenza sul binario.
+Python: ambiente dove il LLM può creare procedure e ragionamenti personalizzati.
+Questa combinazione è già una base molto forte. Se in futuro volessi estenderla, il debugging/P-code sarebbe probabilmente un terzo livello, non una sostituzione:
+\fi
+
 \section{Architettura generale sistema} % 4.1
 
 \section{Componenti del sistema} % 4.2

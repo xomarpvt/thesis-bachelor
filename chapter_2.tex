@@ -67,55 +67,61 @@ Il modello C\&C introduce tuttavia una vulnerabilità intrinseca: la necessità 
 
 \section{Malware analysis} % 2.2
 
-La \textit{malware analysis} (analisi del malware) è la disciplina che si occupa di (dissezionare????) i malware con lo scopo di identificarlo (?), capire il funzionamento e (proteggersi / difendersi / meglio contromisure).
+La \textit{malware analysis} (analisi del malware) è la disciplina che si occupa di analizzare i malware al fine di identificarne le funzionalità, comprenderne il comportamento e sviluppare adeguate contromisure per il rilevamento e la mitigazione delle minacce. \cite{sikorski2012practical}
 
+In seguito a un incidente di sicurezza, la malware analysis consente di raccogliere le informazioni necessarie per ricostruire quanto accaduto, determinando gli obiettivi, le capacità e il comportamento del malware. Uno dei principali risultati dell'analisi è la definizione di \textit{signatures} per il rilevamento del malware. Queste possono essere \textit{host-based}, basate sugli \textit{Indicators of Compromise} (IoC) lasciati sul sistema, come file creati o modificati e variazioni al registro di sistema, oppure \textit{network-based}, ottenute analizzando il traffico di rete per individuare comunicazioni riconducibili al malware.
 
-
-\cite{sikorski2012practical}
-
-Fonti Bibliografiche: Practical Malware Analysis: The Hands-On Guide to Dissecting Malicious Software
-
-Argomenti da trattare:
-
-\begin{itemize}
-    \item Definizione di malware analysis
-    \item Obiettivi della malware analysis
-    \item Breve introduzione/conclusione
-\end{itemize}
+Nella maggior parte dei casi l'analista dispone esclusivamente del file eseguibile del malware, mentre il codice sorgente non è disponibile. Di conseguenza, comprenderne il funzionamento richiede l'impiego di tecniche di \textit{reverse engineering} (RE), che consentono di ricostruire la logica del programma a partire dal codice compilato. Le tecniche di RE si dividono principalmente in due categorie, analisi statica e analisi dinamica, basate su approcci complementari.
 
 \subsection{Analisi statica} % 2.2.1
 
-Fonti Bibliografiche: Practical Malware Analysis: The Hands-On Guide to Dissecting Malicious Software; Limits of Static Analysis for Malware Detection
+La \textit{static analysis} consiste nell'esaminare un malware senza eseguirlo, analizzandone la struttura e il contenuto al fine di ricavarne informazioni sul funzionamento.
 
-Argomenti da trattare:
+Le tecniche di analisi statica di base comprendono l'utilizzo di strumenti antivirus per una prima classificazione del campione, il calcolo di hash per identificarne univocamente il file e l'ispezione delle informazioni contenute nell'eseguibile, quali stringhe, intestazioni del formato binario, librerie importate ed esportate e altri metadati utili. Sebbene queste tecniche consentano di ottenere rapidamente informazioni preliminari, da sole raramente permettono di comprendere completamente il comportamento del malware.
 
-\begin{itemize}
-    \item Tecniche di analisi statica base e avanzate
-    \item Efficacia e limitazioni dell'analisi statica
-    \item Rimozione della tabella dei simboli / stripping del malware
-\end{itemize}
+\subsubsection{Analisi statica del codice}
+
+L'analisi statica avanzata si basa sull'ispezione delle istruzioni contenute nel file eseguibile del malware. Poiché tali istruzioni sono espresse in linguaggio macchina e non risultano direttamente leggibili dall'analista, viene utilizzato un \textit{disassembler}, uno strumento in grado di tradurre il codice macchina nel corrispondente linguaggio assembly. Quest'ultimo fornisce una rappresentazione testuale delle istruzioni della CPU, permettendo di analizzare le operazioni eseguite dal programma a basso livello.
+
+Un ulteriore strumento impiegato nell'analisi dei binari è il \textit{decompiler}, che tenta, a partire dal codice macchina, tenta di ricostruire una rappresentazione equivalente in un linguaggio di alto livello. Sebbene il risultato ottenuto non corrisponda necessariamente al codice sorgente originale, tale rappresentazione introduce un maggiore livello di astrazione e può semplificare la comprensione della logica del programma.
+
+\subsubsection{Analisi statica del codice}
+
+L'analisi statica avanzata si basa sull'ispezione delle istruzioni contenute nel file eseguibile del malware. Poiché tali istruzioni sono espresse in linguaggio macchina e non sono direttamente leggibili dall'analista, viene utilizzato un \textit{disassembler}, uno strumento che traduce il codice macchina nel corrispondente linguaggio assembly. Quest'ultimo rappresenta una forma testuale delle istruzioni della CPU e permette di analizzare le operazioni eseguite dal programma a basso livello.
+
+Un ulteriore strumento utilizzato nell'analisi dei binari è il \textit{decompiler}, che tenta di tradurre il codice macchina in una rappresentazione equivalente in un linguaggio di alto livello. Sebbene il risultato non corrisponda necessariamente al codice sorgente originale, questa rappresentazione introduce un maggiore livello di astrazione e può facilitare la comprensione della logica del programma.
+
+Due dei più noti strumenti di RE sono IDA Pro e Ghidra. Questi software offrono un ambiente completo per l'analisi dei binari, affiancando al disassembler funzionalità di decompilazione, \textit{debugging} e strumenti di supporto all'analisi statica come la navigazione del codice, l'analisi delle funzioni e la ricostruzione dei tipi. Tuttavia, le esigenze degli sviluppatori e degli analisti possono richiedere l'introduzione di funzionalità aggiuntive non direttamente disponibili. Per questo motivo Ghidra, così come altri strumenti di RE, mette a disposizione meccanismi di scripting basati sull'\textit{Application Programming Interface} (API) della piattaforma, che consente di interagire con le funzionalità interne del software. Attraverso tale API è possibile creare ed eseguire script in Java e Python. Questi possono variare da semplici automazioni di operazioni comuni fino alla realizzazione di strumenti più complessi per l'analisi dei programmi, arrivando anche a estendere le capacità della piattaforma mediante plugin dedicati \cite{nance2026ghidra}.
+
+\subsubsection{Limitazioni}
+
+L'analisi statica del codice consente di ottenere una comprensione molto più approfondita del malware rispetto alle tecniche di analisi di base. Tuttavia, presenta alcune limitazioni significative.
+
+Una prima limitazione è rappresentata dall'elevato livello di competenza richiesto per svolgere attività di RE. L'analista deve possedere una solida conoscenza dell'architettura del processore, del linguaggio assembly, delle convenzioni di chiamata e dei meccanismi con cui i compilatori traducono i costrutti ad alto livello in codice macchina, oltre a una buona esperienza nell'utilizzo degli strumenti di analisi.
+
+Una prima limitazione riguarda la complessità dell'attività di RE, che richiede una buona conoscenza dell'architettura (concetti legati a architettura ??), del linguaggio assembly, delle convenzioni di chiamata e dei principali costrutti compilati, oltre a una buona padronanza degli strumenti di analisi. -> esperienza dell'analista (richiedono esperienza per essere acquisite)
+
+Una seconda limitazione è intrinseca all'analisi statica stessa. Alcuni comportamenti del malware dipendono infatti da informazioni disponibili esclusivamente a runtime, come parametri di esecuzione, configurazione del sistema, dati ricevuti dalla rete o indirizzi risolti dinamicamente, che non possono essere determinati osservando unicamente il codice.
+
+A tali limitazioni si aggiungono numerose tecniche impiegate dagli autori dei malware con l'obiettivo di ostacolare le attività RE. Tra le più comuni rientrano le tecniche di \textit{code obfuscation}, che modificano la struttura del programma senza però alterarne il comportamento. L'offuscamento può riguardare il flusso di controllo (\textit{control-flow obfuscation}), sostituendo salti, chiamate o indirizzi di ritorno con sequenze di istruzioni equivalenti; l'accesso ai dati (\textit{data-location obfuscation}), nascondendo gli indirizzi di variabili e API risolte dinamicamente; oppure l'utilizzo dei dati (\textit{data-usage obfuscation}), rendendo più complessa la ricostruzione del flusso dei dati tra  registri, stack e memoria. % cite[limits static analysis]
+
+Un'ulteriore tecnica è quella del \textit{self-modifying code}, nella quale il malware genera, decritta o modifica porzioni del proprio codice durante l'esecuzione, rendendo impossibile osservarne staticamente la versione definitiva. Molto diffuso è inoltre il \textit{packing}, che trasforma il programma originale mediante compressione, cifratura o altre tecniche, sostituendolo con un eseguibile contenente solamente uno \textit{stub} incaricato di ripristinare il codice originale durante l'esecuzione. Di conseguenza, prima di poter analizzare il malware è necessario recuperarne il codice originale mediante una fase preliminare di \textit{unpacking}.
+
+Infine, molti malware vengono distribuiti solo dopo essere stati sottoposti a un processo di \textit{stripping}, attraverso il quale vengono rimossi simboli, nomi delle funzioni, informazioni di debug e altri metadati dal file eseguibile. La conseguente perdita di informazioni semantiche rende più difficile la ricostruzione della logica del programma durante il RE.
+
+Poiché tali tecniche sono ampiamente note e consolidate, è comune che i malware moderni ne adottino una o più contemporaneamente, con l'obiettivo di aumentare la complessità e il tempo richiesti per l'analisi del campione.
 
 \subsection{Analisi dinamica} % 2.2.2
 
-Fonti Bibliografiche: Practical Malware Analysis: The Hands-On Guide to Dissecting Malicious Software; A Survey on Automated Dynamic Malware-Analysis Techniques and Tools
+La \textit{dynamic analysis} consiste nell'analizzare il malware durante la sua esecuzione, osservandone direttamente il comportamento.
 
-Argomenti da trattare:
+L'esecuzione deve ovviamente avvenire all'interno di un ambiente controllato e progettato appositamente per l'analisi, in modo da evitare che il malware possa compromettere il sistema dell'analista o la rete circostante. Nella pratica vengono impiegate prevalentemente macchine virtuali, mentre l'utilizzo di sistemi fisici isolati (\textit{air-gapped}) è meno frequente. L'ambiente di esecuzione viene generalmente configurato in funzione degli obiettivi dell'analisi e, in alcuni casi, come nello studio delle botnet, è necessario abilitare l'accesso a Internet. Questa scelta espone tuttavia l'analista ai rischi connessi all'interazione del malware con l'esterno, come la possibilità di allertare gli autori riguardo all'attività di analisi o, nel caso peggiore, di consentire inconsapevolmente l'esecuzione delle attività malevole per cui il malware è stato progettato.
 
-\begin{itemize}
-    \item Tecniche di analisi dinamica base e avanzate
-    \item Ostacoli e rischi dell'analisi dinamica
-\end{itemize}
+L'esecuzione del malware all'interno di una \textit{sandbox}, ovvero un ambiente protetto, consente di monitorare numerosi aspetti del suo comportamento, tra cui i processi creati, le operazioni sul file system, le modifiche al registro di sistema, le connessioni di rete e il traffico generato, che può essere catturato e analizzato mediante strumenti di \textit{packet sniffing} come Wireshark.
 
-\subsection{Disassembly e decompiling} % 2.2.3
+Un livello di analisi ancora più approfondito è rappresentato dal debugging. Un \textit{debugger} è uno strumento software utilizzato per osservare e controllare l'esecuzione di un programma, fornendo piena visibilità sul suo stato interno durante l'esecuzione. Esso permette agli analisti di ispezionare il contenuto delle locazioni di memoria, i registri del processore e gli argomenti delle funzioni, oltre a seguire il flusso di esecuzione del programma. Inoltre, i debugger consentono di modificare dinamicamente lo stato del programma, permettendo di analizzarne specifici comportamenti o di verificarne il funzionamento in particolari condizioni.
 
-Fonti Bibliografiche: Practical Malware Analysis: The Hands-On Guide to Dissecting Malicious Software; The Ghidra Book: The Definitive Guide; https://www.ghidradocs.com/12.1.2\_PUBLIC/help/index.html; The IDA Pro Book; https://docs.hex-rays.com/
-
-Argomenti da trattare:
-
-\begin{itemize}
-    \item Definizione e differenza tra disassembly e decompiling
-    \item Strumenti di reversing, Ghidra e IDA
-\end{itemize}
+Rispetto alla sola analisi statica, il debugging permette quindi di osservare informazioni disponibili esclusivamente a runtime. Tuttavia, anche questo approccio presenta alcune limitazioni. Oltre ai vincoli imposti dall'ambiente di esecuzione, molti malware implementano tecniche di \textit{anti-debugging} e \textit{anti-virtualization}, mediante le quali rilevano di essere eseguiti rispettivamente sotto il controllo di un debugger o all'interno di una macchina virtuale. In tali casi, il malware può modificare il proprio comportamento o interrompere completamente l'esecuzione, con l'obiettivo di ostacolare l'analisi.
 
 \section{Large Language Models} % 2.3
 
