@@ -135,7 +135,7 @@ L'architettura alla base dei moderni LLM è il \textit{Transformer}, introdotto 
 
 % TODOTODOTODO
 
-La natura \textit{general-purpose} dei LLM li rende utilizzabili per un ampio insieme di compiti. Tra le attività più comuni rientrano la conversazione in linguaggio naturale, la risposta a domande, la classificazione del testo, la traduzione automatica e il riassunto. I LLM vengono inoltre impiegati per attività più complesse, come la generazione di codice, la produzione di contenuti testuali e l'esecuzione di compiti di \textit{reasoning} (ragionamenti), basati sulla capacità di trarre conclusioni a partire dalle informazioni fornite. \cite{dhamani2026genai} % Capitolo 1.4
+La natura \textit{general-purpose} dei LLM li rende utilizzabili per un ampio insieme di compiti. Tra le attività più comuni rientrano la conversazione in linguaggio naturale, la risposta a domande, la classificazione del testo, la traduzione automatica e il riassunto. I LLM vengono inoltre impiegati per attività più complesse, come la generazione di codice, la produzione di contenuti testuali e l'esecuzione di compiti di \textit{reasoning} (ragionamento), basati sulla capacità di trarre conclusioni a partire dalle informazioni fornite. \cite{dhamani2026genai} % Capitolo 1.4
 
 Nonostante i notevoli progressi degli ultimi anni, i LLM presentano ancora importanti limitazioni. Tra le principali vi sono la disponibilità e la qualità dei dati di addestramento, con problematiche legate alla privacy, alla presenza di contenuti protetti da copyright e alla rappresentatività dei dati. Oltre a questi aspetti, rimangono criticità legate all'introduzione di \textit{bias} derivanti dai dati utilizzati durante il training e alla possibilità di produrre informazioni errate o inventate, con la generazione di risposte plausibili ma fattualmente scorrette, fenomeno noto come \textit{hallucination}. \cite{dhamani2026genai} % Capitolo 1.5
 
@@ -148,25 +148,36 @@ Il \textit{prompt engineering} è la pratica di progettare e formulare dei promp
 Oltre alle istruzioni esplicite, assume un ruolo importante anche il contesto fornito al modello e la cronologia della conversazione. Le principali tecniche di prompting sono:
 
 \begin{description}
-    \item[Zero-shot prompting.] Il LLM riceve esclusivamente le istruzioni necessarie per svolgere il compito, senza alcun esempio. La risposta si baserà interamente sulla conoscenza acquisita dal LLM durante l'addestramento.
-    \item[Few-shot prompting.] Il LLM, oltre al compito da svolgere, riceve un piccolo gruppo di esempi, con l'obiettivo di mostrare al modello il formato o il patter da seguire durante la generazione della risposta.
-    \item[Multi-turn prompting.] Il LLM riceve anche la cronologia dei turni conversazionali precedenti, mantenendo il contesto dell'interazione, così da avere conversazioni più naturali e coerenti. Tuttavia, conversazioni molto lunghe possono introdurre difficoltà legate ai limiti della finestra di contesto e alla riduzione dell'attenzione del modello verso parte dell'informazione.
+    \item[Zero-shot prompting.] Il modello riceve esclusivamente le istruzioni necessarie per svolgere il compito, senza alcun esempio. La risposta si baserà interamente sulla conoscenza acquisita dal LLM durante l'addestramento.
+    \item[Few-shot prompting.] Il modello, oltre al compito da svolgere, riceve un piccolo gruppo di esempi, con l'obiettivo di mostrare al modello il formato o il patter da seguire durante la generazione della risposta.
+    \item[Multi-turn prompting.] Il modello riceve anche la cronologia dei turni conversazionali precedenti, mantenendo il contesto dell'interazione, così da avere conversazioni più naturali e coerenti. Tuttavia, conversazioni molto lunghe possono introdurre difficoltà legate ai limiti della finestra di contesto e alla riduzione dell'attenzione del modello verso parte dell'informazione.
 \end{description}
 
 \cite{dhamani2026genai} % Capitolo 7.2
 
-\subsection{AI Agents e Tools} % 2.3.2
+\subsection{Agenti AI} % 2.3.2
 
-Fonti Bibliografiche: From System 1 to System 2: A Survey of Reasoning Large Language Models; ReAct: Synergizing Reasoning and Acting in Language Models; Towards Long-Horizon Agents: A Survey; Tool Learning with Large Language Models: A Survey
+L'evoluzione dei LLM è stata inizialmente guidata principalmente dallo \textit{scaling} dei modelli, aumentando il numero di parametri, la quantità di dati di addestramento e le risorse computazionali impiegate durante il training. Più recentemente, la ricerca si è concentrata anche sul miglioramento delle capacità di ragionamento durante la fase di inferenza, mostrando come dedicare più tempo al processo di reasoning prima della generazione della risposta possa migliorare le prestazioni del modello nei compiti più complessi.
 
-Argomenti da trattare:
+Questo approccio ha favorito lo sviluppo di modelli addestrati a produrre esplicitamente catene di ragionamento (\textit{Chain of Thought}, CoT), ossia sequenze di passaggi logici che guidano il modello nella risoluzione di un problema prima di formulare la risposta finale. Sebbene tutti i più recenti LLM dispongano di avanzate capacità di \textit{reasoning}, affidarsi esclusivamente al ragionamento interno del modello presenta alcuni limiti: il modello può infatti costruire catene logiche coerenti, ma senza essere in grado di verificarne la correttezza attraverso fonti di informazione o strumenti esterni, con il conseguente rischio di produrre allucinazioni. Allo stesso tempo, consentire a un modello di interagire direttamente con un ambiente esterno (\textit{acting}) senza un adeguato processo di ragionamento può portare a decisioni meno accurate, errori di pianificazione e un utilizzo inefficace degli strumenti disponibili.
 
-\begin{itemize}
-    \item Reasoning e chain of thought
-    \item Intelligent Agents
-    \item Long horizon / one-shot tasks
-    \item Tools e tool calls
-\end{itemize}
+Al fine di superare queste limitazioni complementari è stato proposto il framework \textit{ReAct} (\textit{Reasoning and Acting}), con l'obiettivo di risolvere compiti complessi combinando il ragionamento del modello con l'esecuzione di azioni specifiche per il compito da svolgere. Il funzionamento si basa su un ciclo iterativo composto da tre fasi:
+
+\begin{description}
+    \item[Thought.] (Ragionamento) Il modello genera un ragionamento testuale sullo stato corrente del problema, analizzando le informazioni disponibili e pianificando l'azione successiva.
+    \item[Action.] (Azione) Il modello produce un'azione strutturata, tipicamente sotto forma di invocazione di uno strumento (tool) o di una funzione disponibile nell'ambiente esterno.
+    \item[Observation.] (Osservazione) L'ambiente esterno esegue l'azione richiesta e restituisce il risultato al modello, che viene quindi fornito come input per l'iterazione successiva.
+\end{description}
+
+\cite{yao2023react}
+
+Il paradigma ReAct costituisce la base concettuale della maggior parte dei moderni agenti AI. Un agente AI è un agente intelligente progettato per perseguire uno o più obiettivi mediante un ciclo continuo di ragionamento e azione, interagendo con strumenti e ambienti esterni con differenti livelli di autonomia. In questo contesto, il LLM rappresenta il motore decisionale dell'agente, che può anche includere componenti aggiuntivi, come memoria permanente, logiche di pianificazione e un software di orchestrazione, il cosiddetto agent harness, incaricato di coordinarne l'esecuzione.
+
+% TODOTODOTODO
+
+% Long-Horizon Tasks
+
+% TODOTODOTODO
 
 \subsection{Model Context Protocol} % 2.3.3
 
