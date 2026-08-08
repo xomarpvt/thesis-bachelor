@@ -133,6 +133,8 @@ Un LLM è un modello di \textit{Deep Learning}, basato su reti neurali artificia
 
 L'architettura alla base dei moderni LLM è il \textit{Transformer}, introdotto da Google nel 2017. Il Transformer impiega un meccanismo di \textit{self-attention}, che consente al modello di individuare le relazioni tra i token di una sequenza indipendentemente dalla loro distanza. Nell'architettura originale, composta da encoder e decoder, gli encoder trasformano la sequenza di token in rappresentazioni vettoriali (\textit{embeddings}), mentre i decoder generano iterativamente il token successivo sulla base delle rappresentazioni ottenute e dei token precedentemente prodotti. I Transformer per il linguaggio possono essere di tipo \textit{encoder-only}, \textit{encoder-decoder} oppure \textit{decoder-only}. La maggior parte dei moderni LLM adotta un'architettura \textit{decoder-only}, particolarmente adatta alla generazione autoregressiva del testo. \cite{dhamani2026genai} % Capitolo 1.2
 
+Large Language Models (LLMs) are transformer-based neural networks trained on vast text corpora using self- and semi-supervised methods [20], [21]. Modern LLMs, typically using decoder-only architectures [22], excel at general-purpose language generation. Initially, task adaptation required finetuning. Today, prompt engineering guides model behavior through carefully designed input prompts, leveraging pretrained knowledge without retraining [23]. This has proven efficient and often comparable to fine-tuning for large models. \cite{basque2026decompiling}
+
 % TODOTODOTODO
 
 La natura \textit{general-purpose} dei LLM li rende utilizzabili per un ampio insieme di compiti. Tra le attività più comuni rientrano la conversazione in linguaggio naturale, la risposta a domande, la classificazione del testo, la traduzione automatica e il riassunto. I LLM vengono inoltre impiegati per attività più complesse, come la generazione di codice, la produzione di contenuti testuali e l'esecuzione di compiti di \textit{reasoning} (ragionamento), basati sulla capacità di trarre conclusioni a partire dalle informazioni fornite. \cite{dhamani2026genai} % Capitolo 1.4
@@ -212,20 +214,93 @@ Dal punto di vista dei livelli di comunicazione, il \textit{data layer} definisc
 
 \section{Reverse engineering} % 2.4
 
-Fonti Bibliografiche: LLM4Decompile: Decompiling Binary Code with Large Language Models; ReCopilot: Reverse Engineering Copilot in Binary Analysis; Decompiling the Synergy: An Empirical Study of Human--LLM Teaming in Software Reverse Engineering
+mini introduzione
 
-Argomenti da trattare:
+visti i progressi rapidi nel campo dell'ai, non c'è voluto molto perché (La teoria ???) degli LLM venisse applicata al malware analysis, coinvolgendo direttamente gli LLM nel processo di reverse engineering.
 
-\begin{itemize}
-    \item Esempi di come il reverse engineering può essere assistito dai large language models
-\end{itemize}
+qua nell'introduzione si può parlare in generale di training, insieme ad avere dati di qualità per questo scopo e il fine tuning (definizione).
 
-\subsection{Assistito} % 2.4.1
+\subsection{LLM * Binary Analysis}
 
-Fonti Bibliografiche: SoK: AI-Augmented Binary Reversing; Challenges and Future Directions in Agentic Reverse Engineering Systems; 
+\begin{description}
+    \item[LLM4Decompile \cite{tan2024llm4decompile}] (L'articolo ???) propone una serie di LLM open-source (1.3B-33B parametri) di diverse dimensioni addestrati specificamente per decompilare codice binario in codice sorgente C, aumentando la leggibilità e rendendolo potenzialmente eseguibile.
+    
+    Il framework propone due approcci complementari:
 
-Argomenti da trattare:
+    \begin{itemize}
+        \item \textit{LLM4Decompile-End}: dopo il disassemblaggio del codice compilato in istruzioni assembly x86, il  modello genera direttamente il codice C a partire decompilato, con prestazioni superiori a quelle di Ghidra e GPT-4o (cioè modello proprietario ??? generalista ??? dell'epoca).
+        \item \textit{LLM4Decompile-Ref}: dopo il disammblaggio segue il decompiling utilizzando Ghidra e successivamente il modello viene usato per migliorare il codice decompilato da ghidra, senza limitarsi solamente nomi e tipi di variabili, ma puntando a aumentare leggibilità, ottenendo un aumento della eseguibilità rispetto alla sola decompilazione.
+    \end{itemize}
 
-\begin{itemize}
-    \item Agentic reverse engineering. definizione e limitazioni
-\end{itemize}
+    LLM4Decomiple rappresenta un salto di paradigma nella decompilazione binaria, perché ha dimostrato che gli LLM possono superare gli strumenti tradizionali.
+
+    \item[ReCopilot \cite{chen2025recopilot}] (L'articolo ???) presenta \textit{ReCopilot} un LLM specializzato per task l'analisi statica, progettato per funzionare come un copilota per i reverse engineer.
+    
+    ReCopilot adotta un approccio di addestramento multi-fase.
+
+    \begin{enumerate}
+        \item Continue Pre-Training (CPT): un LLM base viene inizialmente pre-addestrato su una grande conoscenza per acquisire una conoscenza di base del dominio. (cioè il collegamento che esiste tra codice binario, codice sorgente e linguaggio naturale)
+        \item Supervised Fine-Tuning (SFT): il pre-trained model viene fine-tuned supervisionato su task predefinite specifiche dell'analisi statica. impara a seguire le istruzioni utente e generare risultati in formati specifici (strutturati), aggiungendo anche il training a ChainOfThought del modello prima di generare la risposta (Rispetto a LLM4decompile le task vengono strutturate ??? suddivise in tag, con decompilazione, analisi di funzione (parametri, variabili, argomento, nomi), identificazione categoria, riassunto breve lungo)
+        \item Direct Preference Optimization (DPO): il modello viene ottimizzato ulteriormente, allineandolo alle preferneze umane, seguire il formato, migliorando la qualità, la consisteza e la pertinenza delle risposte generate. 
+    \end{enumerate}
+
+    Dal punto di vista sperimentale ReCopilot supera si agli strumenti tradizionali (IDA Ghidra) che gli LLM general purpose e fa questo nonostante le dimensioni ridotte (7B parametri), rispetto agli LLM general che sono (>400B)
+
+    Rispetto a LLM4Decompile, ReCopilot è più adatto per costruire agentic capabilities al di sopra di recopilot per sfide complessi di analisi binaria. Può essere integrato come modulo di analisi all'interno di un agente RE autonomo. L'agente può inviare pseudo-codice o istruzioni assembly a ReCopilot e ricevere in cambio analisi dettagliate
+
+\end{description}
+
+\subsection{LLM * Malware Analysis}
+
+oltre che per analisi binaria, ovviamente anche nello specifico per malware
+mini introduzione
+
+\begin{description}
+    \item[Project IRE \cite{caswell2025projectire}] è un esempio industriale di applicazione AI alla cybersecurity. è un classificatore autonomo che dato un file senza metadati, telemetry (?) o informazioni sull'origine o lo scopo esegue il reverse engineering del binario, con l'obiettivo di arrivare a un verdetto di classificazione benigno o maligno. In particolare nato per due ragioni:  e errori + fatica da parte degli analisti.
+    
+    Project Ire si basa su un'architettura agentica che combina LLM con una suite di strumenti specializzati per reverse engineering. L'architettura permette di avere ragionamento su multipli livelli, da analisi binaria basso livello a ricostruzione control flow e interpretazione alto livello comportamento codice, mentre i tool, a cui si accede tramite API sono sandbox di analisi microsoft e altri open sourch, come decompilatori e ricerca di documentazione.
+
+    durante l'esecuzione l'obiettivo è quello di costruire una chain of evidence, costruendo una trail che mostra come il sistema raggiunge la conclusione. Questo log di evidence ha anche lo scopo di supportare la revisione secondaria da parte di team di sicurezza, così da raffinare il sistema in caso di errore di classificazione.
+
+    I test preliminari hanno ottenuto risultati buoni, con l'identificazione corretta del 90 percento dei file totali, con solo il 2\% di falsi positivi, suggerendo la possibilità di poter usare (deploying) questo sistema, ovviamente insieme alle review di analisti esperti.
+
+    \item[Masdroid] l'articolo presenta un framework multi-agent dedicato a malware Android che integra diversi moduli di behavioural anayliss per essere un sistema di (detection) che fornisce una caratterizzazione comprensiva di un malware, con spiegazioni interpretabili da uomo.
+    
+    L'obiettivo del ... (?) è quello di superare le limitazioni degli approcci attualmente esistenti, come analisi puramente statica, evadibile facilmente, analisi dinamica più costosa, limitazione di interpretazione e trasparenza processo decisionale
+
+    descrizione del sistema:
+
+    \begin{itemize}
+        \item analisi statica: il file APK viene decompilato e gli vengono estratte le features comuni, che saranno poi distribuite a tutti gli agenti.
+        \item agenti: ogni agente viene eseguito in parallelo ed è responsabile per una task specifica, per la quale può usare tools. gli output degli agenti vengono passati in un formato standardizzato all agente di decisione (maliciouness score + evidence list)
+        \item decision agent: ha il ruolo di integrare informazioni multi-source ed eseguire la final-classification, oltre a generare un report di spiegazione in linguaggio naturale, con riferimenti alle attività degli agenti.
+    \end{itemize}
+
+    Le valutazioni sperimentali hanno dimostrato ottime performance con punteggi del 97\% sia per malware detection che per malware family classification, ma rispetto a sistemi/modelli teorici black box fa aumentare la trasparenza e il grounding in evidence del processo di decisione.
+
+\end{description}
+
+\subsection{LLM + Uomo = Reverse engineering}
+
+tutte queste applicazioni di LLM rendono chiaro come il futuro del SRE si stia muovendo verso la direzione di integrare gli LLM nel workflow di SRE.
+
+Presentazione dello studio. \cite{basque2026decompiling} tra il 2024 e il 2025. studio su analisi, con diversi livelli di esperienza, con senza LLM supporto.
+
+vantaggi: spiegare comportamento di codice decompilato, leggibilità, identificazione (renaming), capire funzionamento algoritmi, velocizzare il processo con la creazione di script di supporto al SRE
+svantaggi: risposte incorrette o misleading, riducendo la fiducia o facendo perdere tempo. spiegazioni superficiali, con diminuzione dell'efficacia al complicarsi/allungarsi/offuscarsi della task.
+
+i temi emersi:
+- gli LLM aiutano particolarmente nei momenti iniziali, visto che permettono di dare all'analista con un costo cognitivo basso un overview complessivo, aiutando particolarmente i meno esperti. tuttavia questo vantaggio non si ripresenta per i processi di analisi più "deep" (?) specifici
+- la conoscenza degli esperti viene migliorata poco. preferiscono delegare attività di pattern di routine, come l'identificazione di algoritmi noti, riallocando il proprio impegno verso la comprensione di logiche personalizzate o complesse. Il risultato è una redistribuzione dello sforzo, invece che una accelerazione del processo. senza progressi di raffinamento della conoscenza degli LLM e delle modalità di interazione, in questo campo rimarrano più strumento di supporto per principianti rispetto che collaboratori per esperti. 
+- anche delle allucinazioni rare possono complicare l'analisi. l'impatto di un'allucinazione è più alto della frequenza in cui si verifica (rare, ma problematiche). portano alla formulazione prima e poi ad indagare ipotesi non veri e non esistenti per molto tempo
+- il recupero degli artefatti, nomi funzioni, variabili, tipi viene aumentato dall'uso di LLM, ma questo non è correlato con aumento di capire il programma. fare affidamento sui nomi generati o sull'identificazione di algoritmi da parte di AI riduce quanto l'umano capisce 
+- sono alcune task, come descrizione comportamento funzioni/algoritmi standard, single purpose well-scoped, può essere demandato all'AI; con funzioni ottimizzate, multi ruolo o logica complessa serve un'analisi umana iterativa, eventualmente con uso selettivo di LLM.
+
+
+Our study takes the first in-depth empirical dive into how LLMs impact SRE and demonstrates that they augment analysts rather than replace them. The benefits are clear: LLMs support SRE practitioners in many tasks and can even close the gap in some aspects between experts and novices. However, our study shows that many areas of LLM integration still require research and development to be helpful for the most challenging SRE tasks. We present our findings, hopeful that the SRE community will utilize our work to make LLMs an even more helpful tool for security. All in all, LLMs are neither oracles nor impostors, but mirrors held to human insight: their reflections sharpen only in the steady gaze of critical thought and domain expertise.
+
+Sebbene lo studio Decompiling the Synergy evidenzi che gli LLM tradizionali non supportano adeguatamente il raffinamento della conoscenza degli esperti, tale conclusione riflette principalmente un paradigma di interazione basato su assistenti conversazionali. L'emergere degli LLM-based agents introduce un modello alternativo, caratterizzato da capacità di pianificazione, uso autonomo di strumenti e iterazione sulle ipotesi. Questi sistemi mirano proprio a superare il ruolo di "first-pass summarizers" identificato dagli autori, avvicinandosi a forme di collaborazione uomo-AI più profonde. Tuttavia, le evidenze empiriche sull'effettivo raggiungimento di un ruolo di "teammate" negli scenari complessi di reverse engineering sono ancora limitate.
+
+Deve ancora essere ben inquadrato in ambito agents -> aumentano popolarità capacità, ma ancora quantitificato 
+
+% https://github.com/agentrebench/AgentRE-Bench
