@@ -67,7 +67,9 @@
 }
 
 \setcounter{tocdepth}{4} % REMOVEREMOVE
-\includeonly{chapter_2}
+%\includeonly{chapter_2}
+%\includeonly{chapter_3}
+\includeonly{chapter_4}
 
 \begin{document}
 \maketitle
@@ -121,13 +123,16 @@ Indice: \fi
 
 \include{chapter_3}
 
+\include{chapter_4}
+
+\iffalse
 \chapter{Progettazione} % 4
 
 L'architettura proposta:
 
 \textbf{Natura statica dell'analisi}.
 L'intero processo di analisi del campione dovrà essere basato esclusivamente su tecniche di analisi statica. Il sistema non dovrà quindi richiedere l'esecuzione del campione, né ricorrere a tecniche di analisi dinamica, debugging o osservazione diretta del comportamento durante l'esecuzione.
-
+\fi
 \iffalse
 L'architettura basata su **Python MCP e Ghidra MCP con sole capacità statiche** rappresenta un approccio orientato al reverse engineering assistito da LLM, in cui i due componenti assumono ruoli complementari. Ghidra fornisce al modello una rappresentazione strutturata del programma analizzato, mettendo a disposizione informazioni quali funzioni, decompilato, riferimenti incrociati, grafi delle chiamate, stringhe e porzioni di memoria o byte selezionati. Python MCP agisce invece come ambiente di elaborazione generale, permettendo al modello di costruire ed eseguire strumenti personalizzati per trasformare, analizzare e interpretare le informazioni estratte da Ghidra.
 Uno dei principali vantaggi di questa architettura è la flessibilità offerta da Python. Poiché il modello linguistico può generare codice Python durante l'analisi, è in grado di creare strumenti specifici per il problema affrontato senza richiedere un supporto predefinito. Ad esempio, quando viene individuata una struttura dati cifrata o una tabella di simboli offuscata, Ghidra può fornire i byte rilevanti mentre Python può essere utilizzato per implementare algoritmi di decodifica, testare ipotesi, confrontare risultati o ricostruire il formato dei dati. Questo rende il sistema particolarmente efficace in attività come l'analisi di configurazioni nascoste, il riconoscimento di pattern, la manipolazione di dati binari e la generazione automatica di strumenti di analisi.
@@ -151,6 +156,7 @@ Python: ambiente dove il LLM può creare procedure e ragionamenti personalizzati
 Questa combinazione è già una base molto forte. Se in futuro volessi estenderla, il debugging/P-code sarebbe probabilmente un terzo livello, non una sostituzione:
 \fi
 
+\iffalse
 \section{Architettura generale sistema} % 4.1
 
 \section{Componenti del sistema} % 4.2
@@ -161,11 +167,14 @@ Questa combinazione è già una base molto forte. Se in futuro volessi estenderl
 \subsubsection{Ghidra}
 \subsubsection{Sanbox}
 \subsubsection{Knowledge Base}
+\subsubsection{MD High detailed}
 \subsection{Agenti generazione codice} % 4.2.4
 
 \section{Template} % 4.3
 \subsection{Botnet e parser} % 4.3.1
 \subsection{Schema} % 4.3.2
+
+\fi
 
 \chapter{Implementazione} % 5
 
@@ -296,7 +305,6 @@ Le prestazioni non sono oggetto della valutazione.
 
 \chapter{Conclusioni} % 7
 
-% long horizon one shots ai agents + chain of thought (native reasoning)
 % https://arxiv.org/html/2509.09677v3
 % https://people.uniud.it/sites/default/files/Linee%20guida%20per%20la%20richiesta%20e%20la%20stesura%20della%20tesi%20di%20laurea.pdf
 % https://people.uniud.it/sites/default/files/Indicazioni%20per%20la%20compilazione%20della%20tesi%20di%20laurea.pdf
