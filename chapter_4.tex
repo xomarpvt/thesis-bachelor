@@ -4,6 +4,74 @@ Questo capitolo ha l'obiettivo di presentare l'architettura proposta per risolve
 
 \section{Architettura del sistema} % 4.1
 
+Il diagramma UML dei componenti è un diagramma strutturale utilizzato per rappresentare la struttura di un sistema software attraverso i suoi principali componenti e le relazioni che intercorrono tra essi. Esso consente di descrivere l'organizzazione delle diverse parti del sistema e le modalità attraverso cui queste collaborano per realizzare le funzionalità complessive.
+
+% https://www.omg.org/spec/UML/2.5.1/PDF (11.6, B.7.10)
+
+Il diagramma dei componenti fornisce pertanto una visione d'insieme dell'architettura, consentendo di individuare le principali responsabilità del sistema e le interazioni tra le sue diverse parti. Questa rappresentazione costituisce inoltre un riferimento utile per la successiva fase di implementazione, in quanto permette di mantenere una corrispondenza tra la struttura architetturale descritta e i componenti effettivamente implementati.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=.25]{img/componenti.png}
+    \caption{Diagramma UML dei componenti dell'architettura proposta.}
+    \label{fig:componenti}
+\end{figure}
+
+
+\section{Componenti del sistema} % 4.2
+
+In questa sezione vengono descritti nel dettaglio i componenti che costituiscono l'architettura proposta. Per ciascuno di essi vengono individuate le principali responsabilità e le funzionalità messe a disposizione degli altri componenti del sistema. La descrizione segue l'organizzazione mostrata nel diagramma di Figura~\ref{fig:componenti}, in ordine di aree tematiche.
+
++ REQUISITI
+
+\subsection{Ambienti di esecuzione} % 4.2.g
+
+\begin{description}
+    \item[Framework SRE] deve fornire capability almeno di analisi statica, così da poter mettere in pratica l'analisi statica del codice, ed eventualmente anche di analisi dinamica. A questo scopo è utile che abbia funzionalità di disassemblaggio, decompilazione, eventualmente debugging e in generale di altri strumenti di SRE. Al fine di integrazione è fondamentale che esponga tutte queste funzionalità in ... un certo modo ... (plugin o API che sia). Ci interagirà l'agente, che eseguirà le azioni (del LLM) tramite protocollo MCP.
+    
+    % anticipazione di altri tool statici.
+
+    \item[Sandbox] ha lo scopo di aggiungere funzionalità dinamiche diverse dal classico debugging. l'idea è di essere un ambiente generale in cui durante il reverse engineering sia possibile costruire ed eseguire strumenti personalizzati per trasformare, analizzare e interpretare le informazioni estratte durante l'analisi oppure anche per l'automatizzazione di attività. sarà AFFIANCATO al framework SRE. Inoltre permette anche di operare a livello di file, scrivendo e leggendo secondo le necessità. Uno degli aspetti più critici di questo componente è assicurare durante l'implementazione di garantire la SICUREZZA dell'ambiente. La sandbox deve garantire l'isolamento dall'host e da eventuali altre esecuzioni, operando con privilegi minimi, limiti alle risorse computazionali disponibili e con accesso alla rete meglio che sia negato per default. I file prodotti devono essere considerati non trusted: nessuna esecuzione automatica è consentita e la lettura automatica è limitata ai contenuti testuali; ogni altra operazione è demandata all'utente. Le attività svolte conviene siano registrate. Con la sandbox interagirà l'agente, tramite LLM. Al fine di integrazione è fondamentale che esponga tutte queste funzionalità in ... un certo modo ... (libreria o interfaccia che sia). Ci interagirà l'agente, che eseguirà le azioni (del LLM) tramite protocollo MCP.
+\end{description}
+
+\subsection{Layer MCP} % 4.2.t
+
+\begin{description}
+    \item[SRE MCP Client - Sandbox MCP Client] espone le funzionalità doi $tools/list$ che permette di scoprire i tools disponibili e $tools/call$ che permette di chiamare un tool passando $name$ e $arguments$. in base alle necessità, (in particolare con il LLM), si potrebbe implementare anche due parsing personalizzati: quello dal formato dei tool a disposizione (passando da MCP a LLM) e quello per le risposte dei tool ricevute.
+    % https://modelcontextprotocol.io/specification/2026-07-28/server/tools#listing-tools
+    % https://modelcontextprotocol.io/specification/2026-07-28/server/tools?utm_source=chatgpt.com#calling-tools
+    \item[SRE MCP Server - Sandbox MCP Server] ciascuno per il proprio ambito. devono esporre gli strumenti che il reverse agent userà, in accordo al protocollo MCP. i tool devono avere dei nomi univoci e soprattutto chiari, insieme a un titolo, una descrizione e un \textit{inputSchema} un JSON Schema che descrive i parametri di input, insieme ai tipi (e descrizione) \cite{mcp}. ovviamente deve ai tool che arrivano eseguire il dispatch verso l'implementazione del tool (che può essere diretta o indiretta tramite bridge o API) così da eseguirli e restituire il risultato (formattato). (+ stdio o HTTP * i client)
+    % https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture#understanding-the-tool-discovery-response
+\end{description}
+
+\subsection{Altro ?}
+
+\begin{description}
+    \item[LargeLanguageModel] è il cuore dei due agenti (non è un semplice esecutore, ma funge da "cervello centrale" o motore cognitivo). fornisce le capacità cognitive di comprensione, implementando nella pratica il reverse engineering, di deduzione e di generazione del codice finale (+ planning e tool calling). praticamente genererà le assistant (chat completion message, con o senza tool calls). dal punto di vista tecnico, conviene abbia almeno le dimensioni e prestazioni sufficienti, supporti il reasoning, particolarmente necessario per task di questo tipo e capacità nativa di emettere tool call strutturate, anche parallele. deve avere un contesto sufficiente ad affrontare l'analisi in modo efficace.
+    \item[REAgent] handling stripped
+    \item[Classification]
+    \item[CodeAgent]  
+\end{description}
+
+\subsection{Layer di Input / Output (Artefatti)}
+
+\begin{description}
+    \item[Knowledge base]
+    \item[prompt archive] 
+    \item[log json] 
+    \item[template codice] 
+    \item[report MD]
+    \item[file di analisi]
+    \item[botnetinterface - schema json comandi] 
+    \item[input .bin e output .py] coincidono con quanto già descritto nel capitolo 3. non è necessario modificare o aggiungere requisiti e funzioni.
+\end{description}
+
+\section{Flusso di esecuzione} % 4.3
+
+Dopo aver descritto la struttura dell'architettura e le responsabilità dei singoli componenti, questa sezione finale illustra un flusso di esecuzione completo del sistema.
+
+
+
 Sto realizzando una tesi triennale sperimentale sull'argomento "Generazione automatica di moduli per l'intercettazione delle comunicazioni Command-and-Control dei malware".
 
 Descrizione software: esegue il reverse engineering di malware Mirai attraverso agenti LLM, per poi generare il codice di intercettazione dei comandi ricevuti dal C2 server.
@@ -254,7 +322,6 @@ rect rgb(235, 255, 235)
 end
 \fi
 
-\includegraphics[scale=.4]{img/componenti.png}
 
 \hspace{1cm}
 
