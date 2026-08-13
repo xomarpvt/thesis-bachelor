@@ -4,21 +4,15 @@ Questo capitolo ha l'obiettivo di introdurre il problema affrontato nella tesi. 
 
 \section{Definizione del problema} % 3.1
 
-Il problema oggetto di studio e sviluppo in questa tesi consiste nella progettazione e nella successiva implementazione di un sistema in grado di ricevere in ingresso un file binario arbitrario e, qualora questo appartenga a una botnet, generare automaticamente un modulo software capace di intercettare le comunicazioni C2 (\textit{Command-and-Control}) ricevute dal server C2 e di tradurle in una rappresentazione strutturata.
+Il problema oggetto di studio e sviluppo in questa tesi consiste nella progettazione e nella successiva implementazione di un sistema in grado di ricevere in ingresso un file binario arbitrario e, qualora questo appartenga a una botnet, generare automaticamente un modulo software capace di intercettare le comunicazioni Command-and-Control ricevute dall'infrastruttura di comando e di tradurle in una rappresentazione strutturata. % Server C\&C
 
-La motivazione principale alla base di questo lavoro consiste nell'automatizzare e velocizzare, ove possibile, le attività di analisi del malware e di generazione del codice richiesto. Quando svolte manualmente da un esperto di cybersecurity, tali attività richiedono competenze specialistiche, un grande investimento di tempo e un significativo impegno operativo.
+La motivazione principale alla base di questo lavoro consiste nell'automatizzare e velocizzare, ove possibile, le attività richieste di malware analysis e produzione del codice. Quando svolte manualmente da un esperto di cybersecurity, tali attività richiedono competenze specialistiche, un grande investimento di tempo e un significativo impegno operativo.
 
 La responsabilità primaria del sistema consiste pertanto nell'analizzare in maniera autonoma campioni di malware appartenenti a diverse botnet, al fine di ricavare tutte le informazioni necessarie alla generazione di un modulo di intercettazione. Tale modulo dovrà soddisfare sia i requisiti derivanti dalla definizione iniziale del problema, sia quelli che verranno progressivamente individuati e formalizzati nel corso del presente capitolo e delle successive fasi di progettazione e implementazione.
 
-Il processo di analisi dovrà quindi essere orientato a raggiungere l'obiettivo finale di generazione del modulo, concentrandosi sull'acquisizione delle conoscenze strettamente necessarie a ricostruire il protocollo di comunicazione utilizzato. 
+Il processo di analisi dovrà quindi essere orientato a raggiungere l'obiettivo finale di generazione del modulo, concentrandosi sull'acquisizione delle conoscenze strettamente necessarie a ricostruire il protocollo di comunicazione utilizzato. Di conseguenza, tra le responsabilità del sistema non rientra la comprensione completa delle caratteristiche e del funzionamento interno del malware analizzato. Nonostante il processo di analisi possa, come effetto collaterale, portare alla ricostruzione di ulteriori dettagli sul comportamento del campione, tali informazioni non costituiscono un obiettivo del sistema.
 
-Di conseguenza, tra le responsabilità del sistema non rientra la comprensione completa delle caratteristiche e del funzionamento interno del malware analizzato. Nonostante il processo di analisi possa, come effetto collaterale, portare alla ricostruzione di ulteriori dettagli sul comportamento del campione, tali informazioni non costituiscono un obiettivo del sistema.
-
-Analogamente, il sistema non avrà il compito di verificare o garantire il corretto funzionamento del modulo prodotto e quindi l'analisi si concluderà con la generazione del modulo stesso. La successiva validazione del modulo e la valutazione dei risultati ottenuti resteranno invece di competenza dell'utente finale. Quest'ultimo potrà utilizzare il modulo generato come preferisce, secondo le proprie necessità, potendolo modificare estendere e infine eseguire.
-
-% \subsection{Ambito del lavoro (?)} % 3.1.1
-% \subsection{Obiettivi del sistema (?)} % 3.1.2
-% \subsection{Responsabilità del sistema (?)} % 3.1.3
+Analogamente, il sistema non avrà il compito di verificare o garantire il corretto funzionamento del modulo prodotto e quindi l'analisi si concluderà con la generazione del modulo stesso. La successiva validazione del modulo e la valutazione dei risultati ottenuti resteranno invece di competenza dell'utente finale. Quest'ultimo potrà utilizzare il modulo generato come preferisce, potendo modificarlo, estenderlo, fino ad arrivare a eseguirlo. % secondo le proprie necessità
 
 \section{Input e output del sistema} % 3.2
 
@@ -177,43 +171,43 @@ Per concludere la trattazione del problema, la \Cref{fig:context_diagram} fornis
 \begin{figure}[ht]
     \centering
     \resizebox{\textwidth}{!}{%
-    \begin{tikzpicture}[
-        % Stili
-        actor/.style={rectangle, draw, thick, fill=gray!10, minimum width=2.5cm, minimum height=1cm, align=center, rounded corners},
-        system/.style={rectangle, draw, thick, fill=blue!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
-        module/.style={rectangle, draw, thick, fill=green!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
-        server/.style={cylinder, shape border rotate=90, aspect=0.3, draw, thick, fill=red!10, minimum width=2cm, minimum height=1.5cm, align=center},
-        arrow/.style={-{Stealth[scale=1.2]}, thick},
-        dashed_arrow/.style={-{Stealth[scale=1.2]}, thick, dashed}
-    ]
+        \begin{tikzpicture}[
+            % Stili
+            actor/.style={rectangle, draw, thick, fill=gray!10, minimum width=2.5cm, minimum height=1cm, align=center, rounded corners},
+            system/.style={rectangle, draw, thick, fill=blue!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
+            module/.style={rectangle, draw, thick, fill=green!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
+            server/.style={cylinder, shape border rotate=90, aspect=0.3, draw, thick, fill=red!10, minimum width=2cm, minimum height=1.5cm, align=center},
+            arrow/.style={-{Stealth[scale=1.2]}, thick},
+            dashed_arrow/.style={-{Stealth[scale=1.2]}, thick, dashed}
+        ]
 
-    % Nodi Fase 1 (Generazione)
-    \node[actor] (user) {Utente};
-    \node[system, right=2.5cm of user] (sys) {\textbf{Sistema di Analisi}\\\textit{e Generazione}};
-    \node[module, right=2.5cm of sys] (mod) {\textbf{Modulo Python}\\\textit{(BotNetInterface)}};
+        % Nodi Fase 1 (Generazione)
+        \node[actor] (user) {Utente};
+        \node[system, right=2.5cm of user] (sys) {\textbf{Sistema di Analisi}\\\textit{e Generazione}};
+        \node[module, right=2.5cm of sys] (mod) {\textbf{Modulo Python}\\\textit{(BotNetInterface)}};
 
-    % Nodi Fase 2 (Esecuzione)
-    \node[server, right=2.5cm of mod] (c2) {\textbf{Server}\\\textbf{C2}};
-    \node[actor, below=2cm of mod] (output) {Messaggi\\Strutturati\\\textit{(MessageSchema)}};
+        % Nodi Fase 2 (Esecuzione)
+        \node[server, right=2.5cm of mod] (c2) {\textbf{Server}\\\textbf{C2}};
+        \node[actor, below=2cm of mod] (output) {Messaggi\\Strutturati\\\textit{(MessageSchema)}};
 
-    % Connessioni Fase 1
-    \draw[arrow] (user) -- node[above] {\footnotesize File binario} node[below] {\footnotesize\textit{(Input)}} (sys);
-    \draw[arrow] (sys) -- node[above] {\footnotesize Modulo generato} node[below] {\footnotesize\textit{(Output)}} (mod);
+        % Connessioni Fase 1
+        \draw[arrow] (user) -- node[above] {\footnotesize File binario} node[below] {\footnotesize\textit{(Input)}} (sys);
+        \draw[arrow] (sys) -- node[above] {\footnotesize Modulo generato} node[below] {\footnotesize\textit{(Output)}} (mod);
 
-    % Connessioni Fase 2
-    \draw[dashed_arrow] (user.south) |- ++(0,-1) -| node[pos=0.25, below] {\footnotesize Esecuzione (post-generazione)} (mod.south);
-    \draw[arrow] (mod) -- node[above] {\footnotesize Comandi C2} (c2);
-    \draw[arrow] (c2) to[bend right=20] node[above, sloped] {\footnotesize Traffico intercettato} (mod);
-    \draw[arrow] (mod) -- node[right] {\footnotesize \texttt{yield} Messaggi} (output);
+        % Connessioni Fase 2
+        \draw[dashed_arrow] (user.south) |- ++(0,-1) -| node[pos=0.25, below] {\footnotesize Esecuzione (post-generazione)} (mod.south);
+        \draw[arrow] (mod) -- node[above] {\footnotesize Comandi C2} (c2);
+        \draw[arrow] (c2) to[bend right=20] node[above, sloped] {\footnotesize Traffico intercettato} (mod);
+        \draw[arrow] (mod) -- node[right] {\footnotesize \texttt{yield} Messaggi} (output);
 
-    % Box per evidenziare le fasi
-    \begin{scope}[on background layer]
-        % Modificata la label qui sotto per centrarla sopra il box
-        \node[fit=(user) (sys) (mod), draw, dashed, inner sep=20pt, label={[yshift=-0.4cm]north:\textbf{Fase 1: Sviluppo (Automatizzato)}}] {};
-        \node[fit=(mod) (c2) (output), draw, dashed, inner sep=20pt, label={[yshift=-0.4cm]north:\textbf{Fase 2: Esecuzione (Operativa)}}] {};
-    \end{scope}
+        % Box per evidenziare le fasi
+        \begin{scope}[on background layer]
+            % Modificata la label qui sotto per centrarla sopra il box
+            \node[fit=(user) (sys) (mod), draw, dashed, inner sep=20pt, label={[yshift=-0.4cm]north:\textbf{Fase 1: Sviluppo (Automatizzato)}}] {};
+            \node[fit=(mod) (c2) (output), draw, dashed, inner sep=20pt, label={[yshift=-0.4cm]north:\textbf{Fase 2: Esecuzione (Operativa)}}] {};
+        \end{scope}
 
-    \end{tikzpicture}%
+        \end{tikzpicture}%
     }
     \caption{Diagramma di contesto del sistema e del modulo generato.}
     \label{fig:context_diagram}

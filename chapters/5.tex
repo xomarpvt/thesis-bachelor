@@ -1,0 +1,136 @@
+
+\chapter{Implementazione} % 5
+
+\iffalse
+
+L'architettura proposta:
+
+\textbf{Natura statica dell'analisi}.
+L'intero processo di analisi del campione dovrà essere basato esclusivamente su tecniche di analisi statica. Il sistema non dovrà quindi richiedere l'esecuzione del campione, né ricorrere a tecniche di analisi dinamica, debugging o osservazione diretta del comportamento durante l'esecuzione.
+L'architettura basata su **Python MCP e Ghidra MCP con sole capacità statiche** rappresenta un approccio orientato al reverse engineering assistito da LLM, in cui i due componenti assumono ruoli complementari. Ghidra fornisce al modello una rappresentazione strutturata del programma analizzato, mettendo a disposizione informazioni quali funzioni, decompilato, riferimenti incrociati, grafi delle chiamate, stringhe e porzioni di memoria o byte selezionati. Python MCP agisce invece come ambiente di elaborazione generale, permettendo al modello di costruire ed eseguire strumenti personalizzati per trasformare, analizzare e interpretare le informazioni estratte da Ghidra.
+Uno dei principali vantaggi di questa architettura è la flessibilità offerta da Python. Poiché il modello linguistico può generare codice Python durante l'analisi, è in grado di creare strumenti specifici per il problema affrontato senza richiedere un supporto predefinito. Ad esempio, quando viene individuata una struttura dati cifrata o una tabella di simboli offuscata, Ghidra può fornire i byte rilevanti mentre Python può essere utilizzato per implementare algoritmi di decodifica, testare ipotesi, confrontare risultati o ricostruire il formato dei dati. Questo rende il sistema particolarmente efficace in attività come l'analisi di configurazioni nascoste, il riconoscimento di pattern, la manipolazione di dati binari e la generazione automatica di strumenti di analisi.
+L'utilizzo congiunto di Ghidra statico e Python permette inoltre di automatizzare attività complesse che richiederebbero normalmente numerosi passaggi manuali da parte di un analista. Ghidra consente di navigare la struttura del binario e identificare aree di interesse, mentre Python permette di effettuare elaborazioni più generali, come analisi statistiche, clustering, confronto tra campioni, generazione di report o integrazione con librerie esterne. In questo senso, Python MCP non sostituisce le capacità di reverse engineering di Ghidra, ma estende il sistema fornendo al modello la possibilità di creare procedure personalizzate sulla base delle informazioni recuperate.
+Un confronto con un'architettura più completa, composta da **Python MCP e Ghidra MCP con capacità dinamiche di debugging ed esecuzione tramite P-code emulator**, evidenzia una differenza principalmente legata alla possibilità di osservare il comportamento runtime del programma. L'integrazione di strumenti dinamici permetterebbe al modello di eseguire porzioni di codice, osservare registri, memoria e flusso di esecuzione, verificando direttamente ipotesi formulate durante l'analisi statica. Questa capacità risulta particolarmente utile in presenza di codice offuscato, routine di unpacking, algoritmi di decrittazione con chiavi generate dinamicamente o comportamenti difficili da ricostruire esclusivamente dal codice.
+Tuttavia, l'aggiunta di capacità dinamiche non rende superata l'architettura basata esclusivamente sull'analisi statica. La maggior parte delle attività preliminari di reverse engineering consiste infatti nella comprensione della struttura del programma, nell'identificazione delle funzioni rilevanti e nella ricostruzione delle relazioni tra componenti. In questi scenari, l'analisi statica combinata con un ambiente di scripting flessibile può essere più efficiente rispetto all'esecuzione diretta del codice, soprattutto quando è necessario analizzare numerosi campioni o creare pipeline automatizzate.
+In conclusione, le due architetture possono essere considerate complementari. L'approccio **Python MCP + Ghidra statico** fornisce un ambiente versatile per l'analisi, la trasformazione dei dati e la costruzione automatica di strumenti, risultando sufficiente per molte attività di reverse engineering assistito. L'aggiunta delle capacità dinamiche di Ghidra introduce invece un ulteriore livello di verifica sperimentale, permettendo al modello di passare dalla deduzione del comportamento alla sua osservazione diretta. Un sistema completo potrebbe quindi utilizzare l'analisi statica come fase principale di comprensione e ricorrere all'esecuzione dinamica solo quando necessario per validare ipotesi o analizzare comportamenti non osservabili staticamente.
+\fi
+
+\iffalse
+Ma c'è anche un aspetto spesso sottovalutato: dare a un LLM un debugger completo non significa automaticamente ottenere un agente migliore. Aggiungere capacità dinamiche aumenta anche la complessità:
+deve decidere cosa eseguire;
+deve preparare un ambiente corretto;
+deve interpretare trace molto grandi;
+deve evitare di perdersi in dettagli irrilevanti;
+deve gestire casi in cui l'esecuzione non è rappresentativa.
+Un agente con molti strumenti non è necessariamente più efficace di un agente con gli strumenti giusti.
+La tua scelta ha anche un vantaggio progettuale: hai separato bene i ruoli.
+Ghidra statico: fonte autorevole della conoscenza sul binario.
+Python: ambiente dove il LLM può creare procedure e ragionamenti personalizzati.
+Questa combinazione è già una base molto forte. Se in futuro volessi estenderla, il debugging/P-code sarebbe probabilmente un terzo livello, non una sostituzione:
+\fi
+
+\section{Orchestratore ???} % 5.0
+
+\section{Ambiente di sviluppo} % 5.1
+
+\subsection{Python} % 5.1.1
+
+\section{Riconoscimento Campione} % 5.2
+
+\subsection{Virus Total (?)} % 5.2.1
+
+\subsection{YARA Rules (?)} % 5.2.2
+
+\section{Ambiente Reverse Engineering} % 5.3
+
+\subsection{Ghidra} % 5.3.1
+
+\subsection{Import} % 5.3.2
+
+\subsection{MCP Plugin (Github)} % 5.3.3
+
+\subsection{MCP Server (bridge)} % 5.3.4
+
+\subsection{Selezione Tools Analisi Statica} % 5.3.5
+
+\section{Ambiente Isolato Sandbox} % 5.4
+
+\subsection{Dockerfile} % 5.4.1
+
+\subsection{MCP Server} % 5.4.2
+
+\subsubsection{Scrittura File}
+
+\subsubsection{Esecuzione PY}
+
+\section{MCP Client} % 5.5
+
+\subsection{Parse Tool MCP -> LLM} % 5.5.1
+
+\section{LLM Client} % 5.6
+
+\subsection{Logging} % 5.6.1
+
+\subsection{Tool Calls Handling} % 5.6.2
+
+\section{Schema} % 5.7
+
+\subsection{Message Classification} % 5.7.1
+
+\subsection{Message JSON Schema} % 5.7.2
+
+\subsubsection{IP JSON Schema}
+
+Lo schema JSON definisce il formato utilizzato dal sistema per rappresentare le informazioni associate ad un indirizzo IP. Il suo scopo è uniformare l'output prodotto dai moduli di intercettazione, indipendentemente dalla famiglia malware analizzata.
+
+La struttura è suddivisa in cinque sezioni principali: informazioni geografiche (geo), dati di localizzazione (location), caratteristiche della rete (network), informazioni DNS (dns) e metadati (meta). Lo schema, sviluppato secondo lo standard JSON Schema Draft 2020-12, consente inoltre di validare la correttezza della struttura prodotta e di garantire la compatibilità tra tutti i componenti del sistema.
+
+\subsubsection{IP Lookup}
+
+La classe IPLookup centralizza l'arricchimento delle informazioni relative agli indirizzi IP osservati durante l'analisi. A partire da un indirizzo IPv4, vengono interrogate basi dati locali per recuperare informazioni geografiche e di rete, mentre una componente dedicata esegue interrogazioni DNS per ottenere il record PTR e verificarne la corrispondenza tramite Forward-Confirmed Reverse DNS (FCrDNS).
+
+Le informazioni raccolte vengono restituite in un oggetto conforme allo schema descritto nella sezione precedente. L'utilizzo di un'unica classe dedicata evita duplicazioni di codice e garantisce un formato uniforme dei dati prodotti da tutti i moduli generati automaticamente.
+
+\section{Template} % 5.8
+
+\subsection{Botnet} % 5.8.1
+
+\subsection{Parser} % 5.8.2
+
+\subsection{Aggiornamento Interface (?)} % 5.8.3
+
+Visto che per la botnet è stato anche aggiunto un minimo di logging e che IPLookup è centralizzato, l'interfaccia è aggiornata con un costruttore nuovo.
+
+\section{Prompt Engineering} % 5.9
+
+\subsection{Renaming} % 5.9.1
+
+\subsubsection{Start}
+
+\subsubsection{Continue}
+
+\subsection{Reversing} % 5.9.2
+
+\subsubsection{Pt. 1}
+
+\subsubsection{Pt. 2}
+
+\subsection{Coding} % 5.9.3
+
+\subsubsection{Botnet}
+
+\subsubsection{Parser}
+
+\subsubsection{YAML}
+
+\section{Orchestrazione / Esecuzione} % 5.10
+
+\subsection{Filtro} % 5.10.1
+
+\subsection{Malware Reversing} % 5.10.2
+
+\subsubsection{Knowledge Base}
+
+\subsection{Code Generation} % 5.10.3
+
+\subsubsection{Context Injection}

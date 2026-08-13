@@ -48,12 +48,16 @@
 %% cleveref: gestisce in modo intelligente riferimenti a figure e tabelle.
 \usepackage[italian]{cleveref}
 %% enumitem: permette di personalizzare gli elenchi.
-\usepackage{enumitem} 
+\usepackage{enumitem}
+%% lipsum: aggiunge testo riempitivo.
+\usepackage{lipsum}
+%% subfiles: permette di suddividere il contenuto in più file.
+\usepackage{subfiles}
 
-\usepackage{tikz}
+\usepackage{tikz} % to remove (better mermaid)
 \usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, backgrounds}
 
-\lstset{
+\lstset{  % listings
     language=Python,
     basicstyle=\ttfamily\small,
     keywordstyle=\color{blue}\bfseries,
@@ -67,9 +71,6 @@
 }
 
 \setcounter{tocdepth}{4} % REMOVEREMOVE
-%\includeonly{chapter_2}
-%\includeonly{chapter_3}
-\includeonly{chapter_4}
 
 \begin{document}
 \maketitle
@@ -81,11 +82,11 @@
 
 %% Ringraziamenti (opzionali)
 \acknowledgements
-Questo è un testo segnaposto creato esclusivamente per occupare spazio e simulare il contenuto di un documento reale. Può essere utilizzato per prove di impaginazione, test grafici, prototipi di siti web, presentazioni, brochure, cataloghi, applicazioni o qualsiasi altro progetto in cui sia necessario visualizzare una quantità consistente di testo senza ricorrere a contenuti definitivi. Lo scopo di questo testo è permettere di valutare la distribuzione delle parole, la leggibilità, la spaziatura, i margini e il comportamento del layout nelle diverse condizioni di visualizzazione. Ogni paragrafo è costruito con frasi di senso compiuto ma prive di informazioni realmente rilevanti, così da mantenere l'attenzione sull'aspetto grafico piuttosto che sul contenuto.
+\lipsum[1]
 
 %% Sommario (opzionale)
 \abstract
-In una normale fase di progettazione è frequente utilizzare testi temporanei per verificare il bilanciamento tra titoli, sottotitoli, immagini, didascalie e blocchi descrittivi. Questo consente di apportare modifiche all'impaginazione senza dover attendere la stesura definitiva dei contenuti. Inoltre, un testo di lunghezza variabile permette di controllare il comportamento del progetto su schermi di dimensioni differenti o su supporti destinati alla stampa. Ogni elemento presente in questo documento rappresenta un semplice riempitivo. Le frasi scorrono in modo naturale e alternano periodi brevi e più articolati per simulare una scrittura autentica. In questo modo è possibile osservare la resa tipografica dei caratteri, l'allineamento dei paragrafi, la gestione delle interruzioni di riga e la coerenza visiva dell'intero elaborato.
+\lipsum[2]
 
 %% Indice
 \tableofcontents
@@ -99,278 +100,45 @@ In una normale fase di progettazione è frequente utilizzare testi temporanei pe
 %% Corpo principale del documento
 \mainmatter
 
-\iffalse
-Sto realizzando una tesi triennale sperimentale sull'argomento "Generazione automatica di moduli per l'intercettazione delle comunicazioni Command-and-Control dei malware".
-
-Descrizione software: esegue il reverse engineering di malware Mirai attraverso agenti LLM, per poi generare il codice di intercettazione dei comandi ricevuti dal C2 server.
-
-Indice: \fi
-
 %% Parte
 %% La suddivisione in parti è opzionale; solitamente sono sufficienti i capitoli.
 %% \part{Parte}
 
 %% Capitolo
-\chapter{Introduzione} % 1
+%% \chapter{Capitolo}
 
 %% Sezione
-\section{Problema} % 1.1
+%% \section{}
 
 %% Sottosezione
-\section{Struttura della tesi} % 1.2
+%% \subsection{}
 
-\include{chapter_2}
+\subfile{chapters/1.tex}
 
-\include{chapter_3}
+\subfile{chapters/2.tex}
 
-\include{chapter_4}
+\subfile{chapters/3.tex}
 
-\iffalse
-\chapter{Progettazione} % 4
+\subfile{chapters/4.tex}
 
-L'architettura proposta:
+\chapter{5}
 
-\textbf{Natura statica dell'analisi}.
-L'intero processo di analisi del campione dovrà essere basato esclusivamente su tecniche di analisi statica. Il sistema non dovrà quindi richiedere l'esecuzione del campione, né ricorrere a tecniche di analisi dinamica, debugging o osservazione diretta del comportamento durante l'esecuzione.
-\fi
-\iffalse
-L'architettura basata su **Python MCP e Ghidra MCP con sole capacità statiche** rappresenta un approccio orientato al reverse engineering assistito da LLM, in cui i due componenti assumono ruoli complementari. Ghidra fornisce al modello una rappresentazione strutturata del programma analizzato, mettendo a disposizione informazioni quali funzioni, decompilato, riferimenti incrociati, grafi delle chiamate, stringhe e porzioni di memoria o byte selezionati. Python MCP agisce invece come ambiente di elaborazione generale, permettendo al modello di costruire ed eseguire strumenti personalizzati per trasformare, analizzare e interpretare le informazioni estratte da Ghidra.
-Uno dei principali vantaggi di questa architettura è la flessibilità offerta da Python. Poiché il modello linguistico può generare codice Python durante l'analisi, è in grado di creare strumenti specifici per il problema affrontato senza richiedere un supporto predefinito. Ad esempio, quando viene individuata una struttura dati cifrata o una tabella di simboli offuscata, Ghidra può fornire i byte rilevanti mentre Python può essere utilizzato per implementare algoritmi di decodifica, testare ipotesi, confrontare risultati o ricostruire il formato dei dati. Questo rende il sistema particolarmente efficace in attività come l'analisi di configurazioni nascoste, il riconoscimento di pattern, la manipolazione di dati binari e la generazione automatica di strumenti di analisi.
-L'utilizzo congiunto di Ghidra statico e Python permette inoltre di automatizzare attività complesse che richiederebbero normalmente numerosi passaggi manuali da parte di un analista. Ghidra consente di navigare la struttura del binario e identificare aree di interesse, mentre Python permette di effettuare elaborazioni più generali, come analisi statistiche, clustering, confronto tra campioni, generazione di report o integrazione con librerie esterne. In questo senso, Python MCP non sostituisce le capacità di reverse engineering di Ghidra, ma estende il sistema fornendo al modello la possibilità di creare procedure personalizzate sulla base delle informazioni recuperate.
-Un confronto con un'architettura più completa, composta da **Python MCP e Ghidra MCP con capacità dinamiche di debugging ed esecuzione tramite P-code emulator**, evidenzia una differenza principalmente legata alla possibilità di osservare il comportamento runtime del programma. L'integrazione di strumenti dinamici permetterebbe al modello di eseguire porzioni di codice, osservare registri, memoria e flusso di esecuzione, verificando direttamente ipotesi formulate durante l'analisi statica. Questa capacità risulta particolarmente utile in presenza di codice offuscato, routine di unpacking, algoritmi di decrittazione con chiavi generate dinamicamente o comportamenti difficili da ricostruire esclusivamente dal codice.
-Tuttavia, l'aggiunta di capacità dinamiche non rende superata l'architettura basata esclusivamente sull'analisi statica. La maggior parte delle attività preliminari di reverse engineering consiste infatti nella comprensione della struttura del programma, nell'identificazione delle funzioni rilevanti e nella ricostruzione delle relazioni tra componenti. In questi scenari, l'analisi statica combinata con un ambiente di scripting flessibile può essere più efficiente rispetto all'esecuzione diretta del codice, soprattutto quando è necessario analizzare numerosi campioni o creare pipeline automatizzate.
-In conclusione, le due architetture possono essere considerate complementari. L'approccio **Python MCP + Ghidra statico** fornisce un ambiente versatile per l'analisi, la trasformazione dei dati e la costruzione automatica di strumenti, risultando sufficiente per molte attività di reverse engineering assistito. L'aggiunta delle capacità dinamiche di Ghidra introduce invece un ulteriore livello di verifica sperimentale, permettendo al modello di passare dalla deduzione del comportamento alla sua osservazione diretta. Un sistema completo potrebbe quindi utilizzare l'analisi statica come fase principale di comprensione e ricorrere all'esecuzione dinamica solo quando necessario per validare ipotesi o analizzare comportamenti non osservabili staticamente.
-\fi
-
-\iffalse
-Ma c'è anche un aspetto spesso sottovalutato: dare a un LLM un debugger completo non significa automaticamente ottenere un agente migliore. Aggiungere capacità dinamiche aumenta anche la complessità:
-deve decidere cosa eseguire;
-deve preparare un ambiente corretto;
-deve interpretare trace molto grandi;
-deve evitare di perdersi in dettagli irrilevanti;
-deve gestire casi in cui l'esecuzione non è rappresentativa.
-Un agente con molti strumenti non è necessariamente più efficace di un agente con gli strumenti giusti.
-La tua scelta ha anche un vantaggio progettuale: hai separato bene i ruoli.
-Ghidra statico: fonte autorevole della conoscenza sul binario.
-Python: ambiente dove il LLM può creare procedure e ragionamenti personalizzati.
-Questa combinazione è già una base molto forte. Se in futuro volessi estenderla, il debugging/P-code sarebbe probabilmente un terzo livello, non una sostituzione:
-\fi
-
-\iffalse
-\section{Architettura generale sistema} % 4.1
-
-\section{Componenti del sistema} % 4.2
-
-\subsection{Orchestratore} % 4.2.1
-\subsection{Filtro Iniziale} % 4.2.2
-\subsection{Agenti renaming/reversing} % 4.2.3
-\subsubsection{Ghidra}
-\subsubsection{Sanbox}
-\subsubsection{Knowledge Base}
-\subsubsection{MD High detailed}
-\subsection{Agenti generazione codice} % 4.2.4
-
-\section{Template} % 4.3
-\subsection{Botnet e parser} % 4.3.1
-\subsection{Schema} % 4.3.2
-
-\fi
-
-\chapter{Implementazione} % 5
-
-\section{Ambiente di sviluppo} % 5.1
-\subsection{Python} % 5.1.1
-
-\section{Riconoscimento Campione} % 5.2
-\subsection{Virus Total (?)} % 5.2.1
-\subsection{YARA Rules (?)} % 5.2.2
-
-\section{Ambiente Reverse Engineering} % 5.3
-\subsection{Ghidra} % 5.3.1
-\subsection{Import} % 5.3.2
-\subsection{MCP Plugin (Github)} % 5.3.3
-\subsection{MCP Server (bridge)} % 5.3.4
-\subsection{Selezione Tools Analisi Statica} % 5.3.5
-
-\section{Ambiente Isolato Sandbox} % 5.4
-\subsection{Dockerfile} % 5.4.1
-\subsection{MCP Server} % 5.4.2
-\subsubsection{Scrittura File}
-\subsubsection{Esecuzione PY}
-
-\section{MCP Client} % 5.5
-\subsection{Parse Tool MCP -> LLM} % 5.5.1
-
-\section{LLM Client} % 5.6
-\subsection{Logging} % 5.6.1
-\subsection{Tool Calls Handling} % 5.6.2
-
-\section{Schema} % 5.7
-\subsection{Message Classification} % 5.7.1
-\subsection{Message JSON Schema} % 5.7.2
-\subsubsection{IP JSON Schema}
-
-Lo schema JSON definisce il formato utilizzato dal sistema per rappresentare le informazioni associate ad un indirizzo IP. Il suo scopo è uniformare l'output prodotto dai moduli di intercettazione, indipendentemente dalla famiglia malware analizzata.
-
-La struttura è suddivisa in cinque sezioni principali: informazioni geografiche (geo), dati di localizzazione (location), caratteristiche della rete (network), informazioni DNS (dns) e metadati (meta). Lo schema, sviluppato secondo lo standard JSON Schema Draft 2020-12, consente inoltre di validare la correttezza della struttura prodotta e di garantire la compatibilità tra tutti i componenti del sistema.
-
-\subsubsection{IP Lookup}
-
-La classe IPLookup centralizza l'arricchimento delle informazioni relative agli indirizzi IP osservati durante l'analisi. A partire da un indirizzo IPv4, vengono interrogate basi dati locali per recuperare informazioni geografiche e di rete, mentre una componente dedicata esegue interrogazioni DNS per ottenere il record PTR e verificarne la corrispondenza tramite Forward-Confirmed Reverse DNS (FCrDNS).
-
-Le informazioni raccolte vengono restituite in un oggetto conforme allo schema descritto nella sezione precedente. L'utilizzo di un'unica classe dedicata evita duplicazioni di codice e garantisce un formato uniforme dei dati prodotti da tutti i moduli generati automaticamente.
-
-\section{Template} % 5.8
-\subsection{Botnet} % 5.8.1
-\subsection{Parser} % 5.8.2
-\subsection{Aggiornamento Interface (?)} % 5.8.3
-
-Visto che per la botnet è stato anche aggiunto un minimo di logging e che IPLookup è centralizzato, l'interfaccia è aggiornata con un costruttore nuovo.
-
-\section{Prompt Engineering} % 5.9
-\subsection{Renaming} % 5.9.1
-\subsubsection{Start}
-\subsubsection{Continue}
-\subsection{Reversing} % 5.9.2
-\subsubsection{Pt. 1}
-\subsubsection{Pt. 2}
-\subsection{Coding} % 5.9.3
-\subsubsection{Botnet}
-\subsubsection{Parser}
-\subsubsection{YAML}
-
-\section{Orchestrazione / Esecuzione} % 5.10
-\subsection{Filtro} % 5.10.1
-\subsection{Malware Reversing} % 5.10.2
-\subsubsection{Knowledge Base}
-\subsection{Code Generation} % 5.10.3
-\subsubsection{Context Injection}
+\lipsum[1-20]
 
 \chapter{Validazione e test} % 6
-\section{Obiettivi della validazione} % 6.1
-\subsection{Strategia di validazione} % 6.1.1
 
-Le prestazioni non sono oggetto della valutazione.
+\lipsum[1-20]
 
-\section{Ambiente sperimentale} % 6.2
-\subsection{Hardware} % 6.2.1
-\subsubsection{(?) GPU: A100 e 4*H100}
-\subsubsection{(?) CPU e RAM}
-\subsection{Software} % 6.2.2
-\subsubsection{(?) vLLM}
-\subsection{Large Language Models} % 6.2.3 
-\subsubsection{Qwen 3.6 27B}
-\subsubsection{DeepSeek-V4-Flash-Preview}
+\subfile{chapters/7.tex}
 
-\begin{itemize}
-    \item Architettura
-    \item Parametri
-    \item Contesto
-    \item VLLM Recipe
-    \item Usage Parameters
-    \item Varie
-\end{itemize}
-
-\section{Definizione delle metriche di valutazione} % 6.3
-\subsection{Complessità del campione} % 6.3.1
-\subsection{Efficacia dell'attività di rinomina} % 6.3.2
-\subsection{Accuratezza del recupero degli artefatti} % 6.3.3
-\subsection{Qualità del codice generato} % 6.3.3
-
-\section{Campagna sperimentale} % 6.4
-\subsection{Dataset} % 6.4.1
-\subsubsection{Famiglia Gafgyt}
-\subsubsection{Famiglia Mirai}
-\subsubsection{Snippet MD K.B.}
-\subsubsection{Provenienza}
-\subsubsection{(?) Criteri di selezione}
-\subsection{Descrizione dei campioni} % 6.4.2
-\subsubsection{Hash, architettura, dimensione, famiglia}
-\subsubsection{Descrizioni testuali (\textit{Elia/YAML})}
-\subsubsection{Difficoltà}
-
-\section{Risultati sperimentali}  % 6.5
-\subsection{Statistiche di esecuzione} % 6.5.1
-\subsubsection{Token}
-\subsubsection{(?) Tempi}
-\subsection{Metriche} % 6.5.2
-\subsubsection{Tabelle}
-\subsubsection{Grafici}
-
-\section{Discussione dei risultati} % 6.6
-\subsection{Casi di successo} % 6.6.1
-\subsection{Casi di insuccesso} % 6.6.2
-\subsection{Confronto tra i LLM} % 6.6.3
-\subsection{Limitazioni dei LLM} % 6.6.4
-
-\chapter{Conclusioni} % 7
-
-% https://arxiv.org/html/2509.09677v3
-% https://people.uniud.it/sites/default/files/Linee%20guida%20per%20la%20richiesta%20e%20la%20stesura%20della%20tesi%20di%20laurea.pdf
-% https://people.uniud.it/sites/default/files/Indicazioni%20per%20la%20compilazione%20della%20tesi%20di%20laurea.pdf
-% https://www.unisalento.it/documents/20143/327281/Linee+Guida+per+tesi+di+laurea.pdf/0ec39d16-e32f-40dd-1b73-c46b6ffb2458?version=1.1
-
-\iffalse 
-
-\section{Indicazioni Miculan}
-
-\subsection{Struttura}
-
-\begin{enumerate}
-    % 1
-    \item Introduzione. Si introduce il problema a grandi linee, si descrive la sua importanza, e come e perché lo si affronta in questa tesi. L'introduzione si scrive per ULTIMA!
-    Contesto generale in cui si colloca questa ricerca
-    Problema specifico che si vuole affrontare
-    Soluzione proposta
-    Metodo seguito
-    Riassunto del resto della tesi
-
-    è un capitolo che deve avere vita propria. Il suo scopo è quello di fungere da riassunto di tutto e quindi deve coprire tutto. Una persona deve poterla leggere e, solo nel caso in cui si incuriosisca continuare e approfondire la lettura.
-    % 2
-    \item Capitolo di background sul contesto del problema:
-    Lo scenario, il problema
-    Lavori precedenti (se ce ne sono)
-
-    Deve includere i cenni teorici, di modo da fare arrivare una persona non esperta al mio stesso livello prima di cominciare la lettura. è un riassunto di quello che serve per affrontare il problema e quindi non presenterà niente di nuovo (ai generativa, malware, botnet).
-    % 3
-    \item Analisi del problema, definizione requisiti
-    
-    Si individua qual è il problema, insieme ai requisiti. Es: voglio un sistema che faccia x, y, z \dots. A volte potrebbero essere incluse anche scelte progettuali.
-    % 4
-    \item Progettazione della soluzione
-    architettura, moduli, funzionalità
-    algoritmi e protocolli principali, se necessari
-
-    Copre gli argomenti dell'ingegneria del software. Ad esempio qui bisogna includere la scelta fatta di ricorrere a un LLM (tutte le attività potrebbero essere anche fatte a mano).
-    % 5
-    \item Implementazione
-    Scelte implementative
-    perché uso un LLM rispetto ad un altro. Prende ogni singolo modulo e spiega cosa è stato fatto. Ad esempio per gli IP Lookup io ho usato un database locale, perché io ho deciso di implementarlo in questo modo, ma ad esempio avrei potuto usare una API. L'implementazione descrive solamente quello che è stato fatto per questa versione in particolare. A partire dall'architettura, un'altra persona avrebbe potuto fare un'altra implementazione.
-    % 6
-    \item Validazione e test
-    Si verifica il raggiungimento dei requisiti dal 3 in poi.
-    % 7
-    \item Conclusioni
-    Riassunto di cosa è stato fatto
-    Cosa rimane da fare
-    Sviluppi futuri
-\end{enumerate}
-
-\subsection{Stile}
-
-\begin{itemize}
-    \item Usare l'impersonale. Non si dice "In questa tesi, spiegherò la soluzione che ho sviluppato per...", bensì "In questa tesi verrà descritta la soluzione che è stata sviluppata per...".
-    \item Tempo verbale costante (Presente vs. Passato): Usa il presente per descrivere verità scientifiche, dati nei grafici o la struttura della tesi. Usa il passato per descrivere le azioni compiute durante gli esperimenti o i test passati.
-    Esempio: "La Figura 2 mostra i risultati..." (non "ha mostrato").
-    Esempio: "I campioni sono stati inseriti nell'incubatore per 24 ore."
-    \item Precisione assoluta e quantificazione: Evita aggettivi vaghi come molto, poco, grande, veloce, circa. Sostituisci la vaghezza con i dati numerici e le unità di misura del Sistema Internazionale.
-    \item Lessico formale e denotativo: Elimina i sinonimi letterari o i termini emotivi (es. incredibile, deludente, purtroppo). Usa termini univoci e tecnici. La ripetizione della stessa parola tecnica è corretta se serve a non generare ambiguità. Evita le metafore o il linguaggio figurato.
-    \item Gestione di acronimi e formule: Definisci gli acronimi la prima volta che compaiono nel testo, poi usa solo la sigla. Isola le formule matematiche importanti al centro della riga e numera ciascuna formula sul margine destro per poterne fare riferimento nel testo.
-    Esempio: "...utilizzando le reti neurali artificiali (ANN). Le ANN permettono di..."
-    \item Sintassi lineare (Frasi corte): Limita le subordinate e le frasi incastrate l'una dentro l'altra. Usa la struttura Soggetto + Verbo + Oggetto. Spezza i periodi più lunghi di due righe. La prosa scientifica deve essere fluida e facile da scansionare mentalmente.
-\end{itemize}
-
-\fi
+%\includeonly{chapter_2}
+%\includeonly{chapter_3}
+%\includeonly{chapter_4}
+%\include{chapter_2}
+%\include{chapter_3}
+%\include{chapter_4}
+%\include{chapters/5}
+%\include{chapters/6}
 
 %% Fine dei capitoli normali, inizio dei capitoli-appendice (opzionali)
 \appendix
@@ -378,14 +146,15 @@ Le prestazioni non sono oggetto della valutazione.
 %\part{Appendici}
 
 \chapter{Titolo della prima appendice}
-Sed purus libero, vestibulum ut nibh vitae, mollis ultricies augue. Pellentesque velit libero, tempor sed pulvinar non, fermentum eu leo. Duis posuere eleifend nulla eget sagittis. Nam laoreet accumsan rutrum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur eget libero quis leo porttitor vehicula eget nec odio. Proin euismod interdum ligula non ultricies. Maecenas sit amet accumsan sapien.
+
+\lipsum[1]
 
 %% Parte conclusiva del documento; tipicamente per riassunto, bibliografia e/o indice analitico.
 \backmatter
 
 %% Riassunto (opzionale)
 %\summary
-%Maecenas tempor elit sed arcu commodo, dapibus sagittis leo egestas. Praesent at ultrices urna. Integer et nibh in augue mollis facilisis sit amet eget magna. Fusce at porttitor sapien. Phasellus imperdiet, felis et molestie vulputate, mauris sapien tincidunt justo, in lacinia velit nisi nec ipsum. Duis elementum pharetra lorem, ut pellentesque nulla congue et. Sed eu venenatis tellus, pharetra cursus felis. Sed et luctus nunc. Aenean commodo, neque a aliquam bibendum, mauris augue fringilla justo, et scelerisque odio mi sit amet diam. Nulla at placerat nibh, nec rutrum urna. Donec ut egestas magna. Aliquam erat volutpat. Phasellus vestibulum justo sed purus mattis, vitae lacinia magna viverra. Nulla rutrum diam dui, vel semper mi mattis ac. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec id vestibulum lectus, eget tristique est.
+%\lipsum[1]
 
 %% Bibliografia (praticamente obbligatoria)
 \bibliographystyle{plain_\languagename}%% Carica l'omonimo file .bst, dove \languagename è la lingua attiva.

@@ -1,0 +1,367 @@
+\documentclass[../thesis_paviotti.tex]{subfiles}
+
+\begin{document}
+
+\chapter{Lo stato dell'arte} % 2
+
+Questo capitolo ha l'obiettivo di presentare i principali concetti teorici e le nozioni fondamentali necessarie per comprendere gli argomenti trattati nei capitoli successivi. Saranno quindi introdotti gli aspetti essenziali su cui si fonda lo sviluppo del lavoro descritto in questa tesi.
+
+\section{Malware e botnet} % 2.1
+
+In generale, qualsiasi software progettato per compromettere la riservatezza, l'integrità o la disponibilità di un sistema informatico, di una rete o dei dati di un utente può essere classificato come \textit{malware}, abbreviazione di \textit{malicious software}. Il malware può assumere diverse forme e può essere sviluppato con differenti finalità, tra cui il furto di informazioni, il danneggiamento dei sistemi o l'accesso a dispositivi non autorizzato. In base al proprio obiettivo, un malware può appartenere a una o più categorie, tra cui, ad esempio, \textit{backdoor}, \textit{information stealer}, \textit{launcher}, \textit{worm}, \textit{virus} e altre \cite{sikorski2012malware}. % Capitolo 0
+
+% Forme del malware: programmi eseguibili, \textit{script} o codice incorporato in altri software
+% Altre categorie: dropper, downloader
+
+Nel corso degli anni, l'evoluzione delle infrastrutture di rete e il cambiamento delle abitudini tecnologiche hanno portato a un aumento del numero di dispositivi connessi e del tempo durante il quale essi rimangono online. Questo fenomeno, unito alla presenza di vulnerabilità di sicurezza nei sistemi, ha favorito lo sviluppo e la diffusione di nuove minacce informatiche, tra cui le \textit{botnet}, oggi considerate una delle principali minacce nel panorama della sicurezza informatica.
+
+Una botnet è una rete di host compromessi, detti \textit{bot}, controllati remotamente da uno o più attaccanti, chiamati \textit{botmaster}. Il malware installato sul dispositivo consente al botmaster di controllare da remoto i dispositivi e di eseguire azioni malevole. \cite{silva2013botnets} % Capitolo 1-2
+
+Dal punto di vista degli attaccanti, le botnet rappresentano uno strumento estremamente redditizio, poiché consentono di ottenere un ritorno economico attraverso lo sfruttamento dei dispositivi compromessi. Una volta infettati, tali dispositivi possono essere impiegati simultaneamente per eseguire attività malevole su larga scala, generando danni economici per utenti, aziende e Internet Service Provider (ISP) e fungendo da infrastruttura per numerose attività criminali online.
+
+Le botnet possono essere impiegate per numerose attività, tra cui l'invio di spam, la distribuzione di malware, il furto di informazioni, frodi informatiche, estorsioni e attacchi \textit{Distributed Denial of Service} (DDoS). Tra queste, gli attacchi DDoS rappresentano uno degli utilizzi più diffusi, poiché consentono di sfruttare la capacità trasmissiva complessiva dei dispositivi compromessi per sovraccaricare il bersaglio e rendere i suoi servizi indisponibili.
+
+\subsection{Botnet IoT} % 2.1.1
+
+Parallelamente alla crescita delle botnet, si sono evolute anche le tecniche di difesa, che possono essere di tipo reattivo, intervenendo dopo la compromissione, oppure preventivo, con l'obiettivo di impedire o limitare l'infezione prima che questa si verifichi. Nonostante il progressivo rafforzamento dei meccanismi di protezione, la continua evoluzione delle tecnologie e dei dispositivi connessi ha offerto nuove opportunità agli attaccanti, contribuendo all'espansione della superficie d'attacco. In particolare, la rapida diffusione dei dispositivi appartenenti all'\textit{Internet of Things} (IoT) ha favorito la creazione e la diffusione di botnet su larga scala, a causa delle risorse hardware limitate e di configurazioni di sicurezza spesso inadeguate.
+
+% Internet of Things botnets: A survey on Artificial Intelligence based detection techniques
+
+Nel 2016 Internet è stata interessata dalla diffusione della botnet \textit{Mirai}, composta principalmente da dispositivi embedded e IoT compromessi, che nel giro di poco tempo è stata responsabile di alcuni dei più grandi attacchi DDoS mai registrati.
+
+La rapida espansione di Mirai è stata resa possibile dalla combinazione di diversi fattori, tra cui un'implementazione relativamente semplice del malware, una scansione estremamente efficiente della rete, la capacità di infettare dispositivi eterogenei e, soprattutto, lo sfruttamento della presenza di credenziali predefinite deboli o mai modificate sui dispositivi IoT. \cite{antonakakis2017mirai} % Capitolo 1
+
+\subsection{Architettura} % 2.1.2
+
+Il componente fondamentale di una botnet è l'infrastruttura di \textit{Command-and-Control} (C\&C), che permette la comunicazione tra il botmaster e i bot compromessi, coordinandone le attività. Attraverso il canale C\&C vengono trasmessi i comandi, che i bot interpretano ed eseguono sul dispositivo infetto.
+
+Per realizzare tale comunicazione possono essere impiegati diversi protocolli di rete. Oltre alla trasmissione dei comandi, il canale C\&C consente di mantenere il controllo dei bot, distribuire aggiornamenti del malware e raccogliere informazioni dai dispositivi compromessi. I protocolli utilizzati, così come le funzionalità implementate, variano in funzione degli obiettivi della botnet.
+
+L'architettura dell'infrastruttura C\&C influenza direttamente la robustezza e la capacità di sopravvivenza della botnet. Le principali architetture adottate sono quelle centralizzate, caratterizzate da un modello \textit{client-server} con uno o pochi server C\&C, e quelle decentralizzate, generalmente basate su reti \textit{peer-to-peer} (P2P), ma esistono anche architetture ibride che combinano caratteristiche di entrambi gli approcci \cite{silva2013botnets}. % Capitolo 2.3-2.6
+
+\subsection{Ciclo di vita} % 2.1.3
+
+Il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi concatenate, secondo il modello proposto in \cite{silva2013botnets}: % Capitolo 2.4
+
+% \begin{enumerate}[label=Fase (\arabic*)., leftmargin=*] \end{enumerate}
+
+\begin{description}
+    \item[Infezione iniziale.] Un host viene compromesso attraverso dei vettori di attacco comuni e diventa un potenziale bot.
+    \item[Iniezione secondaria.] Il malware iniziale, che può essere un \textit{dropper} o un \textit{downloader}, scarica o attiva il componente principale della botnet, trasformano il dispositivo in un bot controllabile dal botmaster. 
+    \item[Connessione C\&C.] Il nuovo bot deve stabilire una connessione comunicazione con l'infrastruttura C\&C per registrare la propria presenza e per mettersi in attesa di istruzioni o aggiornamenti. La risoluzione dell'indirizzo del server C\&C avviene tramite metodi statici (indirizzi IP o nomi di dominio \textit{hardcoded} nel binario) oppure mediante tecniche più sofisticate, come i \textit{Domain Generation Algorithm} (DGA). 
+    \item[Attività malevole.] Il bot è ora nella fase operativa, è pronto per ricevere i \textit{payload} di comando ed eseguire le attività malevole ordinate dal botmaster.
+    \item[Manutenzione e aggiornamento.] Alla fine la botnet entra nella fase di manutenzione, che ha l'obiettivo di garantire la sopravvivenza della botnet nel lungo periodo. Il botmaster può inviare aggiornamenti del malware, con lo scopo di correggere vulnerabilità o aggiungere nuove funzionalità.
+\end{description}
+
+Il modello C\&C introduce però una vulnerabilità intrinseca: la necessità per i bot di comunicare con l'infrastruttura di comando espone l'attività malevola all'osservazione, costituendo un punto debole sfruttato dalle metodologie di rilevamento. Il traffico analizzato include l'\textit{handshake} iniziale (scambio di identificativi ed eventuale \textit{profiling}, ovvero la raccolta di informazioni sulle caratteristiche dell'host compromesso), il \textit{beaconing} periodico verso un \textit{endpoint} C\&C (che funge da \textit{keepalive} per segnalare la disponibilità del bot) e i payload di comando.
+
+% \cite{silva2013botnets} Capitolo 2.4
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}[
+        node distance=10mm,
+        box/.style={
+            rectangle,
+            rounded corners=5pt,
+            draw=black,
+            minimum width=25mm,
+            minimum height=9mm,
+            align=center,
+            font=\footnotesize
+        },
+        arrow/.style={
+            -{Stealth[length=2.0mm]},
+            semithick
+        }
+    ]
+
+        \node[box] (A) {Infezione\\iniziale};
+        \node[box, right=of A] (B) {Iniezione\\secondaria};
+        \node[box, right=of B] (C) {Connessione\\C\&C};
+        \node[box, right=of C] (D) {Attività\\malevole};
+        \node[box, right=of D] (E) {Manutenzione e\\aggiornamento};
+
+        \draw[arrow] (A) -- (B);
+        \draw[arrow] (B) -- (C);
+        \draw[arrow] (C) -- (D);
+        \draw[arrow] (D) -- (E);
+
+    \draw[arrow]
+        (E.south)
+        .. controls +(0,-9mm) and +(10mm,-7mm) ..
+        (C.south east);
+
+    \draw[arrow]
+        (C.north)
+        .. controls +(0,9mm) and +(10mm,7mm) ..
+        (C.north east);
+
+    \end{tikzpicture}
+    \caption[Ciclo di vita di una botnet]{Ciclo di vita di una botnet \cite{silva2013botnets}}
+    \label{fig:botnet}
+\end{figure}
+
+% \subsection{Detailed Command-and-Control}
+% \subsubsection{Handshake, profiling e beaconing}
+% \subsubsection{Esempi Attacchi}
+% \subsubsection{Esempio Mirai}
+
+\section{Malware analysis} % 2.2
+
+La \textit{malware analysis} (analisi del malware) è la disciplina che si occupa di analizzare i malware al fine di identificarne le funzionalità, comprenderne il comportamento e sviluppare adeguate contromisure per il rilevamento e la mitigazione delle minacce \cite{sikorski2012malware}. % Capitolo 0
+
+Nel contesto della risposta a un incidente di sicurezza, la malware analysis consente di raccogliere le informazioni necessarie per ricostruire quanto accaduto, determinando gli obiettivi, le capacità e il comportamento del malware. Tra i risultati dell'analisi vi è anche l'individuazione di elementi utili al rilevamento, tra cui le \textit{signatures} e gli \textit{Indicators of Compromise} (IoC). Questi ultimi possono essere di tipo \textit{host-based}, quando riguardano artefatti presenti sul sistema compromesso, come file creati o modificati e variazioni al registro di sistema, oppure \textit{network-based}, quando sono ricavati dall'analisi del traffico di rete e consentono di individuare comunicazioni riconducibili all'attività del malware.
+
+Nella maggior parte dei casi, chi conduce l'analisi dispone esclusivamente del file eseguibile del malware, mentre il codice sorgente non è disponibile. Di conseguenza, comprenderne il funzionamento richiede l'impiego di tecniche di \textit{Software Reverse Engineering} (SRE), che consentono di ricostruire la logica del programma a partire dal codice compilato. Le tecniche di SRE si dividono principalmente in due categorie, analisi statica e analisi dinamica, basate su approcci complementari tra loro.
+
+% Software Reverse Engineering (SRE) involves analyzing software to uncover its design and functionality. Applications range from malware analysis to vulnerability discovery and piracy prevention. The primary goal is to reconstruct program logic and identify conditions that trigger specific code behaviors, often linked to bugs or malicious actions.
+
+\subsection{Analisi statica} % 2.2.1
+
+La \textit{static analysis} consiste nell'esaminare un malware senza eseguirlo, analizzandone la struttura e il contenuto al fine di ricavarne informazioni sul funzionamento.
+
+Le tecniche di analisi statica di base comprendono l'utilizzo di strumenti antivirus per una prima classificazione del campione, il calcolo di hash per identificarne univocamente il file e l'ispezione delle informazioni contenute nell'eseguibile, quali stringhe, intestazioni del formato binario, librerie importate o esportate e altri metadati utili. Sebbene queste tecniche consentano di ottenere rapidamente informazioni preliminari, da sole raramente permettono di comprendere completamente il comportamento del malware \cite{sikorski2012malware}.  % Capitolo 1
+
+\subsubsection{Analisi statica del codice}
+
+L'analisi statica avanzata si basa sull'ispezione delle istruzioni contenute nel file eseguibile del malware. Poiché tali istruzioni sono espresse in linguaggio macchina e non sono direttamente leggibili dal reverse engineer, viene utilizzato un \textit{disassembler}, uno strumento che traduce il codice macchina nel corrispondente linguaggio assembly. Quest'ultimo fornisce una rappresentazione testuale delle istruzioni della CPU, permettendo di analizzare le operazioni eseguite dal programma a basso livello \cite{sikorski2012malware}.  % Capitolo 2
+
+Un ulteriore strumento utilizzato nell'analisi dei binari è il \textit{decompiler}, che tenta di tradurre il codice macchina in una rappresentazione equivalente in un linguaggio di alto livello. Sebbene il risultato non corrisponda necessariamente al codice sorgente originale, questa rappresentazione introduce un maggiore livello di astrazione e può facilitare la comprensione della logica del programma.
+
+Due dei più noti strumenti di RE sono IDA Pro e Ghidra. Questi software offrono un ambiente completo per l'analisi dei binari, affiancando al disassembler funzionalità di decompilazione, \textit{debugging} e strumenti di supporto all'analisi statica come la navigazione del codice, l'analisi delle funzioni e la ricostruzione dei tipi. Tuttavia, le esigenze degli sviluppatori e dei reverse engineer possono richiedere l'introduzione di funzionalità aggiuntive non direttamente disponibili. Per questo motivo Ghidra, così come altri strumenti di SRE, mette a disposizione meccanismi di scripting basati sull'\textit{Application Programming Interface} (API) della piattaforma, che consente di interagire con le funzionalità interne del software. Attraverso tale API è possibile creare ed eseguire script in Java e Python. Questi possono variare da semplici automazioni di operazioni comuni fino alla realizzazione di strumenti più complessi per l'analisi dei programmi, arrivando anche a estendere le capacità della piattaforma mediante plugin dedicati \cite{nance2026ghidrabook}. % Capitolo 14
+
+\subsubsection{Limitazioni}
+
+L'analisi statica del codice consente di ottenere una comprensione molto più approfondita del malware rispetto alle tecniche di analisi di base. Tuttavia, presenta alcune limitazioni significative.
+
+Una prima limitazione è rappresentata dall'elevato livello di competenza richiesto per svolgere attività di SRE. Il reverse engineer deve possedere una solida conoscenza dell'architettura del processore, del linguaggio assembly, delle convenzioni di chiamata e dei meccanismi con cui i compilatori traducono i costrutti ad alto livello in codice macchina, oltre a una buona esperienza nell'utilizzo degli strumenti di analisi.
+
+Una seconda limitazione è intrinseca all'analisi statica stessa. Alcuni comportamenti del malware dipendono infatti da informazioni disponibili esclusivamente a runtime, come parametri di esecuzione, configurazione del sistema, dati ricevuti dalla rete o indirizzi risolti dinamicamente, che non possono essere determinati osservando unicamente il codice.
+
+A tali limitazioni si aggiungono numerose tecniche impiegate dagli autori dei malware con l'obiettivo di ostacolare le attività di SRE. Tra le più comuni rientra la \textit{code obfuscation}, che modifica la rappresentazione e la struttura del programma preservandone al contempo il comportamento. L'offuscamento può riguardare il flusso di controllo (\textit{control-flow obfuscation}), attraverso trasformazioni che rendono più complessa la ricostruzione delle relazioni tra le istruzioni; la posizione dei dati (\textit{data-location obfuscation}), rendendo più difficile determinare dove sono memorizzate variabili e altre informazioni utilizzate dal programma; oppure l'utilizzo dei dati (\textit{data-usage obfuscation}), ostacolando la ricostruzione delle relazioni tra la definizione e il successivo utilizzo dei valori \cite{moser2007static}. % Capitolo 2.2
+
+% Più specifico: L'offuscamento può riguardare il flusso di controllo (\textit{control-flow obfuscation}), sostituendo salti, chiamate o indirizzi di ritorno con sequenze di istruzioni equivalenti; l'accesso ai dati (\textit{data-location obfuscation}), nascondendo gli indirizzi di variabili e API risolte dinamicamente; oppure l'utilizzo dei dati (\textit{data-usage obfuscation}), rendendo più complessa la ricostruzione del flusso dei dati tra  registri, stack e memoria.
+
+Un'ulteriore tecnica è quella del \textit{self-modifying code}, nella quale il malware genera, decritta o modifica porzioni del proprio codice durante l'esecuzione, rendendo impossibile osservarne staticamente la versione definitiva. Molto diffuso è il \textit{packing}, che trasforma il programma originale mediante compressione, cifratura o altre tecniche, sostituendolo con un eseguibile contenente solamente uno \textit{stub} incaricato di ripristinare il codice originale durante l'esecuzione. Di conseguenza, prima di poter analizzare il malware è necessario recuperarne il codice originale mediante una fase preliminare di \textit{unpacking} \cite{egele2012dynamic}. % Capitolo 4.6.1
+
+Infine, molti malware vengono distribuiti solo dopo essere stati sottoposti a un processo di \textit{stripping}, attraverso il quale vengono rimossi simboli, nomi delle funzioni, informazioni di debug e altri metadati dal file eseguibile. La conseguente perdita di informazioni semantiche rende più difficile la ricostruzione della logica del programma durante il processo di SRE.
+
+Poiché tali tecniche sono ampiamente note e consolidate, è comune che i malware moderni ne adottino una o più contemporaneamente, con l'obiettivo di aumentare la complessità e il tempo richiesti per l'analisi del campione.
+
+\subsection{Analisi dinamica} % 2.2.2
+
+La \textit{dynamic analysis} consiste nell'analizzare il malware durante la sua esecuzione, osservandone direttamente il comportamento.
+
+L'esecuzione deve ovviamente avvenire all'interno di un ambiente controllato e progettato appositamente per l'analisi, in modo da evitare che il malware possa compromettere il sistema del reverse engineer o la rete circostante. Nella pratica vengono impiegate prevalentemente macchine virtuali, mentre l'utilizzo di sistemi fisici isolati (\textit{air-gapped}) è meno frequente. L'ambiente di esecuzione viene generalmente configurato in funzione degli obiettivi dell'analisi e, in alcuni casi, come nello studio delle botnet, è necessario abilitare l'accesso a Internet. Questa scelta espone il reverse engineer ai rischi connessi all'interazione del malware con l'esterno, come la possibilità di allertare gli autori riguardo all'attività di analisi o, nel caso peggiore, di consentire inconsapevolmente l'esecuzione delle attività malevole per cui il malware è stato progettato.
+
+L'esecuzione del malware all'interno di una \textit{sandbox}, ovvero un ambiente protetto, consente di monitorare numerosi aspetti del suo comportamento, tra cui i processi creati, le operazioni sul file system, le modifiche al registro di sistema, le connessioni di rete e il traffico generato, che può essere catturato e analizzato mediante strumenti di \textit{packet sniffing} come Wireshark.
+
+Un livello di analisi ancora più approfondito è rappresentato dal debugging. Un \textit{debugger} è uno strumento software utilizzato per osservare e controllare l'esecuzione di un programma, fornendo piena visibilità sul suo stato interno durante l'esecuzione. Esso permette ai reverse engineer di ispezionare il contenuto delle locazioni di memoria, i registri del processore e gli argomenti delle funzioni, oltre a seguire il flusso di esecuzione del programma. Inoltre, i debugger consentono di modificare dinamicamente lo stato del programma, permettendo di analizzarne specifici comportamenti o di verificarne il funzionamento in particolari condizioni \cite{sikorski2012malware}. % Capitolo 3
+
+Rispetto alla sola analisi statica, il debugging permette quindi di osservare informazioni disponibili esclusivamente a runtime. Tuttavia, anche questo approccio presenta alcune limitazioni. Oltre ai vincoli imposti dall'ambiente di esecuzione, molti malware implementano tecniche di \textit{anti-debugging} e \textit{anti-virtualization}, mediante le quali rilevano di essere eseguiti rispettivamente sotto il controllo di un debugger o all'interno di una macchina virtuale. In tali casi, il malware può modificare il proprio comportamento o interrompere completamente l'esecuzione, con l'obiettivo di ostacolare l'analisi.
+
+% \cite{sikorski2012malware} Capitolo 5
+
+\section{Large Language Model} % 2.3
+
+I \textit{Large Language Model} (LLM) appartengono alla famiglia della \textit{Generative Artificial Intelligence} (GenAI), un sottocampo dell'intelligenza artificiale che comprende modelli in grado di generare nuovi contenuti, quali testo, immagini, audio e dati sintetici, a partire dai pattern appresi durante l'addestramento su grandi quantità di dati. I LLM rappresentano la specializzazione della GenAI nel dominio del linguaggio naturale.
+
+Un LLM è un modello di \textit{Deep Learning}, basato su reti neurali artificiali di grandi dimensioni e addestrato su vaste collezioni di testo mediante tecniche di apprendimento auto-supervisionato e semi-supervisionato. Durante il \textit{training}, il modello apprende le strutture e i pattern linguistici, acquisendo la capacità di comprendere e generare testo in linguaggio naturale.
+
+L'architettura alla base dei moderni LLM è il \textit{Transformer}, introdotto da Google nel 2017. Il Transformer si basa sul meccanismo di \textit{self-attention}, che consente al modello di individuare le relazioni tra i diversi \textit{token}, le unità in cui viene suddiviso il testo. A ciascun token viene associata una rappresentazione numerica, detta \textit{embedding}, che ne cattura le caratteristiche semantiche e linguistiche. Questi modelli adottano prevalentemente un'architettura \textit{decoder-only}, in cui il testo viene generato in modo autoregressivo, prevedendo un token alla volta sulla base di quelli precedentemente elaborati \cite{dhamani2026genai}. % Capitolo 1.2
+
+Questa architettura, combinata con la natura \textit{general-purpose} dei LLM li rende utilizzabili per un ampio insieme di compiti. Tra le attività più comuni rientrano la conversazione in linguaggio naturale, la risposta a domande, la classificazione del testo, la traduzione automatica e il riassunto. I LLM vengono inoltre impiegati per attività più complesse, come la generazione di codice, la produzione di contenuti testuali e l'esecuzione di compiti di ragionamento, basati sulla capacità di trarre conclusioni a partire dalle informazioni fornite. 
+
+% Large Language Models (LLMs) are transformer-based neural networks trained on vast text corpora using self- and semi-supervised methods [20], [21]. Modern LLMs, typically using decoder-only architectures [22], excel at general-purpose language generation. Initially, task adaptation required finetuning. Today, prompt engineering guides model behavior through carefully designed input prompts, leveraging pretrained knowledge without retraining [23]. This has proven efficient and often comparable to fine-tuning for large models. \cite{basque2026decompiling}
+% \cite{dhamani2026genai} Capitolo 1.4
+
+Nonostante i notevoli progressi degli ultimi anni, i LLM presentano ancora importanti limitazioni. Tra le principali vi sono la disponibilità e la qualità dei dati di addestramento, con problematiche legate alla privacy, alla presenza di contenuti protetti da copyright e alla rappresentatività dei dati. Oltre a questi aspetti, rimangono criticità legate all'introduzione di \textit{bias} derivanti dai dati utilizzati durante il training e alla possibilità di produrre informazioni errate o inventate, con la generazione di risposte plausibili ma fattualmente scorrette, fenomeno noto come \textit{hallucination} (allucinazione) \cite{dhamani2026genai}. % Capitolo 1.5
+
+\subsection{Prompt engineering} % 2.3.1
+
+Inizialmente, l'adattamento di un LLM a compiti specifici richiedeva generalmente il \textit{fine-tuning} del modello, ovvero un ulteriore addestramento su dati appositamente selezionati. Oggi, il \textit{prompt engineering} consente di orientarne il comportamento attraverso la composizione di \textit{prompt}, ossia gli input forniti al modello. Anche piccole variazioni nella loro formulazione possono produrre differenze significative nella qualità e nella tipologia delle risposte generate.
+
+% Per questo motivo, il \textit{prompt engineering} riveste un ruolo fondamentale nell'utilizzo efficace dei modelli linguistici.
+
+Il \textit{prompt engineering} è la pratica di progettare e formulare dei prompt che consentano ai LLM di raggiungere specifici obiettivi. L'obiettivo del prompt engineering è quello di tradurre l'intento dell'utente in istruzioni chiare e strutturate, che il modello possa interpretare correttamente durante la fase di inferenza, cioè la fase in cui il modello genera la risposta. 
+
+% \cite{dhamani2026genai} % Capitolo 7
+
+Oltre alle istruzioni esplicite, assume un ruolo importante anche il contesto fornito al modello e la cronologia della conversazione. Le principali tecniche di prompting sono \cite{dhamani2026genai}: % Capitolo 7.2
+
+\begin{description}
+    \item[Zero-shot prompting.] Il modello riceve esclusivamente le istruzioni necessarie per svolgere il compito, senza alcun esempio. La risposta si baserà interamente sulla conoscenza acquisita dal LLM durante l'addestramento.
+    \item[Few-shot prompting.] Il modello, oltre al compito da svolgere, riceve un piccolo gruppo di esempi, con l'obiettivo di mostrargli il formato o il patter da seguire durante la generazione della risposta.
+    \item[Multi-turn prompting.] Il modello riceve anche la cronologia dei turni conversazionali precedenti, mantenendo il contesto dell'interazione, così da avere conversazioni più naturali e coerenti. Tuttavia, conversazioni molto lunghe possono introdurre difficoltà legate ai limiti della finestra di contesto e alla riduzione dell'attenzione del modello verso parte dell'informazione.
+\end{description}
+
+\subsection{Agenti AI} % 2.3.2
+
+L'evoluzione dei LLM è stata inizialmente guidata principalmente dallo \textit{scaling} dei modelli, aumentando il numero di parametri, la quantità di dati di addestramento e le risorse computazionali impiegate durante il training. Più recentemente, la ricerca si è concentrata anche sul miglioramento delle capacità di ragionamento durante la fase di inferenza, mostrando come dedicare più tempo al processo di \textit{reasoning} (ragionamento) prima della generazione della risposta possa migliorare le prestazioni del modello nei compiti più complessi.
+
+Questo approccio ha favorito lo sviluppo di modelli addestrati a produrre esplicitamente catene di ragionamento (\textit{Chain of Thought}, CoT), ossia sequenze di passaggi logici che guidano il modello nella risoluzione di un problema prima di formulare la risposta finale. Sebbene tutti i più recenti LLM dispongano di avanzate capacità di reasoning, affidarsi esclusivamente al ragionamento interno del modello presenta un'importante limitazione, poiché il modello può costruire catene logiche coerenti senza poter necessariamente verificarne la correttezza attraverso fonti di informazione o strumenti esterni, aumentando così il rischio di produrre allucinazioni. Allo stesso tempo, consentire a un modello di interagire direttamente con un ambiente esterno (\textit{acting}) senza un adeguato processo di ragionamento può portare a decisioni meno accurate, errori di pianificazione e un utilizzo inefficace degli strumenti disponibili.
+
+Al fine di superare queste limitazioni complementari è stato proposto il framework \textit{ReAct} (\textit{Reasoning and Acting}), con l'obiettivo di risolvere compiti complessi combinando il ragionamento del modello con l'esecuzione di azioni specifiche per il compito da svolgere \cite{yao2023react}. Il funzionamento si basa su un ciclo iterativo composto da tre fasi:
+
+\begin{description}
+    \item[Thought.] (Ragionamento) Il modello genera un ragionamento testuale sullo stato corrente del problema, analizzando le informazioni disponibili e pianificando l'azione successiva.
+    \item[Action.] (Azione) Il modello produce un'azione strutturata, tipicamente sotto forma di invocazione di uno strumento (tool) o di una funzione disponibile nell'ambiente esterno.
+    \item[Observation.] (Osservazione) L'ambiente esterno esegue l'azione richiesta e restituisce il risultato al modello, che viene quindi fornito come input per l'iterazione successiva.
+\end{description}
+
+Il paradigma ReAct costituisce la base concettuale della maggior parte dei moderni agenti AI. Un agente AI è un agente intelligente progettato per perseguire uno o più obiettivi attraverso un ciclo continuo di ragionamento e azione, con diversi livelli di autonomia, interagendo con strumenti e ambienti esterni. In questo contesto, il LLM costituisce il motore decisionale dell'agente, che può essere integrato con componenti aggiuntivi, quali memoria persistente, logiche di pianificazione e un software di orchestrazione, detto \textit{agent harness}, responsabile del coordinamento delle diverse componenti e della loro esecuzione.
+
+% Long-Horizon Tasks
+
+\subsection{Model Context Protocol} % 2.3.3
+
+Il \textit{Model Context Protocol} (MCP) è uno standard \textit{open-source}, introdotto da Anthropic nel 2024, che permette di connettere le \textit{AI application} con sistemi esterni \cite{anthropic2024mcp}
+
+L'obiettivo del MCP è quello di fornire un'interfaccia standardizzata per collegare le AI application a fonti di informazioni, strumenti e altri flussi di lavoro, consentendo ai LLM di accedere a dati esterni e di svolgere operazioni attraverso sistemi terzi.
+
+Il MCP è stato introdotto per risolvere il problema dell'integrazione tra AI application e sistemi esterni. Prima della sua introduzione, gli sviluppatori dovevano implementare connettori specifici per ciascuna sorgente di dati o strumento, spesso dipendenti dal singolo fornitore (\textit{vendor-specific}), con conseguenti problemi di integrazione  e interoperabilità.
+
+\subsubsection{Architettura}
+
+Il protocollo distingue tre ruoli principali:
+
+\begin{description}
+    \item[MCP Host.] L'AI application, come un ambiente di sviluppo o un chatbot avanzato in cui risiede il LLM e che coordina il flusso di lavoro, creando uno o più Client per interfacciarsi con i Server.
+
+    \item[MCP Client.] Un modulo integrato nell'Host che agisce come intermediario, mantenendo una connessione uno-a-uno con un singolo Server, instradando le richieste dell'Host e restituendo i risultati ottenuti.
+
+    \item[MCP Server.] Un programma che espone funzionalità specifiche a uno o più Client. Ogni server può mettere a disposizione una o più \textit{capability} (capacità), classificate in \textit{tools} e \textit{resources}.
+\end{description}
+
+I \textit{tools} rappresentano operazioni invocabili dal LLM e sono descritti tramite interfacce basate su JSON Schema, che definiscono in modo esplicito gli input e gli output previsti. Le \textit{resources}, invece, forniscono accesso strutturato a informazioni esterne; sono identificate mediante URI, associate a un tipo MIME e possono essere fornite al LLM come contesto aggiuntivo durante l'esecuzione.
+
+Dal punto di vista dei livelli di comunicazione, il \textit{data layer} definisce il protocollo di scambio tra Client e Server, basato su JSON-RPC 2.0, specificando il formato dei messaggi e la relativa semantica. Il \textit{transport layer}, invece, definisce il meccanismo di trasporto e il canale attraverso cui avviene lo scambio dei messaggi, occupandosi della gestione della connessione e del \textit{message framing}. Attualmente il protocollo supporta due meccanismi di trasporto: lo \textit{stdio transport}, che utilizza gli stream di input e output standard per la comunicazione tra processi locali sulla stessa macchina e lo \textit{Streamable HTTP transport}, basato su richieste HTTP, che consente la comunicazione con server remoti.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=.5]{img/mcp.png}
+    \caption[Architettura del Model Context Protocol (MCP)]{Architettura del Model Context Protocol (MCP) \cite{anthropic2024mcp}}
+    \label{fig:mcp}
+\end{figure}
+
+\section{Reverse engineering assistito} % 2.4
+
+\subsection{LLM nella binary analysis} % 2.4.1
+
+I rapidi progressi nel campo dell'AI hanno portato all'impiego degli LLM anche nel SRE, dove le loro capacità di comprensione e generazione del codice possono essere sfruttate dai reverse engineer per supportare il processo di analisi binaria dei software.
+
+In questo contesto si inseriscono i due lavori descritti di seguito.
+
+\begin{description}
+    \item[LLM4Decompile \cite{tan2024llm4decompile}.] Propone una famiglia di LLM open-source, con dimensioni comprese tra $1.3$ e $33$ miliardi di parametri, \textit{fine-tuned} per la decompilazione di codice binario in linguaggio C. L'obiettivo è produrre codice sorgente più leggibile e semanticamente corretto rispetto ai decompilatori tradizionali.
+    
+    Lo studio introduce due classi di modelli, che seguono approcci complementari:
+
+    \begin{itemize}
+        \item \textit{LLM4Decompile-End}. Dopo il disassemblaggio del codice binario in istruzioni assembly x86, il modello genera direttamente il corrispondente codice C, ottenendo risultati superiori sia al decompilatore di Ghidra sia a modelli general-purpose come GPT-4o.
+        
+        \item \textit{LLM4Decompile-Ref}. In questo caso, dopo il disassemblaggio, il codice viene inizialmente decompilato mediante Ghidra; successivamente, il modello utilizza il codice decompilato come punto di partenza per migliorarne leggibilità e correttezza semantica. L'intervento non si limita alla semplice revisione dei nomi e dei tipi delle variabili, ma mira a una rielaborazione più generale del codice, aumentando la potenziale eseguibilità rispetto alla sola decompilazione automatica.
+    \end{itemize}
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[scale=.40]{img/decompile.png}
+        \caption[Approcci LLM4Decompile-End e -Ref per la decompilazione]{Approcci LLM4Decompile-End e -Ref per la decompilazione \cite{tan2024llm4decompile}} % di codice binario
+        \label{fig:decompile}
+    \end{figure}
+
+    I risultati sperimentali ottenuti con LLM4Decompile mostrano come LLM specializzati possano superare gli strumenti tradizionali di decompilazione, evidenziando il potenziale degli LLM come supporto alle attività di SRE.
+
+    \item[ReCopilot \cite{chen2025recopilot}.] Presenta un LLM specializzato nelle principali attività dell'analisi statica, progettato per operare come un copilota a supporto del reverse engineer durante il processo di analisi.
+
+    ReCopilot adotta un approccio di addestramento articolato in più fasi:
+
+    \begin{itemize}
+        \item \textit{Continue Pre-Training} (CPT). Un LLM di base viene ulteriormente pre-addestrato su un ampio corpus di dati relativi al SRE, al fine di acquisire una conoscenza specialistica del dominio e delle relazioni tra codice binario, assembly, codice sorgente e linguaggio naturale.
+
+        \item \textit{Supervised Fine-Tuning} (SFT). Il modello viene quindi specializzato su un insieme di task tipiche dell'analisi statica, imparando a seguire le istruzioni dell'utente e a produrre output in formati strutturati. Tra le attività considerate rientrano la decompilazione, l'analisi delle funzioni e dei relativi nomi, parametri e variabili, a cui si aggiungono task come l'identificazione di algoritmi, la classificazione e la generazione di riassunti relativi a codice e funzioni. Il training include inoltre esempi basati su Chain of Thought, con l'obiettivo di guidare il modello nel processo di ragionamento prima della generazione della risposta.
+
+        \item \textit{Direct Preference Optimization} (DPO). Il modello viene infine ottimizzato rispetto alle preferenze umane, migliorandone la capacità di seguire il formato richiesto e la qualità, consistenza e pertinenza delle risposte generate.
+    \end{itemize}
+
+    Dal punto di vista sperimentale, ReCopilot supera sia gli strumenti tradizionali di SRE, come IDA Pro e Ghidra, sia gli LLM general-purpose, pur mantenendo dimensioni contenute ($7$ miliardi di parametri rispetto alle dimensioni molto maggiori dei modelli general-purpose). Inoltre, la natura specialistica e strutturata del modello lo rende particolarmente adatto all'integrazione all'interno di sistemi agentici. In questo contesto, ReCopilot può essere impiegato come modulo dedicato all'analisi binaria da parte di un agente di SRE autonomo, al quale può fornire analisi dettagliate a partire da pseudocodice o istruzioni assembly.
+
+\end{description}
+
+\subsection{LLM nella malware analysis}
+
+Dopo le prime applicazioni degli LLM al SRE in contesti generici, il loro impiego è stato progressivamente esteso anche ad ambiti più specifici della cybersecurity, tra cui la malware analysis.
+
+A questo scopo, sono emerse soluzioni specializzate, progettate per sfruttare le capacità degli LLM a supporto dell'analisi dei campioni malevoli e delle attività di SRE, come le due soluzioni presentate di seguito.
+
+\begin{description}
+    \item[Project IRE \cite{caswell2025projectire}.] Sviluppato da Microsoft, rappresenta uno dei primi esempi industriali di applicazione degli LLM alla malware analysis. Il sistema è progettato per classificare automaticamente un file eseguibile come benigno o maligno disponendo esclusivamente del campione binario, senza fare affidamento su metadati, telemetria o altre informazioni relative alla sua provenienza o al suo scopo. L'obiettivo è assistere gli analisti nella gestione dell'elevato numero di file da analizzare, riducendo i tempi e il carico operativo.
+
+    Project IRE adotta un'architettura agentica nella quale un LLM coordina una suite di strumenti specializzati per il SRE. L'architettura consente di combinare diversi livelli di analisi, passando dall'analisi binaria a basso livello alla ricostruzione del control flow, fino all'interpretazione ad alto livello del comportamento del codice. I diversi strumenti, accessibili tramite API, includono sandbox per l'analisi dei campioni, strumenti Microsoft e componenti open source, tra cui decompilatori, strumenti per la ricerca e per il recupero di documentazione.
+
+    Durante l'analisi, il sistema costruisce una \textit{chain of evidence}, ovvero una sequenza di evidenze che documenta il percorso seguito per giungere alla classificazione finale. Questa traccia risulta particolarmente utile durante la revisione da parte degli analisti, poiché consente di verificare le evidenze alla base della decisione e di individuare i passaggi che possono aver contribuito a un'eventuale classificazione errata.
+
+    Le valutazioni preliminari riportano un tasso di classificazione corretta pari a circa il $90\%$ dei campioni analizzati, con una percentuale di falsi positivi prossima al $2\%$. Questi risultati suggeriscono la possibilità di impiegare il sistema in scenari operativi, mantenendo tuttavia la revisione da parte di analisti esperti come componente del processo di analisi.
+
+    \item[MASDroid \cite{wei2026masdroid}.] Propone un framework multi-agente dedicato all'analisi di malware Android. Il sistema combina diversi agenti specializzati con tecniche di analisi comportamentale, producendo una classificazione del malware accompagnata da spiegazioni interpretabili dal reverse engineer.
+
+    L'obiettivo del framework è superare alcune delle principali limitazioni degli approcci esistenti, tra cui la possibilità di elusione delle tecniche di analisi puramente statica, il costo computazionale maggiore dell'analisi dinamica e, soprattutto, la limitata trasparenza dei processi decisionali dei sistemi tradizionali.
+
+    L'architettura di MASDroid può essere suddivisa in tre componenti principali:
+
+    \begin{itemize}
+        \item \textit{Static Analysis}: il file APK viene preliminarmente decompilato e analizzato, estraendo un insieme di caratteristiche che viene successivamente fornito ai diversi agenti come base comune per l'analisi.
+
+        \item \textit{Multi-Agent Collaboration}: i diversi agenti operano in parallelo, ciascuno responsabile di una specifica attività di analisi, per cui può utilizzare i tool a disposizione. Gli output prodotti vengono organizzati in un formato strutturato, che combina un \textit{maliciousness score} con una \textit{evidence list}, e vengono successivamente forniti all'agente responsabile della decisione finale.
+
+        \item \textit{Decision Agent}: l'agente di decisione integra le informazioni provenienti dai diversi agenti ed esegue la classificazione finale. Esso genera inoltre un report strutturato contenente lo score finale, i riferimenti alle evidenze e alle attività dei singoli agenti, rendendo il processo decisionale maggiormente interpretabile dal reverse engineer.
+    \end{itemize}
+
+    Le valutazioni sperimentali mostrano prestazioni superiori al $97\%$ sia nella rilevazione del malware sia nella classificazione della relativa famiglia. Oltre ai risultati quantitativi, gli autori evidenziano come l'approccio multi-agente migliori l'interpretabilità delle decisioni rispetto ai tradizionali modelli \textit{black-box}, fornendo classificazioni supportate dalle evidenze raccolte durante il processo di analisi.
+
+    \begin{figure}[ht]
+        \centering
+        \includegraphics[scale=.40]{img/masdroid.png}
+        \caption[Panoramica dell'architettura di MASDroid]{Panoramica dell'architettura di MASDroid \cite{wei2026masdroid}}
+        \label{fig:masdroid}
+    \end{figure}
+\end{description}
+
+% Dopo un sondaggio preliminare che ha permesso di filtrare il pool di candidati.
+
+\subsection{Interazione Uomo-LLM nel SRE}
+
+La crescente diffusione degli LLM nelle attività di SRE evidenzia come lo stato dell'arte della ricerca si stia progressivamente orientando verso l'integrazione di tali modelli all'interno del flusso di lavoro dei reverse engineer. % la ricerca scientifica e le prospettive future del settore
+
+In questo contesto che, tra il 2024 e il 2025, Basque et al. \cite{basque2026srellmstudy} hanno condotto il primo studio sistematico volto a comprendere come gli LLM possano collaborare con i reverse engineer durante le attività di SRE. Lo studio si propone di analizzare le modalità con cui gli LLM vengono integrati nel processo di analisi, il loro impatto sul flusso di lavoro dei reverse engineer e la percezione del loro utilizzo.
+
+Per lo svolgimento dello studio, i ricercatori hanno selezionato $48$ partecipanti, equamente suddivisi tra reverse engineer con esperienza limitata ed esperti. I partecipanti sono stati quindi coinvolti in un esperimento controllato, nel quale dovevano analizzare due binari progettati in stile \textit{Capture The Flag} (CTF), contenenti sfide rappresentative di comuni attività di SRE. L'esperimento prevedeva due condizioni, rispettivamente con e senza il supporto di un LLM (l'assistenza LLM veniva fornita attraverso un'interfaccia integrata nel flusso di lavoro).
+
+L'osservazione delle attività svolte dai partecipanti ha portato all'individuazione di $18$ risultati sperimentali, successivamente sintetizzati dagli autori in cinque principali conclusioni:
+
+\begin{itemize}
+    \item L'uso dei LLM aiuta soprattutto nei momenti iniziali, visto che è in grado di fornire al reverse engineer on overview complessivo con un costo cognitivo basso. Questo aiuta soprattutto i meno esperti, tuttavia, il vantaggio non c'è per analisi più profonde.
+    \item La conoscenza degli esperti viene migliorata poco. Preferiscono delegate attività di routine agli LLM, riallocando il proprio impegno a attività di comprensione di logiche complesse (redistribuzione sforzo e no accelerazione). --- A meno di progressi di raffinamento di conoscenza degli LLM e delle modalità di interazione, i LLM in questo campo saranno più strumento di supporto per principianti rispetto che collaboratori pari per esperti. ---
+    \item Anche delle allucinazioni rare possono deragliare/complicare l'analisi. Anche se la frequenza è bassa, portano alla formulazione prima e poi a indagare delle ipotesi non vere, allungando il tempo di analisi.
+    \item La comprensione semantica del funzionamento del programma dipende molto dall'atto di recuperare artefatti. Anche se i LLM migliorano il recupero di nomi, funzioni variabili e tipi, questo non correla con il capire a fondo il programma. 
+    \item Agli LLM possono essere demandate solo le task più semplici, come descrizione e caratterizzazione di funzioni single purpose e algoritmi standard. Per funzioni complesse, multi ruolo o con logica complessa è necessaria un'analisi umana iterativa, eventualmente supportata da uso iterativo di LLM.
+\end{itemize}
+
+% Our study takes the first in-depth empirical dive into how LLMs impact SRE and demonstrates that they augment analysts rather than replace them. The benefits are clear: LLMs support SRE practitioners in many tasks and can even close the gap in some aspects between experts and novices. However, our study shows that many areas of LLM integration still require research and development to be helpful for the most challenging SRE tasks. We present our findings, hopeful that the SRE community will utilize our work to make LLMs an even more helpful tool for security. All in all, LLMs are neither oracles nor impostors, but mirrors held to human insight: their reflections sharpen only in the steady gaze of critical thought and domain expertise.
+
+Sebbene lo studio evidenzi che gli LLM tradizionali non supportano adeguatamente il raffinamento della conoscenza degli esperti, tale conclusione riflette principalmente un paradigma di interazione basato su assistenti conversazionali. L'emergere degli LLM-based agents introduce un modello alternativo, caratterizzato da capacità di pianificazione, uso autonomo di strumenti e iterazione sulle ipotesi. Questi sistemi mirano proprio a superare il ruolo di "first-pass summarizers" identificato dagli autori, avvicinandosi a forme di collaborazione uomo-AI più profonde. Tuttavia, le evidenze empiriche sull'effettivo raggiungimento di un ruolo di "teammate" negli scenari complessi di reverse engineering sono ancora limitate. Ciò deve ancora essere ben inquadrato in ambito agents, di cui stanno aumentando popolarità e capacità, ma deve ancora essere quantificato in questo modo.
+
+% Vantaggi uso LLM: spiegare comportamento di codice decompilato, leggibilità, identificazione (renaming), capire funzionamento algoritmi, velocizzare il processo con la creazione di script di supporto al SRE
+% Svantaggi uso LLM: risposte incorrette o misleading, riducendo la fiducia o facendo perdere tempo. spiegazioni superficiali, con diminuzione dell'efficacia al complicarsi/allungarsi/offuscarsi della task.
+
+% https://github.com/agentrebench/AgentRE-Bench
+% Coordinamento con SOK e Challenges and Future Directions
+
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{../plain_\languagename}
+    \bibliography{../thud.bib}
+}{}
+
+\end{document}

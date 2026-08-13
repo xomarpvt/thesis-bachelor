@@ -1065,9 +1065,9 @@ FUNCTION {presort}
   'sort.key$ :=
 }
 
-ITERATE {presort}
-
-SORT
+% ITERATE {presort}
+% Sorting by author -> year -> title is DISABLED
+% SORT
 
 STRINGS { longest.label }
 
