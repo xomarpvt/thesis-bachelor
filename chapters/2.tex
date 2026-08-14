@@ -330,7 +330,7 @@ A questo scopo, sono emerse soluzioni specializzate, progettate per sfruttare le
 
 % Dopo un sondaggio preliminare che ha permesso di filtrare il pool di candidati.
 
-\subsection{Interazione Uomo-LLM nel SRE}
+\subsection{Interazione Persona-LLM nel SRE}
 
 La crescente diffusione degli LLM nelle attività di SRE evidenzia come lo stato dell'arte della ricerca si stia progressivamente orientando verso l'integrazione di tali modelli all'interno del flusso di lavoro dei reverse engineer. % la ricerca scientifica e le prospettive future del settore
 
@@ -338,26 +338,29 @@ In questo contesto che, tra il 2024 e il 2025, Basque et al. \cite{basque2026sre
 
 Per lo svolgimento dello studio, i ricercatori hanno selezionato $48$ partecipanti, equamente suddivisi tra reverse engineer con esperienza limitata ed esperti. I partecipanti sono stati quindi coinvolti in un esperimento controllato, nel quale dovevano analizzare due binari progettati in stile \textit{Capture The Flag} (CTF), contenenti sfide rappresentative di comuni attività di SRE. L'esperimento prevedeva due condizioni, rispettivamente con e senza il supporto di un LLM (l'assistenza LLM veniva fornita attraverso un'interfaccia integrata nel flusso di lavoro).
 
-L'osservazione delle attività svolte dai partecipanti ha portato all'individuazione di $18$ risultati sperimentali, successivamente sintetizzati dagli autori in cinque principali conclusioni:
+L'osservazione delle attività svolte dai partecipanti ha portato all'individuazione di $18$ risultati sperimentali, successivamente sintetizzati dagli autori in cinque principali conclusioni \cite{basque2026srellmstudy}:
 
-\begin{itemize}
-    \item L'uso dei LLM aiuta soprattutto nei momenti iniziali, visto che è in grado di fornire al reverse engineer on overview complessivo con un costo cognitivo basso. Questo aiuta soprattutto i meno esperti, tuttavia, il vantaggio non c'è per analisi più profonde.
-    \item La conoscenza degli esperti viene migliorata poco. Preferiscono delegate attività di routine agli LLM, riallocando il proprio impegno a attività di comprensione di logiche complesse (redistribuzione sforzo e no accelerazione). --- A meno di progressi di raffinamento di conoscenza degli LLM e delle modalità di interazione, i LLM in questo campo saranno più strumento di supporto per principianti rispetto che collaboratori pari per esperti. ---
-    \item Anche delle allucinazioni rare possono deragliare/complicare l'analisi. Anche se la frequenza è bassa, portano alla formulazione prima e poi a indagare delle ipotesi non vere, allungando il tempo di analisi.
-    \item La comprensione semantica del funzionamento del programma dipende molto dall'atto di recuperare artefatti. Anche se i LLM migliorano il recupero di nomi, funzioni variabili e tipi, questo non correla con il capire a fondo il programma. 
-    \item Agli LLM possono essere demandate solo le task più semplici, come descrizione e caratterizzazione di funzioni single purpose e algoritmi standard. Per funzioni complesse, multi ruolo o con logica complessa è necessaria un'analisi umana iterativa, eventualmente supportata da uso iterativo di LLM.
-\end{itemize}
+\begin{description}
+    \item[Supporto nelle fasi iniziali.] L'uso dei LLM è particolarmente utile nelle fasi iniziali dell'analisi, grazie al fatto che fornisce una visione d'insieme a un basso costo cognitivo. Questo approccio avvantaggi soprattutto i reverse engineer meno esperti, mentre il beneficio si riduce nel caso di analisi più approfondite.
+    \item[Impatto limitato sugli esperti.] L'apporto dei LLM migliora solo marginalmente le competenze degli esperti, i quali preferiscono delegargli le attività di routine, così da riallocare il proprio impegno sulla comprensione di logiche complesse, redistribuendo così lo sforzo.
+    \item[Rischio delle allucinazione.] Anche delle allucinazione rare possono compromettere seriamente il flusso di analisi, visto che la formulazione e l'indagine di ipotesi errate prolunga i tempi complessivi di lavoro.
+    \item[Recupero degli artefatti vs. compresione sematica.] La comprensione semantica del programma da parte del reverse engineer dipende fortemente dal recupero degli artefatti. Nonostante i LLM aiutino a recuperare tipi, nomi di funzioni e variabili, questo non si traduce automaticamente in una comprensione profonda del funzionamento del codice.
+    \item[Limiti nella delegazione delle attività.] Ai LLM possono essere demandate solo le attività più semplice, come ad esempio la descrizione e la caratterizzazione di funzioni \textit{single-purpose} e di algoritmi standard. Nel caso di funzioni complesse, con più ruoli o dotate di logiche intricate è necessaria un'analisi umana iterativa, eventualmente supportata dai LLM.
+\end{description}
+
+Lo studio evidenzia dunque che, in assenza di un avanzamento tecnologico nell'ambito della GenAI, di un miglioramento delle conoscenze specifiche dei LLM e, soprattutto, di un'evoluzione delle modalità di interazione, questi modelli rimarranno per la maggior parte degli strumenti di supporto per principianti, piuttosto che veri collaboratori alla pari per gli esperti di SRE \cite{basque2026srellmstudy}. Tuttavia, è fondamentale sottolineare che tale conclusione è stata dedotta considerando un paradigma di interazione basato su assistenti conversazionale e sullo stato dell'arte della GenAI precedente alle più recenti evoluzioni.
+
+In questo conteso, l'emergere e la diffusione, tra il 2025 e il 2026, degli agenti AI basati su LLM ha introdotto un modello di interazione alternativo rispetto a quello tradizionale. Tali sistemi mirano a superare il ruolo di mero strumento di sintesi preliminare identificato dagli autori, avvicinandosi a forme di collaborazione uomo-LLM decisamente più profonde. Questo nuovo paradigma si caratterizza per la capacità di pianificare, iterare sulle ipotesi, utilizzare gli strumenti di supporto e agire autonomamente.
+
+Nonostante ciò, al momento le evidenze empiriche sul raggiungimento di un ruolo di collaboratore o persino di una sostituzione completa del reverse engineer negli scenari complessi di SRE risultano ancora limitate. Di conseguenza, l'effetto di questi miglioramenti tecnologici deve ancora essere pienamente inquadrato e validato, in particolare nello specifico ambito degli agenti AI autonomi.
 
 % Our study takes the first in-depth empirical dive into how LLMs impact SRE and demonstrates that they augment analysts rather than replace them. The benefits are clear: LLMs support SRE practitioners in many tasks and can even close the gap in some aspects between experts and novices. However, our study shows that many areas of LLM integration still require research and development to be helpful for the most challenging SRE tasks. We present our findings, hopeful that the SRE community will utilize our work to make LLMs an even more helpful tool for security. All in all, LLMs are neither oracles nor impostors, but mirrors held to human insight: their reflections sharpen only in the steady gaze of critical thought and domain expertise.
 
-Sebbene lo studio evidenzi che gli LLM tradizionali non supportano adeguatamente il raffinamento della conoscenza degli esperti, tale conclusione riflette principalmente un paradigma di interazione basato su assistenti conversazionali. L'emergere degli LLM-based agents introduce un modello alternativo, caratterizzato da capacità di pianificazione, uso autonomo di strumenti e iterazione sulle ipotesi. Questi sistemi mirano proprio a superare il ruolo di "first-pass summarizers" identificato dagli autori, avvicinandosi a forme di collaborazione uomo-AI più profonde. Tuttavia, le evidenze empiriche sull'effettivo raggiungimento di un ruolo di "teammate" negli scenari complessi di reverse engineering sono ancora limitate. Ciò deve ancora essere ben inquadrato in ambito agents, di cui stanno aumentando popolarità e capacità, ma deve ancora essere quantificato in questo modo.
-
-% Vantaggi uso LLM: spiegare comportamento di codice decompilato, leggibilità, identificazione (renaming), capire funzionamento algoritmi, velocizzare il processo con la creazione di script di supporto al SRE
-% Svantaggi uso LLM: risposte incorrette o misleading, riducendo la fiducia o facendo perdere tempo. spiegazioni superficiali, con diminuzione dell'efficacia al complicarsi/allungarsi/offuscarsi della task.
+% Vantaggi uso LLM: spiegare comportamento di codice decompilato e funzionamento algoritmi, aumento leggibilità, identificazione (renaming), velocizzazione del processo di SRE con la creazione di script di supporto
+% Svantaggi uso LLM: risposte incorrette o misleading, riducendo la fiducia o causando perdita di tempo, spiegazioni superficiali, con diminuzione generale dell'efficacia al complicarsi e all'allungarsi della task.
 
 % https://github.com/agentrebench/AgentRE-Bench
 % Coordinamento con SOK e Challenges and Future Directions
-
 
 \ifSubfilesClassLoaded{%
     \bibliographystyle{../plain_\languagename}
