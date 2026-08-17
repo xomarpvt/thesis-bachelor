@@ -154,9 +154,9 @@ Pertanto, l'output prodotto dal sistema non dovrà più limitarsi a essere funzi
 
 \section{Diagramma di contesto del sistema} % 3.5
 
-Considerando il sistema come una generica \textit{black box}, la descrizione del problema può essere riassunta con il seguente diagramma di contesto.
+Considerando il sistema come una generica \textit{black box}, la trattazione del problema può concludersi con la costruzione del relativo diagramma di contesto, riportato in \Cref{fig:context_diagram}. Il diagramma di contesto fornisce una rappresentazione ad alto livello del sistema, dei suoi confini e delle principali interazioni con l'ambiente operativo, senza entrare nel dettaglio della sua struttura interna.
 
-Per concludere la trattazione del problema, la \Cref{fig:context_diagram} fornisce una rappresentazione sintetica del sistema e del suo contesto operativo. Il diagramma evidenzia le due fasi principali in cui si articola il processo: la \textit{fase di analisi e generazione} (competenza del sistema sviluppato) e la \textit{fase di cattura} (competenza del modulo generato).
+Da un lato, il sistema sviluppato si deve occupare dell'analisi del file binario di input e, qualora siano soddisfatte le condizioni previste, della generazione del relativo output. Dall'altro, viene rappresentato un possibile utilizzo operativo del modulo generato da parte di un utente, che può impiegarlo per la cattura del traffico dell'infrastruttura C\&C e per la restituzione dei messaggi intercettati in forma strutturata.
 
 \begin{figure}[ht]
     \centering
@@ -164,7 +164,7 @@ Per concludere la trattazione del problema, la \Cref{fig:context_diagram} fornis
         \begin{tikzpicture}[
             % Stili
             actor/.style={rectangle, draw, thick, fill=gray!10, minimum width=2.5cm, minimum height=1cm, align=center, rounded corners},
-            system/.style={rectangle, draw, thick, fill=blue!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
+            system/.style={rectangle, draw, thick, fill=blue!10, minimum width=2.5cm, minimum height=1.5cm, align=center, rounded corners},
             module/.style={rectangle, draw, thick, fill=green!10, minimum width=3.5cm, minimum height=1.5cm, align=center, rounded corners},
             server/.style={cylinder, shape border rotate=90, aspect=0.3, draw, thick, fill=red!10, minimum width=2cm, minimum height=1.5cm, align=center},
             arrow/.style={-{Stealth[scale=1.2]}, thick},
@@ -173,7 +173,7 @@ Per concludere la trattazione del problema, la \Cref{fig:context_diagram} fornis
 
         % Nodi Fase 1 (Generazione)
         \node[actor] (user) {\textbf{Utente}};
-        \node[system, right=2.5cm of user] (sys) {\textbf{Sistema di analisi}\\\textbf{e generazione}};
+        \node[system, right=2.5cm of user] (sys) {\textbf{Sistema}}; % di analisi}\\\textbf{e generazione}};
         \node[module, right=2.5cm of sys] (mod) {\textbf{Modulo Python}\\\texttt{BotNetInterface}};
 
         % Nodi Fase 2 (Esecuzione)
@@ -182,7 +182,7 @@ Per concludere la trattazione del problema, la \Cref{fig:context_diagram} fornis
 
         % Connessioni Fase 1
         \draw[arrow] (user) -- node[above] {\footnotesize File binario} node[below] {\footnotesize\textit{Input}} (sys);
-        \draw[arrow] (sys) -- node[above] {\footnotesize Modulo generato} node[below] {\footnotesize\textit{Output}} (mod);
+        \draw[dashed_arrow] (sys) -- node[above] {\footnotesize Modulo generato} node[below] {\footnotesize\textit{Output}} (mod);
 
         % Connessioni Fase 2
         \draw (user.south) |- ++(0,-1.5) -| node[pos=0.25, below] {\footnotesize Esecuzione (post-generazione)} (mod.south); % [dashed_arrow]
@@ -194,8 +194,8 @@ Per concludere la trattazione del problema, la \Cref{fig:context_diagram} fornis
         % Box per evidenziare le fasi
         \begin{scope}[on background layer]
             % Modificata la label qui sotto per centrarla sopra il box
-            \node[fit=(user) (sys) (mod), draw, dashed, inner sep=20pt, label={[yshift=+0.5cm]north:\textbf{Fase 1: Sviluppo (Automatizzato)}}] {};
-            \node[fit=(mod) (c2) (output), draw, dashed, inner sep=20pt, label={[yshift=-0.5cm]south:\textbf{Fase 2: Esecuzione (Operativa)}}] {};
+            \node[fit=(user) (sys) (mod), draw, dashed, inner sep=20pt, label={[yshift=+0.5cm]north:\textbf{Analisi e generazione del modulo}}] {};
+            \node[fit=(mod) (c2) (output), draw, dashed, inner sep=20pt, label={[yshift=-0.5cm]south:\textbf{Utilizzo operativo del modulo}}] {};
         \end{scope}
 
         \end{tikzpicture}%
