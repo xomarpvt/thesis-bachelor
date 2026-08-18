@@ -24,29 +24,55 @@ In questa sezione vengono descritti nel dettaglio i singoli componenti che costi
 \subsection{Artefatti} % 4.2.1
 
 \begin{description}
-    \item[\textsl{Binary File} -- \textsl{Python Module}] Rappresentano l'input e l'output principali del sistema, + i loro requisiti coincidono e rimangono quelli già descritti nel capitolo 3. Durante la progettazione non è necessario modificare o aggiungere requisiti o caratteristiche (?).
-    \item[\texttt{BotNetInterface} -- \texttt{MessageSchema}.] (Vale lo stesso ???) discorso di input e output principali del sistema. La interface rimane uguale alla definizione del capitolo 3 e lo schema dei messaggi può essere definito concretamente durante l'implementazione.
-    \item[\textsl{Prompt Archive}] rappresenta l'archivio di tutte le istruzioni (statiche) di cosa fare per i due agenti che dovranno essere fornite a \textsc{SRE Agent} e \textsc{Code Agent}. questo comprenderà sia i \textit{system prompt} che gli \textit{user prompt} utilizzati. Il system prompt è un insieme di istruzioni fornito a un LLM che permette di definire il suo ruolo, il comportamento da assumere, il tono che utilizza nel rispondere, i constraints e le capacità per un'applicazione specifica (in questo caso l'agente). Mentre il system prompt rimane fisso, gli user prompt invece cambiano con ogni interazione e rappresentano le task specifiche che l'utente chiede al modello/agente di eseguire con quel ruolo. gli user prompt dovranno quindi descrivere queste task nello specifico, insieme a quale output e quale formato sia desiderato, con eventuali informazioni aggiuntive.
-    \item[\textsl{Knowledge Base}] A livello progettuale, è definita come un elemento opzionale del sistema, senza imporre a priori una forma/struttura interna. Il suo scopo è fornire al LLM un contesto informativo aggiuntivo, non necessariamente richiesto esplicitamente tramite tool, ma che possa supportare e migliorare l'attività di analisi. Tale contesto può comprendere, ad esempio, documentazione tecnica, istruzioni operative specifiche, informazioni relative a una determinata famiglia di malware o altre conoscenze ritenute rilevanti dall'analista.
+    \item[\textsl{Binary File} -- \textsl{Python Module}.] Rappresentano rispettivamente l'input e l'output principale del sistema. I relativi requisiti e le caratteristiche coincidono con quelli già descritti nel Capitolo~3 e non richiedono, a livello progettuale, ulteriori modifiche o integrazioni.
+
+    \item[\texttt{BotNetInterface} -- \texttt{MessageSchema}.] Come i precedenti, anche questi artefatti sono già stati introdotti nel Capitolo~3 e non richiedono modifiche a livello progettuale. L'interfaccia \texttt{BotNetInterface} mantiene pertanto la definizione precedentemente descritta, mentre la struttura concreta dei messaggi rappresentati da \texttt{MessageSchema} potrà essere definita durante l'implementazione.
     
-    La Knowledge Base si distingue dai prompt per la propria natura dinamica: mentre il prompt  tende pertanto a rimanere relativamente stabile, la Knowledge Base può essere aggiornata o modificata frequentemente in funzione delle esigenze dell'analista e dell'evoluzione delle conoscenze disponibili. Per questo motivo, si prevede una Knowledge Base distinta per ciascuna famiglia di malware analizzata (visto che se fosse unica potrebbe essere spostato nel prompt).
-    \item[\textsl{Logging Files}] Permettono di tracciano in dettaglio l'attività e le azioni svolte dal LLM all'interno del SRE agent. possono essere dei file organizzati in modo più o meno strutturato. possono includere o meno anche informazioni riguardanti le statistiche su token e tempi. lo scopo principale è ovviamente quello di una revisione più estesa da parte dell'umano rispetto ai report. Ma anche le ovvie attività di debug, oltre alla possibilità di eventualmente riprendere continuare le conversazioni (???).
-    \item[\textsl{Sandbox Files}] sono i file che il LLM produce all'interno dell'ambiente sandbox durante le sue attività di analisi svolte nel SRE agent. I file prodotti devono essere considerati (non trusted?) \textit{untrusted}, visto che sono stati prodotti da un LLM che sta interagendo con un malware. A questo scopo nessuna esecuzione automatica è consentita (nel resto della pipeline) e l'unica azione consentita è la lettura automatica in forma testuale dei file con estensioni attendibili. Qualsiasi altra operazione con tale file dovrà essere fatta dall'utente che è il responsabile delle sue azioni.
-    \item[\textsl{SRE Reports}] Questo è l'artefatto chiave dell'intera pipeline, visto che si colloca a metà tra i due agenti. deve rispondere a due scopi. il primo è quello di sintetizzare con un alto livello di dettaglio l'attività di rev eseguita dal SRE agent e fungere da single source of truth per la produzione del codice successiva del Code Agent. il secondo è quello di fornire della documentazione che sia analizzabile, consultabile e verificabile da parte dell'umano che in questo modo può in autonomia validare quanto trovato e correggere eventuali errori.
+    \item[\textsl{Prompt Archive}.] Raccoglie le istruzioni statiche che devono essere fornite ai due agenti, \textsc{SRE Agent} e \textsc{Code Agent}, per definire le attività da svolgere. Esso comprende sia i \textit{system prompt} che gli \textit{user prompt} utilizzati.
+
+    Il system prompt è un insieme di istruzioni fornite al LLM che permette di definire il ruolo dell'agente, il comportamento da assumere, il tono da utilizzare, i vincoli e le capacità previste per l'applicazione specifica. Mentre il system prompt rimane fisso, gli user prompt cambiano a ogni interazione e rappresentano le attività specifiche che l'utente richiede al modello o all'agente di eseguire nel ruolo definito. Gli user prompt dovranno quindi descrivere nello specifico tali attività, indicando anche l'output atteso e il formato desiderato, oltre a eventuali informazioni aggiuntive.
     
-    a questo scopo è importante che il file (o eventualmente più di uno) usi una struttura chiara e facilmente consultabile, ad esempio in Markdown, eventualmente adottando un formato semistrutturato; adotti un linguaggio appropriato e mostri dettagliatamente i finding effettuali, con una chain of evidence e referenze specifiche ai finding (come ad esempio indirizzi di memoria, funzioni, nomi per supportare un certo claim).
-    \item[\textsl{Code Templates}] Sono uno o più file da prendere che il LLM potrà prendere come riferimento nel \textsc{CodeAgent}. sicuramente deve essere almeno un file python "main" con una classe che implementi l'interfaccia BotNetInterface. a questo classe/file ovviamente ne possono essere affiancati altri per modularizzare il codice e cercando di mantenere le singole responsabilità, ad esempio con moduli dedicati per la classificazione e il parsing dei messaggi (all'interno del protocollo). il template potrebbe essere unico oppure implementato in modo simile alla knowledge base, con uno per famiglia.
+    \item[\textsl{Knowledge Base}.] A livello progettuale, è definita come un elemento opzionale del sistema, senza imporre a priori una forma o una struttura interna. Il suo scopo è fornire al \textsc{LLM} un contesto informativo aggiuntivo, non necessariamente richiesto esplicitamente tramite \textit{tool}, che possa supportare e migliorare l'attività di analisi. Tale contesto può comprendere, ad esempio, documentazione tecnica, istruzioni operative specifiche, informazioni relative a una determinata famiglia di malware o altre conoscenze ritenute rilevanti dal reverse engineer.
+
+    A differenza dei prompt, che tendono a rimanere relativamente stabili nel tempo, la \textsc{Knowledge Base} è pensata per avere una natura maggiormente dinamica, potendo essere aggiornata o modificata in funzione delle esigenze dell'analista e dell'evoluzione delle conoscenze disponibili. Proprio per questa caratteristica, un'implementazione efficace potrebbe prevedere la raccolta di informazioni specifiche per le diverse famiglie di malware, che il \textsc{SRE Agent} può utilizzare in funzione del singolo campione analizzato, evitando di incorporare direttamente nel prompt informazioni che possono variare da un campione all'altro.
     
-    il motivo dell'inserimento dei template sono due. il primo cercare standardizzare e strutturare un minimo l'output finale (Python Module), così da semplificare la revisione dell'umano prima dell'eventuale esecuzione dando una logica comune (cioè limitando un po' la libertà del LLM che altrimenti produrrebbe codici tanto diversi anche per campioni simili) [quindi uniformare, ma lasciando comunque libertà]. il secondo è (provare ad arginare la possibilità???) evitare che il codice finale esegua azioni malevole, mostrando al LLM un'implementazione simile a quella finale che non presenta alcun tipo di quella funzionalità. 
+    \item[\textsl{Sandbox Files}.] Sono i file prodotti dal \textsc{LLM} all'interno dell'ambiente \textsc{Sandbox} durante le attività di analisi svolte nel \textsc{SRE Agent}. Tali file devono essere considerati \textit{untrusted}, in quanto prodotti da un \textsc{LLM} che sta interagendo con un malware.
+
+    Per questo motivo, non deve essere consentita l'esecuzione automatica dei file prodotti all'interno della restante pipeline. L'unica operazione automatica consentita è la lettura in forma testuale dei file con estensioni considerate attendibili, mentre qualsiasi altra operazione può essere eseguita esclusivamente dall'utente.
+    
+    \item[\textsl{SRE Report}.] Rappresenta l'artefatto chiave dell'intera pipeline, poiché si colloca tra i due agenti e per questo deve rispondere a due scopi principali. Il primo consiste nel sintetizzare con un elevato livello di dettaglio l'attività di reverse engineering svolta dal \textsc{SRE Agent} e, allo stesso tempo, nel fungere da \textit{single source of truth} (SSOT) per la successiva produzione del \textsc{Python Module} da parte del \textsc{Code Agent}. Il secondo consiste nel fornire una documentazione analizzabile, consultabile e verificabile dall'utente, che possa quindi validare autonomamente quanto rilevato e correggere eventuali errori.
+    
+    A questo scopo, è importante che il file, o eventualmente l'insieme di file, utilizzi una struttura chiara, magari adottando un formato semistrutturato (ad esempio Markdown), che ne faciliti sia la lettura da parte dell'umano che la comprensione da parte del \textsc{LLM}. Il contenuto deve inoltre utilizzare un linguaggio appropriato e riportare in dettaglio i risultati dell'analisi, fornendo una chiara sequenza di evidenze e riferimenti specifici a supporto delle conclusioni, quali indirizzi di memoria e nomi utilizzati.
+    
+    \item[\textsl{Logging Files}.] Permettono di tracciare in dettaglio le azioni svolte dal \textsc{LLM} all'interno del \textsc{SRE Agent}. Possono essere costituiti da file con diverso grado di strutturazione e possono includere, ove previsto, anche informazioni relative all'utilizzo delle risorse computazionali e ai tempi di esecuzione.
+
+    Il loro scopo principale è consentire all'utente di effettuare un'analisi più approfondita delle attività del \textsc{LLM} rispetto a quella possibile attraverso il solo \textsc{SRE Report}, oltre a supportare le attività di debugging e, nei casi previsti, permettere di riprendere o continuare manualmente l'esecuzione a partire da uno stato precedente.
+
+    \item[\textsl{Code Templates}.] Sono costituiti da uno o più file che il \textsc{LLM} del \textsc{Code Agent} può utilizzare come riferimento durante la generazione del \textsc{Python Module}. Tra questi deve essere presente almeno un file Python principale contenente una classe che implementi l'interfaccia \texttt{BotNetInterface}. A tale classe o file possono ne possono essere affiancati altri, con l'obiettivo di modularizzare il codice e mantenere separate le singole responsabilità, ad esempio attraverso moduli specifici dedicati alla classificazione e al parsing dei messaggi. Il template può essere unico oppure, analogamente alla \textsl{Knowledge Base}, può essere declinato in versioni specifiche per ciascuna famiglia di malware.
+
+    L'introduzione dei template di codice risponde a due obiettivi. Il primo consiste nel standardizzare e strutturare, almeno in parte, l'output finale (\textsl{Python Module}), così da semplificarne la valutazione e la revisione da parte dell'utente prima di un'eventuale esecuzione. In particolare, i template forniscono una struttura e una logica comuni, limitando la variabilità del codice prodotto dal \textsc{LLM} anche in presenza di campioni simili, pur lasciando una certa libertà nella sua implementazione. Il secondo obiettivo consiste nel ridurre la possibilità che il codice finale introduca funzionalità malevole, fornendo al \textsc{LLM} un'implementazione di riferimento simile a quella attesa, ma priva di tali funzionalità.
 \end{description}
 
 \subsection{Componenti decisionali} % 4.2.2
 
 \begin{description}
-    \item[Large Language Model] è il cuore dei due agenti (non è un semplice esecutore, ma funge da "cervello centrale" o motore cognitivo). fornisce le capacità cognitive di comprensione, implementando nella pratica il reverse engineering, di deduzione e di generazione del codice finale (+ planning e tool calling). praticamente genererà le assistant (chat completion message, con o senza tool calls). dal punto di vista tecnico, conviene abbia almeno le dimensioni e prestazioni sufficienti, supporti il reasoning, particolarmente necessario per task di questo tipo e capacità nativa di emettere tool call strutturate, anche parallele. deve avere un contesto sufficiente ad affrontare l'analisi in modo efficace.
-    \item[Classification] questo può essere un modulo black box. agisce come gatekeeper per la pipeline di analisi. ha il compito di analizzare preliminarmente il file binario ignoto e decidere se instradare il file verso il REAgent oppure interrompere il flusso di analisi (ovviamente per risparmiare risorse). in più, anche se non è strettamente necessario, potrebbe convenire, se possibile, provare a identificare subito la famiglia a cui appartiene il malware, così da poter eventualmente usufruire della knowledge base e indirizzare meglio il RE Agent anche se comunque può fare il suo lavoro.
-    \item[REAgent] si occupa di orchestrare il SRE del campione di malware ricevuto. usa il LLM come cervello, pianifica la strategia di analisi (considerando knowledge base e istruzioni) e la mette in atto grazie agli strumenti che gli vengono messi esposti attraverso il protocollo MCP (reindirizza le tool calls del modello agli MCP client rispettivi e gli fornisce i risultati). alla fine deve raccogliere ciò che scopre e riassumerlo nei report, che poi verrà usato per la generazione di codice. in più deve anche occuparsi del minimo di logging richiesto. bisogna tenere a mente che dovrà adattare il comportamento in base se il malware è non stripped oppure stripped.
-    \item[CodeAgent] utilizzando sempre il LLM come cervello e i prompt come istruzioni ricevute. deve usare l'input ricevuti dall'analisi (report), uno o più file; fare riferimento ai template ricevuti (tra cui interface) e lo schema dei messaggi e generare il modulo di intercettazione unendo tutta questa conoscenza. è responsabile di estrarre correttamente le informazioni necessarie e attenersi ai formati suggeriti/richiesti (in particolare avere attività offensive)
+
+    \item[\textsl{Large Language Model}.] Costituisce il fulcro centrale dei due agenti e agisce come motore cognitivo, fornendo le capacità necessarie alla comprensione, al ragionamento, alla pianificazione e, ove previsto, all'utilizzo dei \textit{tool}. Viene utilizzato come base per implementare le funzionalità previste sia dal \textsc{SRE Agent} sia dal \textsc{Code Agent}.
+
+    Dal punto di vista tecnico, il modello deve disporre di dimensioni e prestazioni sufficienti a supportare le attività previste, di adeguate capacità di \textit{reasoning}, particolarmente rilevanti per questo tipo di attività, e della capacità nativa di emettere tool call strutturate, anche in parallelo, nonché di una finestra di contesto sufficientemente ampia.
+
+    \item[\textsl{Classifier}.] È un modulo che agisce come \textit{gatekeeper} della pipeline di analisi e ha il compito di esaminare preliminarmente il \textsc{Binary File} ricevuto, decidendo se instradarlo verso il \textsc{SRE Agent} oppure interrompere prematuramente il flusso di analisi, così da evitare l'impiego di risorse nello studio di campioni che non lo richiedono o che non risultano interessanti.
+    
+    Inoltre, pur non essendo necessario per il funzionamento di base, il modulo può essere esteso per estrarre, quando possibile, ulteriori informazioni preliminari, come l'identificazione della famiglia di botnet a cui appartiene il campione. Tali informazioni possono essere utilizzate per fornire al \textsc{SRE Agent} un contesto più specifico, attraverso la \textsl{Knowledge Base}, anche se il \textsc{SRE Agent} deve comunque essere in grado di svolgere l'attività di analisi anche in assenza di tali informazioni.
+
+    \item[\textsl{SRE Agent}.] Si occupa di orchestrare l'attività di SRE sul campione di malware ricevuto. Utilizzando il \textsc{LLM}, a partire dal \textsc{Binary File}, pianifica la strategia di analisi, tenendo conto dei prompt e, ove disponibile, della \textsl{Knowledge Base}, e la mette in atto attraverso il collegamento, mediante il protocollo MCP, ai tool esposti dagli ambienti di esecuzione.
+
+    L'agente deve gestire le tool call generate dal modello, inoltrandole ai rispettivi MCP Client, e fornire al modello i risultati delle operazioni eseguite. Al termine dell'analisi, deve raccogliere le informazioni ottenute e sintetizzarle nei \textsl{SRE Reports}, che verranno successivamente utilizzati per la generazione del codice. Il \textsc{SRE Agent} deve inoltre occuparsi delle funzionalità di logging richieste e adattare il proprio comportamento in funzione del fatto che il campione analizzato sia \textit{stripped} o \textit{non stripped}.
+
+    \item[\textsl{Code Agent}.] Utilizza il \textsc{LLM} per guidare e coordinare le attività di generazione del codice, sulla base dei prompt che ne definiscono le istruzioni operative. Riceve come input le informazioni prodotte durante la fase di analisi e contenute nei \textsl{SRE Reports}, utilizzando inoltre come riferimento i \textsl{Code Templates}, che comprendono anche l'interfaccia \texttt{BotNetInterface}, e lo schema dei messaggi \texttt{MessageSchema}.
+    
+    A partire da tali elementi, l'agente deve estrarre le informazioni necessarie, combinarle e utilizzarle per generare il \textsl{Python Module} di cattura. L'agente è pertanto responsabile di produrre un modulo funzionante e conforme ai formati e alle strutture richieste, in particolare rispettando l'interfaccia prevista e senza introdurre alcuna capacità offensiva.
+
 \end{description}
 
 \subsection{Integrazione MCP} % 4.2.3
@@ -86,9 +112,39 @@ In questa sezione vengono descritti nel dettaglio i singoli componenti che costi
 
 \section{Flusso di esecuzione} % 4.3
 
-Dopo aver descritto la struttura dell'architettura e le responsabilità dei singoli componenti, questa sezione finale illustra un flusso di esecuzione completo del sistema.
+Dopo aver descritto la struttura dell'architettura nel suo complesso e le responsabilità dei singoli componenti, questa sezione finale illustra un flusso di esecuzione completo del sistema. Illustra la strada che il file binario fa nel sistema.
 
-A differenza del diagramma dei componenti presentato nella sezione precedente, il diagramma riportato in questa sezione ha esclusivamente uno scopo esplicativo. è un esempio semplificato e un riferimento concettuale, non costituisce una specifica vincolante del comportamento del sistema.
+Per fare questo si utilizzerà un diagramma UML delle attività, un diagramma comportamentale utilizzato per mostrare il modo in cui si svolge un processo o un comportamento, mostrando la sequenza delle attività, le decisioni, i possibili percorsi alternativi, le attività eseguite in parallelo e, quando necessario, il flusso dei dati \cite{omg2017uml}.
+
+Il diagramma delle attività realizzato è riportato in figura \Cref{fig:attivita}. A differenza del diagramma dei componenti presentato nella sezione precedente, questo diagramma delle attività riportato in questa sezione ha una finalità esclusivamente dimostrativa/illustrativa/esplicativa, visto che è semplificato, è solo un riferimento e non costituisce una specifica vincolante del comportamento del sistema.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=.20]{img/sequenza.png}
+    \caption{Diagramma UML delle attività (della pipeline?).}
+    \label{fig:attivita}
+\end{figure}
+
+Il flusso di esecuzione ha inizio quando l'utente fornisce in ingresso al sistema il \textsc{Binary File}. Quindi, il \textsc{Classifier} ne esegue un'analisi preliminare, con lo scopo di determinare se il campione sia malevolo oppure no. Quando è possibile stabilire con certezza che il campione non è malevolo oppure che, pur essendo malevolo, non è di interesse per il sistema, allora la pipeline di analisi viene interrotta. Negli altri casi il campione viene trasferito dal \textsc{Classifier} al \textsc{SRE Agent}.
+
+Come prima cosa, il \textsc{SRE Agent}, basandosi sulla presenza dei simboli, determina se il campione è non stripped o stripped. Nel secondo caso, l'agente può quindi svolgere subito qualche azione apposita oppure potrà semplicemente modificare il proprio comportamento durante le attività di SRE. A questo punto l'agente carica dal \textsc{Prompt Archive} i prompt di riferimento e, quando possibile, utilizza le informazioni rese disponibili dal \textsl{Classifier} per selezionare dalla \textsc{Knowledge Base} il contesto aggiuntivo pertinente al campione.
+
+La fase centrale è dunque costituita dall'attività di SRE svolta dal \textsc{SRE Agent} attraverso il \textsc{LLM}, secondo un ciclo di iterativo di ragionamento, azione e osservazione. Il modello utilizza, secondo il MCP, i tool offerti dagli ambienti di esecuzione \textsc{Framework SRE} e \textsc{Sandbox}, messi a disposizione dell'agente. Nel caso dell'ambiente \textsc{Sandbox}, il \textsc{LLM} potrà anche produrre e salvare dei \textsc{Sandbox Files}. Quando l'agente dispone di informazioni sufficienti, conclude l'analisi, producendo uno o più file riassuntivi (\textsc{SRE Reports}), mentre l'elenco completo delle attività svolte viene registrato nei relativi \textsc{Logging Files}.
+
+Successivamente, i \textsc{SRE Reports} vengono passati al \textsc{Code Agent}, che carica i propri prompt dal \textsc{Prompt Archive}, oltre ai \textsc{Code Templates}, che comprendono la \texttt{BotNetInterface} e al \texttt{MessageSchema}. Il \textsc{LLM} dell'agente utilizza infine questo insieme di informazioni per generare i file richiesti, producendo il \textsc{Python Module} di cattura delle comunicazioni completo, cioè l'output finale del sistema.
+
+\begin{itemize}
+    \item Tra i tool, chiama quelli del Framework SRE: il LLM chiama il tool, l'agente invoca il metodo del SRE MCP Client, collegato con trasporto al SRE MCP Server che poi eseguirà praticamente l'azione all'interno dell'ambiente Framework SRE.
+    \item La risposta al tool, eventualmente formattata, segue il percorso inverso, tornando al LLM.
+    \item L'agente alterna tra tool dei due ambienti. Nel caso della Sandbox, i tool possono creare anche dei file di analisi (che rimangono).
+    \item Quando l'agent ha raccolto informazioni sufficienti, si ferma e genera i SRE Report che contengono il riassunto di analisi e delle scoperte effettuate.
+    \item Tutte le attività svolte dall'agente (logging) vengono salvate, alcune durante, alcune alla fine.
+    \item Parte il Code Agent, caricando le istruzioni prompt.
+    \item Viene forniti i report (uno o più).
+    \item Vengono caricati i Code Templates tra cui botnet e il MessageSchema.
+    \item Il code Agent, con il LLM, genera i file richiesti secondo le istruzioni dei prompt.
+    \item Il sistema restituisce il Python Module di cattura completo.
+\end{itemize}
 
 \subsection{Tool calls} % 4.3.1
 
@@ -313,3 +369,11 @@ rect rgb(235, 255, 235)
     SREFrameworkMCPClient-->>LLM: call_tools response
 end
 \fi
+
+%\documentclass[../thesis_paviotti.tex]{subfiles}
+%\begin{document}
+%\ifSubfilesClassLoaded{%
+%    \bibliographystyle{../plain_\languagename}
+%    \bibliography{../thud.bib}
+%}{}
+%\end{document}
