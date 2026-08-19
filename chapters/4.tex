@@ -1,6 +1,6 @@
 \chapter{L'architettura proposta} % 4
 
-Questo capitolo ha l'obiettivo di presentare l'architettura proposta per risolvere il problema affrontato dalla tesi. Prima verrà mostrata l'architettura generale, utilizzando un diagramma UML dei componenti e successivamente, per ciascun componente verranno individuate le caratteristiche principali. Infine, per chiarificare, sarà descritto un flusso di esecuzione completo, descrivendo ciò che succede partendo dall'inizio e arrivando fino alla fine.
+Questo capitolo ha l'obiettivo di presentare l'architettura proposta per risolvere il problema affrontato dalla tesi. In primo luogo verrà mostrata l'architettura generale, utilizzando un diagramma dei componenti, e successivamente, per ciascun componente, verranno individuate le caratteristiche principali. Infine, verrà descritto il funzionamento del sistema da un ulteriore punto di vista, illustrando un flusso di esecuzione completo mediante un diagramma delle attività e approfondendo il meccanismo di \textit{tool calling} con un diagramma di sequenza.
 
 \section{Architettura del sistema} % 4.1
 
@@ -11,11 +11,11 @@ Il diagramma dei componenti realizzato è riportato in \Cref{fig:componenti}.
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=.30]{img/componenti.png}
-    \caption{Diagramma UML dei componenti dell'architettura proposta.}
+    \caption{Diagramma UML dei componenti dell'architettura proposta}
     \label{fig:componenti}
 \end{figure}
 
-Questo diagramma permette quindi di mettere in evidenza le principali aree funzionali in cui è organizzato il sistema. In particolare, l'architettura è progettata secondo un approccio modulare e come una pipeline automatizzata, all'interno della quale si distinguono, da un lato, la logica decisionale e gli agenti basati su LLM e, dall'altro, gli ambienti di esecuzione esterni con cui questi interagiscono attraverso il Model Context Protocol. A queste componenti si affiancano inoltre gli artefatti di input e di output, che comprendono sia gli input e gli output complessivi del sistema, ma soprattutto i contenuti che vengono forniti alle diverse fasi della pipeline e i risultati prodotti nel corso dell'elaborazione.
+Questo diagramma permette quindi di mettere in evidenza le principali aree funzionali in cui è organizzato il sistema. In particolare, l'architettura è progettata come una \textit{pipeline} di analisi automatizzata, suddivisa in moduli, all'interno della quale si distinguono, da un lato, la logica decisionale e gli agenti basati su LLM e, dall'altro, gli ambienti di esecuzione esterni con cui questi interagiscono attraverso il Model Context Protocol. A queste componenti si affiancano inoltre gli artefatti di input e di output, che comprendono sia l'input e l'output complessivi del sistema, sia i contenuti forniti alle diverse fasi della pipeline e i risultati prodotti nel corso dell'elaborazione.
 
 \section{Componenti del sistema} % 4.2
 
@@ -24,52 +24,52 @@ In questa sezione vengono descritti nel dettaglio i singoli componenti che costi
 \subsection{Artefatti} % 4.2.1
 
 \begin{description}
-    \item[\textsl{Binary File} -- \textsl{Python Module}.] Rappresentano rispettivamente l'input e l'output principale del sistema. I relativi requisiti e le caratteristiche coincidono con quelli già descritti nel Capitolo~3 e non richiedono, a livello progettuale, ulteriori modifiche o integrazioni.
+    \item[\normalfont\textsc{Binary File} -- \textsc{Python Module}.] Rappresentano rispettivamente l'input e l'output principale del sistema. I relativi requisiti e le caratteristiche coincidono con quelli già descritti nel Capitolo~3 e non richiedono, a livello progettuale, ulteriori modifiche o integrazioni.
 
     \item[\texttt{BotNetInterface} -- \texttt{MessageSchema}.] Come i precedenti, anche questi artefatti sono già stati introdotti nel Capitolo~3 e non richiedono modifiche a livello progettuale. L'interfaccia \texttt{BotNetInterface} mantiene pertanto la definizione precedentemente descritta, mentre la struttura concreta dei messaggi rappresentati da \texttt{MessageSchema} potrà essere definita durante l'implementazione.
     
-    \item[\textsl{Prompt Archive}.] Raccoglie le istruzioni statiche che devono essere fornite ai due agenti, \textsc{SRE Agent} e \textsc{Code Agent}, per definire le attività da svolgere. Esso comprende sia i \textit{system prompt} che gli \textit{user prompt} utilizzati.
+    \item[\normalfont\textsc{Prompt Archive}.] Raccoglie le istruzioni statiche che devono essere fornite ai due agenti, \textsc{SRE Agent} e \textsc{Code Agent}, per definire le attività da svolgere. Esso comprende sia i \textit{system prompt} che gli \textit{user prompt} utilizzati.
 
     Il system prompt è un insieme di istruzioni fornite al LLM che permette di definire il ruolo dell'agente, il comportamento da assumere, il tono da utilizzare, i vincoli e le capacità previste per l'applicazione specifica. Mentre il system prompt rimane fisso, gli user prompt cambiano a ogni interazione e rappresentano le attività specifiche che l'utente richiede al modello o all'agente di eseguire nel ruolo definito. Gli user prompt dovranno quindi descrivere nello specifico tali attività, indicando anche l'output atteso e il formato desiderato, oltre a eventuali informazioni aggiuntive.
     
-    \item[\textsl{Knowledge Base}.] A livello progettuale, è definita come un elemento opzionale del sistema, senza imporre a priori una forma o una struttura interna. Il suo scopo è fornire al \textsc{LLM} un contesto informativo aggiuntivo, non necessariamente richiesto esplicitamente tramite \textit{tool}, che possa supportare e migliorare l'attività di analisi. Tale contesto può comprendere, ad esempio, documentazione tecnica, istruzioni operative specifiche, informazioni relative a una determinata famiglia di malware o altre conoscenze ritenute rilevanti dal reverse engineer.
+    \item[\normalfont\textsc{Knowledge Base}.] A livello progettuale, è definita come un elemento opzionale del sistema, senza imporre a priori una forma o una struttura interna. Il suo scopo è fornire al \textsc{LLM} un contesto informativo aggiuntivo, non necessariamente richiesto esplicitamente tramite tool, che possa supportare e migliorare l'attività di analisi. Tale contesto può comprendere, ad esempio, documentazione tecnica, istruzioni operative specifiche, informazioni relative a una determinata famiglia di malware o altre conoscenze ritenute rilevanti.
 
-    A differenza dei prompt, che tendono a rimanere relativamente stabili nel tempo, la \textsc{Knowledge Base} è pensata per avere una natura maggiormente dinamica, potendo essere aggiornata o modificata in funzione delle esigenze dell'analista e dell'evoluzione delle conoscenze disponibili. Proprio per questa caratteristica, un'implementazione efficace potrebbe prevedere la raccolta di informazioni specifiche per le diverse famiglie di malware, che il \textsc{SRE Agent} può utilizzare in funzione del singolo campione analizzato, evitando di incorporare direttamente nel prompt informazioni che possono variare da un campione all'altro.
+    A differenza dei prompt, che tendono a rimanere relativamente stabili nel tempo, la \textsc{Knowledge Base} è pensata per avere una natura maggiormente dinamica, potendo essere aggiornata o modificata in funzione delle esigenze del reverse engineer e dell'evoluzione delle conoscenze disponibili. Proprio per questa caratteristica, un'implementazione efficace potrebbe prevedere la raccolta di informazioni specifiche per le diverse famiglie di malware, che il \textsc{SRE Agent} può utilizzare in funzione del singolo campione analizzato, evitando di incorporare direttamente nei prompt informazioni che possono variare da un campione all'altro.
     
-    \item[\textsl{Sandbox Files}.] Sono i file prodotti dal \textsc{LLM} all'interno dell'ambiente \textsc{Sandbox} durante le attività di analisi svolte nel \textsc{SRE Agent}. Tali file devono essere considerati \textit{untrusted}, in quanto prodotti da un \textsc{LLM} che sta interagendo con un malware.
+    \item[\normalfont\textsc{Sandbox Files}.] Sono i file prodotti dal \textsc{LLM} all'interno dell'ambiente \textsc{Sandbox} durante le attività di analisi svolte nel \textsc{SRE Agent}. Tali file devono essere considerati \textit{untrusted}, in quanto prodotti da un \textsc{LLM} che sta interagendo con un malware.
 
-    Per questo motivo, non deve essere consentita l'esecuzione automatica dei file prodotti all'interno della restante pipeline. L'unica operazione automatica consentita è la lettura in forma testuale dei file con estensioni considerate attendibili, mentre qualsiasi altra operazione può essere eseguita esclusivamente dall'utente.
+    Per questo motivo, l'esecuzione automatica di tali file non deve essere consentita nel resto della pipeline. L'unica operazione automatica permessa è la lettura in forma testuale dei file con estensioni considerate attendibili, mentre qualsiasi altra operazione può essere eseguita esclusivamente dall'utente.
     
-    \item[\textsl{SRE Report}.] Rappresenta l'artefatto chiave dell'intera pipeline, poiché si colloca tra i due agenti e per questo deve rispondere a due scopi principali. Il primo consiste nel sintetizzare con un elevato livello di dettaglio l'attività di reverse engineering svolta dal \textsc{SRE Agent} e, allo stesso tempo, nel fungere da \textit{single source of truth} (SSOT) per la successiva produzione del \textsc{Python Module} da parte del \textsc{Code Agent}. Il secondo consiste nel fornire una documentazione analizzabile, consultabile e verificabile dall'utente, che possa quindi validare autonomamente quanto rilevato e correggere eventuali errori.
+    \item[\normalfont\textsc{SRE Report}.] Rappresenta l'artefatto chiave dell'intera pipeline, poiché si colloca tra i due agenti e per questo deve rispondere a due scopi principali. Il primo consiste nel sintetizzare con un elevato livello di dettaglio l'attività di reverse engineering svolta dal \textsc{SRE Agent} e, allo stesso tempo, nel fungere da \textit{single source of truth} (SSOT) per la successiva produzione del \textsc{Python Module} da parte del \textsc{Code Agent}. Il secondo consiste nel fornire una documentazione analizzabile, consultabile e verificabile dall'utente, che possa quindi validare autonomamente quanto rilevato e correggere eventuali errori.
     
     A questo scopo, è importante che il file, o eventualmente l'insieme di file, utilizzi una struttura chiara, magari adottando un formato semistrutturato (ad esempio Markdown), che ne faciliti sia la lettura da parte dell'umano che la comprensione da parte del \textsc{LLM}. Il contenuto deve inoltre utilizzare un linguaggio appropriato e riportare in dettaglio i risultati dell'analisi, fornendo una chiara sequenza di evidenze e riferimenti specifici a supporto delle conclusioni, quali indirizzi di memoria e nomi utilizzati.
     
-    \item[\textsl{Logging Files}.] Permettono di tracciare in dettaglio le azioni svolte dal \textsc{LLM} all'interno del \textsc{SRE Agent}. Possono essere costituiti da file con diverso grado di strutturazione e possono includere, ove previsto, anche informazioni relative all'utilizzo delle risorse computazionali e ai tempi di esecuzione.
+    \item[\normalfont\textsc{Logging Files}.] Permettono di tracciare in dettaglio le azioni svolte dal \textsc{LLM} all'interno del \textsc{SRE Agent}. Possono consistere in uno o più file, caratterizzati da un diverso grado di strutturazione, e includere, ove previsto, anche informazioni relative all'utilizzo delle risorse computazionali e ai tempi di esecuzione.
 
     Il loro scopo principale è consentire all'utente di effettuare un'analisi più approfondita delle attività del \textsc{LLM} rispetto a quella possibile attraverso il solo \textsc{SRE Report}, oltre a supportare le attività di debugging e, nei casi previsti, permettere di riprendere o continuare manualmente l'esecuzione a partire da uno stato precedente.
 
-    \item[\textsl{Code Templates}.] Sono costituiti da uno o più file che il \textsc{LLM} del \textsc{Code Agent} può utilizzare come riferimento durante la generazione del \textsc{Python Module}. Tra questi deve essere presente almeno un file Python principale contenente una classe che implementi l'interfaccia \texttt{BotNetInterface}. A tale classe o file possono ne possono essere affiancati altri, con l'obiettivo di modularizzare il codice e mantenere separate le singole responsabilità, ad esempio attraverso moduli specifici dedicati alla classificazione e al parsing dei messaggi. Il template può essere unico oppure, analogamente alla \textsl{Knowledge Base}, può essere declinato in versioni specifiche per ciascuna famiglia di malware.
+    \item[\normalfont\textsc{Code Templates}.] Sono costituiti da uno o più file che il \textsc{LLM} del \textsc{Code Agent} può utilizzare come riferimento durante la generazione del \textsc{Python Module}. Tra questi deve essere presente almeno un file Python principale contenente una classe che implementi l'interfaccia \texttt{BotNetInterface}. A tale classe o file ne possono essere affiancati altri, con l'obiettivo di modularizzare il codice e mantenere separate le responsabilità, ad esempio attraverso moduli specifici dedicati alla classificazione e al parsing dei messaggi. Il template può essere unico oppure, analogamente alla \textsc{Knowledge Base}, può essere declinato in versioni specifiche per ciascuna famiglia di malware.
 
-    L'introduzione dei template di codice risponde a due obiettivi. Il primo consiste nel standardizzare e strutturare, almeno in parte, l'output finale (\textsl{Python Module}), così da semplificarne la valutazione e la revisione da parte dell'utente prima di un'eventuale esecuzione. In particolare, i template forniscono una struttura e una logica comuni, limitando la variabilità del codice prodotto dal \textsc{LLM} anche in presenza di campioni simili, pur lasciando una certa libertà nella sua implementazione. Il secondo obiettivo consiste nel ridurre la possibilità che il codice finale introduca funzionalità malevole, fornendo al \textsc{LLM} un'implementazione di riferimento simile a quella attesa, ma priva di tali funzionalità.
+    L'introduzione dei template di codice risponde a due obiettivi. Il primo consiste nel standardizzare e strutturare, almeno in parte, l'output finale (\textsc{Python Module}), così da semplificarne la valutazione e la revisione da parte dell'utente prima di un'eventuale esecuzione. In particolare, i template forniscono una struttura e una logica comuni, limitando la variabilità del codice prodotto dal \textsc{LLM} anche in presenza di campioni simili, pur lasciando una certa libertà nella sua implementazione. Il secondo obiettivo consiste nel ridurre la possibilità che il codice finale introduca funzionalità malevole, fornendo al \textsc{LLM} un'implementazione di riferimento simile a quella attesa, che per l'appunto non include funzionalità di questo tipo.
 \end{description}
 
 \subsection{Componenti decisionali} % 4.2.2
 
 \begin{description}
 
-    \item[\textsl{Large Language Model}.] Costituisce il fulcro centrale dei due agenti e agisce come motore cognitivo, fornendo le capacità necessarie alla comprensione, al ragionamento, alla pianificazione e, ove previsto, all'utilizzo dei \textit{tool}. Viene utilizzato come base per implementare le funzionalità previste sia dal \textsc{SRE Agent} sia dal \textsc{Code Agent}.
+    \item[\normalfont\textsc{Large Language Model}.] Costituisce il fulcro centrale dei due agenti e agisce come motore cognitivo, fornendo le capacità necessarie alla comprensione, al ragionamento, alla pianificazione e, ove previsto, all'utilizzo dei tool. Viene utilizzato come base per implementare le funzionalità previste sia dal \textsc{SRE Agent} sia dal \textsc{Code Agent}.
 
     Dal punto di vista tecnico, il modello deve disporre di dimensioni e prestazioni sufficienti a supportare le attività previste, di adeguate capacità di \textit{reasoning}, particolarmente rilevanti per questo tipo di attività, e della capacità nativa di emettere tool call strutturate, anche in parallelo, nonché di una finestra di contesto sufficientemente ampia.
 
-    \item[\textsl{Classifier}.] È un modulo che agisce come \textit{gatekeeper} della pipeline di analisi e ha il compito di esaminare preliminarmente il \textsc{Binary File} ricevuto, decidendo se instradarlo verso il \textsc{SRE Agent} oppure interrompere prematuramente il flusso di analisi, così da evitare l'impiego di risorse nello studio di campioni che non lo richiedono o che non risultano interessanti.
+    \item[\normalfont\textsc{Classifier}.] È un modulo che agisce come \textit{gatekeeper} della pipeline di analisi e ha il compito di esaminare preliminarmente il \textsc{Binary File} ricevuto, decidendo se instradarlo verso il \textsc{SRE Agent} oppure interrompere prematuramente il flusso di analisi, così da evitare l'impiego di risorse nello studio di campioni che non lo richiedono o che non risultano interessanti.
     
-    Inoltre, pur non essendo necessario per il funzionamento di base, il modulo può essere esteso per estrarre, quando possibile, ulteriori informazioni preliminari, come l'identificazione della famiglia di botnet a cui appartiene il campione. Tali informazioni possono essere utilizzate per fornire al \textsc{SRE Agent} un contesto più specifico, attraverso la \textsl{Knowledge Base}, anche se il \textsc{SRE Agent} deve comunque essere in grado di svolgere l'attività di analisi anche in assenza di tali informazioni.
+    Inoltre, pur non essendo necessario per il funzionamento di base, il modulo può essere esteso per estrarre, quando possibile, ulteriori informazioni preliminari, come l'identificazione della famiglia di botnet a cui appartiene il campione. Tali informazioni possono essere utilizzate per fornire al \textsc{SRE Agent} un contesto più specifico, attraverso la \textsc{Knowledge Base}, anche se il \textsc{SRE Agent} deve comunque essere in grado di svolgere l'attività di analisi anche senza di esse.
 
-    \item[\textsl{SRE Agent}.] Si occupa di orchestrare l'attività di SRE sul campione di malware ricevuto. Utilizzando il \textsc{LLM}, a partire dal \textsc{Binary File}, pianifica la strategia di analisi, tenendo conto dei prompt e, ove disponibile, della \textsl{Knowledge Base}, e la mette in atto attraverso il collegamento, mediante il protocollo MCP, ai tool esposti dagli ambienti di esecuzione.
+    \item[\normalfont\textsc{SRE Agent}.] Si occupa di orchestrare l'attività di SRE sul campione di malware ricevuto. Utilizzando il \textsc{LLM}, a partire dal \textsc{Binary File}, pianifica la strategia di analisi, tenendo conto dei prompt e, ove disponibile, della \textsl{Knowledge Base}, e la mette in atto attraverso il collegamento, mediante il protocollo MCP, ai tool esposti dagli ambienti di esecuzione.
 
-    L'agente deve gestire le tool call generate dal modello, inoltrandole ai rispettivi MCP Client, e fornire al modello i risultati delle operazioni eseguite. Al termine dell'analisi, deve raccogliere le informazioni ottenute e sintetizzarle nei \textsl{SRE Reports}, che verranno successivamente utilizzati per la generazione del codice. Il \textsc{SRE Agent} deve inoltre occuparsi delle funzionalità di logging richieste e adattare il proprio comportamento in funzione del fatto che il campione analizzato sia \textit{stripped} o \textit{non stripped}.
+    L'agente deve gestire le tool call generate dal modello, inoltrandole ai rispettivi MCP Client, e fornire al modello i risultati delle operazioni eseguite. Infine, al termine dell'analisi, deve raccogliere le informazioni ottenute e sintetizzarle all'interno del \textsc{SRE Report}. Il \textsc{SRE Agent} deve inoltre occuparsi delle funzionalità di logging richieste e adattare il proprio comportamento in funzione del fatto che il campione analizzato sia \textit{stripped} o \textit{non stripped}.
 
-    \item[\textsl{Code Agent}.] Utilizza il \textsc{LLM} per guidare e coordinare le attività di generazione del codice, sulla base dei prompt che ne definiscono le istruzioni operative. Riceve come input le informazioni prodotte durante la fase di analisi e contenute nei \textsl{SRE Reports}, utilizzando inoltre come riferimento i \textsl{Code Templates}, che comprendono anche l'interfaccia \texttt{BotNetInterface}, e lo schema dei messaggi \texttt{MessageSchema}.
+    \item[\normalfont\textsc{Code Agent}.] Utilizza il \textsc{LLM} per guidare e coordinare le attività di generazione del codice, sulla base dei prompt che ne definiscono le istruzioni operative. Riceve come input le informazioni prodotte durante la fase di analisi e contenute nel \textsl{SRE Report}, utilizzando inoltre come riferimento lo schema dei messaggi \texttt{MessageSchema} e i \textsc{Code Templates}, tra cui c'è anche l'interfaccia \texttt{BotNetInterface}.
     
     A partire da tali elementi, l'agente deve estrarre le informazioni necessarie, combinarle e utilizzarle per generare il \textsl{Python Module} di cattura. L'agente è pertanto responsabile di produrre un modulo funzionante e conforme ai formati e alle strutture richieste, in particolare rispettando l'interfaccia prevista e senza introdurre alcuna capacità offensiva.
 
@@ -80,7 +80,7 @@ In questa sezione vengono descritti nel dettaglio i singoli componenti che costi
 \begin{description}
 	\item[\textsl{SRE MCP Server} -- \textsl{Sandbox MCP Server}.] Ciascun server è dedicato al rispettivo ambiente di esecuzione e deve esporre i \textit{tools} che potranno essere utilizzati dal \textsc{SRE Agent}, in conformità al protocollo MCP. Ogni \textit{tool} deve avere un \textit{name} univoco e che permette di identificare chiaramente il proprio scopo. Ad esso sono associati inoltre un \textit{title}, opzionale, una \textit{description}, che specifica il contesto e le modalità di utilizzo, e infine un \textit{inputSchema}, un JSON Schema che specifica, per ciascun parametro di input, il tipo, la relativa descrizione e se questo è obbligatorio (\textit{required}) o opzionale \cite{anthropic2024mcp}.
 
-	Il server deve inoltre predisporre il meccanismo di trasporto attraverso cui accettare le connessioni dei client, utilizzando il protocollo \texttt{stdio} nel caso di client locali oppure Streamable HTTP nel caso di client remoti. A fronte delle richieste di esecuzione dei \textit{tool} ricevute dai client, il server deve effettuare il \textit{dispatch} verso la relativa implementazione, che può essere realizzata direttamente oppure indirettamente, delegando l'operazione effettiva a un altro componente. Dopo aver eseguito il \textit{tool}, il server deve restituirne il risultato, eventualmente dopo averlo opportunamente formattato.
+	Il server deve inoltre predisporre il meccanismo di trasporto attraverso cui accettare le connessioni dei client, utilizzando il protocollo \texttt{stdio} nel caso di client locali oppure \texttt{Streamable HTTP} nel caso di client remoti. A fronte delle richieste di esecuzione dei \textit{tool} ricevute dai client, il server deve effettuare il \textit{dispatch} verso la relativa implementazione, che può essere realizzata direttamente oppure indirettamente, delegando l'operazione effettiva a un altro componente. Dopo aver eseguito il \textit{tool}, il server deve restituirne il risultato, eventualmente dopo averlo opportunamente formattato.
     
     % https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture#understanding-the-tool-discovery-response
 
@@ -97,7 +97,7 @@ In questa sezione vengono descritti nel dettaglio i singoli componenti che costi
 
 \begin{description}
 
-    \item[\textsl{SRE Framework}.] Deve fornire almeno le capacità necessarie per l'analisi statica, in modo da consentire lo svolgimento delle relative attività di analisi statica del codice, ed eventualmente anche capacità di analisi dinamica avanzata. A questo scopo, è utile che disponga di funzionalità di disassemblaggio, decompilazione ed, eventualmente, debugging, oltre che di ulteriori strumenti di SRE. Tra le funzionalità di analisi statica da includere rientrano, ad esempio, l'analisi e la gestione delle funzioni e delle relative \textit{cross-reference}, degli indirizzi e della memoria, del \textit{type system}, nonché la gestione e la rinomina dei simboli.
+    \item[\textsl{SRE Framework}.] Deve fornire almeno le capacità necessarie per consentire lo svolgimento delle attività di analisi statica del codice ed eventualmente anche capacità di analisi dinamica avanzata. A questo scopo, è utile che disponga di funzionalità di disassemblaggio, decompilazione ed, eventualmente, debugging, oltre che di ulteriori strumenti di SRE. Tra le funzionalità di analisi statica da includere rientrano, ad esempio, l'analisi e la gestione delle funzioni e delle relative \textit{cross-reference}, degli indirizzi e della memoria, del \textit{type system}, nonché la gestione e la rinomina dei simboli.
 
     Dal punto di vista dell'integrazione, è fondamentale che tali funzionalità siano esposte attraverso un'interfaccia, ad esempio mediante plugin o API, che ne permetta l'accesso da parte del \textsc{SRE Agent} mediante il protocollo MCP, consentendogli di eseguire le azioni selezionate dal \textsc{LLM}.
 
@@ -105,270 +105,59 @@ In questa sezione vengono descritti nel dettaglio i singoli componenti che costi
 
     L'obiettivo è fornire un ambiente generale nel quale, durante il processo di SRE, sia possibile costruire ed eseguire strumenti personalizzati per trasformare, analizzare e interpretare le informazioni estratte durante l'analisi, oppure per automatizzare determinate attività. La sandbox deve inoltre permettere di operare a livello di file, effettuando operazioni di lettura e scrittura secondo le necessità.
 
-    Uno degli aspetti più critici di questo componente consiste nel garantire la sicurezza dell'ambiente durante la sua implementazione. La sandbox deve garantire l'isolamento dall'host e da eventuali altre esecuzioni, operare con privilegi minimi, prevedere limiti alle risorse computazionali disponibili e registrare le attività svolte. L'accesso alla rete dovrebbe essere negato per impostazione predefinita e consentito esclusivamente qualora l'implementazione della sandbox garantisca adeguate condizioni di sicurezza.
+    Uno degli aspetti più critici di questo componente consiste nel garantire la sicurezza dell'ambiente durante la sua implementazione. La sandbox deve garantire l'isolamento dall'host e da eventuali altre esecuzioni, operare con privilegi minimi e prevedere limiti alle risorse computazionali disponibili. L'accesso alla rete dovrebbe essere negato per impostazione predefinita e consentito esclusivamente qualora l'implementazione della sandbox garantisca adeguate condizioni di sicurezza.
+
+    % Registrare le attività svolte (logging files)
 
     Ai fini dell'integrazione con il \textsc{SRE Agent} tramite il protocollo MCP, valgono considerazioni analoghe a quelle precedentemente illustrate per il \textsc{SRE Framework}.
 \end{description}
 
 \section{Flusso di esecuzione} % 4.3
 
-Dopo aver descritto la struttura dell'architettura nel suo complesso e le responsabilità dei singoli componenti, questa sezione finale illustra un flusso di esecuzione completo del sistema. Illustra la strada che il file binario fa nel sistema.
+Dopo aver descritto la struttura complessiva dell'architettura e le responsabilità dei singoli componenti, questa sezione presenta un esempio di flusso di esecuzione completo, illustrando il percorso seguito attraverso i diversi componenti del sistema da un generico \textsc{Binary File} di input.
 
-Per fare questo si utilizzerà un diagramma UML delle attività, un diagramma comportamentale utilizzato per mostrare il modo in cui si svolge un processo o un comportamento, mostrando la sequenza delle attività, le decisioni, i possibili percorsi alternativi, le attività eseguite in parallelo e, quando necessario, il flusso dei dati \cite{omg2017uml}.
+A questo scopo viene utilizzato un diagramma UML delle attività, un diagramma comportamentale che permette di rappresentare lo svolgimento di un processo attraverso il flusso delle attività, le decisioni, i possibili percorsi alternativi, le attività eseguite in parallelo e, ove necessario, il flusso degli oggetti \cite{omg2017uml}. % Capitolo 15
 
-Il diagramma delle attività realizzato è riportato in figura \Cref{fig:attivita}. A differenza del diagramma dei componenti presentato nella sezione precedente, questo diagramma delle attività riportato in questa sezione ha una finalità esclusivamente dimostrativa/illustrativa/esplicativa, visto che è semplificato, è solo un riferimento e non costituisce una specifica vincolante del comportamento del sistema.
+Il diagramma delle attività realizzato è riportato in \Cref{fig:attivita}. A differenza del diagramma dei componenti presentato nella sezione precedente, questo diagramma ha una finalità esclusivamente descrittiva: rappresenta infatti un flusso semplificato utilizzato solamente per illustrare il comportamento del sistema, senza costituire una specifica vincolante per l'implementazione.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=.20]{img/sequenza.png}
-    \caption{Diagramma UML delle attività (della pipeline?).}
+    \includegraphics[scale=.50]{img/attivita_1.png}
+    \includegraphics[scale=.40]{img/attivita_2.png}
+    \caption{Diagramma UML delle attività della pipeline di analisi}
     \label{fig:attivita}
 \end{figure}
 
 Il flusso di esecuzione ha inizio quando l'utente fornisce in ingresso al sistema il \textsc{Binary File}. Quindi, il \textsc{Classifier} ne esegue un'analisi preliminare, con lo scopo di determinare se il campione sia malevolo oppure no. Quando è possibile stabilire con certezza che il campione non è malevolo oppure che, pur essendo malevolo, non è di interesse per il sistema, allora la pipeline di analisi viene interrotta. Negli altri casi il campione viene trasferito dal \textsc{Classifier} al \textsc{SRE Agent}.
 
-Come prima cosa, il \textsc{SRE Agent}, basandosi sulla presenza dei simboli, determina se il campione è non stripped o stripped. Nel secondo caso, l'agente può quindi svolgere subito qualche azione apposita oppure potrà semplicemente modificare il proprio comportamento durante le attività di SRE. A questo punto l'agente carica dal \textsc{Prompt Archive} i prompt di riferimento e, quando possibile, utilizza le informazioni rese disponibili dal \textsl{Classifier} per selezionare dalla \textsc{Knowledge Base} il contesto aggiuntivo pertinente al campione.
+Come prima cosa, il \textsc{SRE Agent}, basandosi sulla presenza dei simboli, determina se il campione è non stripped o stripped. Nel secondo caso, l'agente potrebbe subito svolgere qualche azione apposita oppure potrà adattare di conseguenza il proprio comportamento direttamente durante lo svolgimento delle attività di SRE. A questo punto l'agente carica dal \textsc{Prompt Archive} i prompt di riferimento e, quando possibile, utilizza le informazioni rese disponibili dal \textsc{Classifier} per selezionare dalla \textsc{Knowledge Base} il contesto aggiuntivo pertinente al campione.
 
-La fase centrale è dunque costituita dall'attività di SRE svolta dal \textsc{SRE Agent} attraverso il \textsc{LLM}, secondo un ciclo di iterativo di ragionamento, azione e osservazione. Il modello utilizza, secondo il MCP, i tool offerti dagli ambienti di esecuzione \textsc{Framework SRE} e \textsc{Sandbox}, messi a disposizione dell'agente. Nel caso dell'ambiente \textsc{Sandbox}, il \textsc{LLM} potrà anche produrre e salvare dei \textsc{Sandbox Files}. Quando l'agente dispone di informazioni sufficienti, conclude l'analisi, producendo uno o più file riassuntivi (\textsc{SRE Reports}), mentre l'elenco completo delle attività svolte viene registrato nei relativi \textsc{Logging Files}.
+La fase centrale è dunque costituita dall'attività di SRE svolta dal \textsc{SRE Agent} attraverso il \textsc{LLM}, secondo un ciclo di iterativo di ragionamento, azione e osservazione. Per fare ciò, il modello utilizza i tool messi a disposizione dagli ambienti di esecuzione \textsc{Framework SRE} e \textsc{Sandbox}, interagendoci secondo il protocollo MCP. Nel caso dell'ambiente \textsc{Sandbox}, il \textsc{LLM} potrà anche produrre e salvare dei \textsc{Sandbox Files}. Quando l'agente dispone di informazioni sufficienti, conclude l'analisi, producendo uno o più file riassuntivi (\textsc{SRE Reports}), mentre l'elenco completo delle attività svolte viene registrato nei relativi \textsc{Logging Files}.
 
-Successivamente, i \textsc{SRE Reports} vengono passati al \textsc{Code Agent}, che carica i propri prompt dal \textsc{Prompt Archive}, oltre ai \textsc{Code Templates}, che comprendono la \texttt{BotNetInterface} e al \texttt{MessageSchema}. Il \textsc{LLM} dell'agente utilizza infine questo insieme di informazioni per generare i file richiesti, producendo il \textsc{Python Module} di cattura delle comunicazioni completo, cioè l'output finale del sistema.
+Infine, i \textsc{SRE Reports} vengono passati al \textsc{Code Agent}, che carica i \textsc{Code Templates}, che comprendono la \texttt{BotNetInterface}, il \texttt{MessageSchema} e le istruzioni operative dal \textsc{Prompt Archive}. Il \textsc{LLM} dell'agente utilizza questo insieme di informazioni per generare i file necessari a costruire il \textsc{Python Module} di cattura delle comunicazioni, che corrisponde all'output finale del sistema.
 
-\begin{itemize}
-    \item Tra i tool, chiama quelli del Framework SRE: il LLM chiama il tool, l'agente invoca il metodo del SRE MCP Client, collegato con trasporto al SRE MCP Server che poi eseguirà praticamente l'azione all'interno dell'ambiente Framework SRE.
-    \item La risposta al tool, eventualmente formattata, segue il percorso inverso, tornando al LLM.
-    \item L'agente alterna tra tool dei due ambienti. Nel caso della Sandbox, i tool possono creare anche dei file di analisi (che rimangono).
-    \item Quando l'agent ha raccolto informazioni sufficienti, si ferma e genera i SRE Report che contengono il riassunto di analisi e delle scoperte effettuate.
-    \item Tutte le attività svolte dall'agente (logging) vengono salvate, alcune durante, alcune alla fine.
-    \item Parte il Code Agent, caricando le istruzioni prompt.
-    \item Viene forniti i report (uno o più).
-    \item Vengono caricati i Code Templates tra cui botnet e il MessageSchema.
-    \item Il code Agent, con il LLM, genera i file richiesti secondo le istruzioni dei prompt.
-    \item Il sistema restituisce il Python Module di cattura completo.
-\end{itemize}
+\section{Tool calling} % 4.4
 
-\subsection{Tool calls} % 4.3.1
+Considerata la rilevanza del meccanismo di \textit{tool calling} nell'architettura proposta e la frequenza con cui viene coinvolto durante l'attività di SRE, risulta utile fornire una rappresentazione più dettagliata delle interazioni che avvengono tra il \textsc{SRE Agent} e gli ambienti di esecuzione attraverso il protocollo MCP. I soli diagrammi dei componenti e di attività non risultano infatti adeguati a rappresentare in modo chiaro ed efficace la natura di tali interazioni.
 
-Considerata la rilevanza del meccanismo di tool calling nell'architettura proposta, conviene fornire una rappresentazione più dettagliata delle interazioni che avvengono durante l'utilizzo degli strumenti messi a disposizione tramite MCP. A tale scopo, viene riportato un diagramma di sequenza con finalità esclusivamente dimostrativa, volto a illustrare il flusso dei messaggi scambiati tra il Large Language Model (LLM) e il componente MCP durante l'esecuzione di un tool call.
+A tale scopo, si utilizza un diagramma UML di sequenza, un diagramma comportamentale che rappresenta come diversi componenti interagiscono tra loro nel corso del tempo, descrivendo lo scambio di messaggi relativo a una determinata interazione e mettendo in evidenza l'ordine temporale degli eventi \cite{omg2017uml}. % Capitolo 17, 17.8
 
-Il diagramma si limita a mostrare un caso esemplificativo di list tools e dell'esecuzione di un tool (call tool), insieme alle responsabilità iniziali (creazione oggetto).
+Il diagramma di sequenza realizzato è riportato in \Cref{fig:sequenza}. Esso rappresenta una sequenza esemplificativa, corrispondente a un sottoinsieme delle interazioni che si verificano durante le attività di analisi da parte del \textsc{SRE Agent}.
 
-decisione LLM strumento, invocazione tool mcp client-server, restituzione modello.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=.35]{img/sequenza.png}
+    \caption{Diagramma UML di sequenza delle operazioni di tool calling}
+    \label{fig:sequenza}
+\end{figure}
 
-\includegraphics[scale=.35]{img/sequenza.png}
+Il diagramma mostra nella prima parte della sequenza alcune delle operazioni preliminari relative alla creazione e alla configurazione degli oggetti coinvolti nelle interazioni successive, tra cui l'istanziazione dei \textsc{MCP Client} e del \textsc{LLM} da parte del \textsc{SRE Agent}.
 
-Diagramma dei componenti 1: contiene delle aree evidenziate.
+La seconda parte della sequenza riguarda la scoperta dei tool disponibili per l'ambiente \textsc{Sandbox} da parte dell'agente. Il \textsc{SRE Agent} richiede al \textsc{Sandbox MCP Client} la lista dei tool tramite la funzione $list_tools()$ e il client invoca quindi l'endpoint MCP \texttt{tools/list} del \textsc{Sandbox MCP Server}, che restituisce la lista dei tool secondo il formato previsto dal protocollo MCP. Il client può eventualmente convertire tale formato in quello richiesto dal \textsc{LLM}, restituendo quindi la lista al \textsc{SRE Agent}. Quest'ultimo può utilizzare la lista ottenuta come parametro per le richieste inviate al \textsc{LLM}, eventualmente limitandola anche a un sottoinsieme dei tool disponibili.
 
-\iffalse
-flowchart TD
+La terza parte riguarda invece l'effettiva chiamata di un generico tool del \textsc{SRE Framework}. Il \textsc{SRE Agent}, dopo aver invocato il \textsc{LLM}, riceve una risposta strutturata contenente una o più tool call. Il \textsc{SRE Agent} estrae quindi le singole tool call e determina a quale ambiente di esecuzione appartengano. Nel caso considerato, la chiamata riguarda il \textsc{SRE Framework}, per cui l'agente richiede al \textsc{SRE MCP Client} l'esecuzione del tool tramite la funzione $call_tool(name, arguments)$. Il client invoca quindi l'endpoint \texttt{tools/call} del \textsc{SRE MCP Server}, specificando il $name$ del tool e gli eventuali $arguments$ come oggetto JSON. Il \textsc{SRE MCP Server} gestisce la richiesta eseguendo direttamente l'azione sul \textsc{SRE Framework} oppure delegandola a un altro componente incaricato della sua esecuzione. Quando l'esecuzione dell'operazione richiesta termina, il \textsc{SRE Framework} restituisce il relativo risultato al server, che può eventualmente formattarlo prima di restituirlo al \textsc{MCP Client}. Quest'ultimo può a sua volta applicare un'ulteriore conversione del formato, prima di restituire il risultato al \textsc{SRE Agent}. L'agente può infine inserire il risultato nel contesto del \textsc{LLM} e proseguire con l'attività di analisi.
 
-%% =========================
-%% Definizione Stili
-%% =========================
-classDef agent fill:#f9d0c4,stroke:#c0392b,stroke-width:2px,color:#333;
-classDef mcp fill:#d4e6f1,stroke:#2980b9,stroke-width:2px,color:#333;
-classDef tool fill:#fcf3cf,stroke:#f1c40f,stroke-width:2px,color:#333;
-classDef io fill:#e8f8f5,stroke:#1abc9c,stroke-width:2px,color:#333;
-
-%% =========================
-%% Artefatti di Input / Output
-%% =========================
-Bin([File Binario Ignoto]):::io
-KB[(Knowledge Base<br/>e System Prompts)]:::io
-Templ[(Template Codice)]:::io
-Logs[(Log di Tracciabilità)]:::io
-Output([Codice di Intercettazione]):::io
-
-%% =========================
-%% Layer 1: Pipeline degli Agenti
-%% =========================
-subgraph Pipeline_Agenti["Pipeline di Analisi LLM"]
-    Classifier["Modulo di Classificazione<br/>Triage"]:::agent
-    REAgent["Agente di Reverse Engineering<br/>LLM-based"]:::agent
-    GenAgent["Agente di Generazione Codice<br/>LLM-based"]:::agent
-end
-
-%% =========================
-%% Layer 2: Modulo MCP
-%% =========================
-subgraph Layer_MCP["Model Context Protocol Layer"]
-    GhidraMCP["Ghidra MCP<br/>Server"]:::mcp
-    SandboxMCP["Sandbox MCP<br/>Server"]:::mcp
-end
-
-%% =========================
-%% Layer 3: Strumenti Esecutivi
-%% =========================
-subgraph Strumenti["Ambienti di Esecuzione"]
-    GhidraTool["Ghidra R.E.<br/>Headless"]:::tool
-    SandboxEnv["Sandbox<br/>Dinamica"]:::tool
-end
-
-%% =========================
-%% Artefatti Intermedi
-%% =========================
-Report[(Report & Evidenze<br/>JSON Schema C2)]:::io
-
-%% =========================
-%% Flusso Principale dei Dati
-%% =========================
-Bin --> Classifier
-Classifier -->|"Conferma: Famiglia Mirai"| REAgent
-REAgent -->|"Evidenze Estratte"| Report
-Report --> GenAgent
-GenAgent --> Output
-
-%% =========================
-%% Contesto agli Agenti
-%% =========================
-KB -.->|"Contesto / Regole"| REAgent
-KB -.->|"Contesto / Regole"| GenAgent
-Templ -.->|"Struttura Base"| GenAgent
-
-%% =========================
-%% Logging
-%% =========================
-Pipeline_Agenti -.-> Logs
-
-%% =========================
-%% Agenti <-> MCP
-%% =========================
-REAgent ==>|"Richiesta Tool<br/>(Decompile, Sys call, ecc.)"| GhidraMCP
-REAgent ==>|"Richiesta Tool<br/>(Esegui, Sniff)"| SandboxMCP
-
-%% =========================
-%% MCP <-> Strumenti
-%% =========================
-GhidraMCP <--> |"API / Bridge"| GhidraTool
-SandboxMCP <--> |"API / Bridge"| SandboxEnv
-\fi 
-
-Diagramma dei componenti 2: contiene tutti i componenti, input e output.
-
-\iffalse
-flowchart TD
-%% Definizione Stili
-classDef agent fill:#f9d0c4,stroke:#c0392b,stroke-width:2px,color:#333;
-classDef mcp fill:#d4e6f1,stroke:#2980b9,stroke-width:2px,color:#333;
-classDef tool fill:#fcf3cf,stroke:#f1c40f,stroke-width:2px,color:#333;
-classDef io fill:#e8f8f5,stroke:#1abc9c,stroke-width:2px,color:#333;
-classDef llm fill:#ffecd2,stroke:#8e44ad,stroke-width:2px,color:#333;
-classDef primary fill:#e8daef,stroke:#ff7f50,stroke-width:3px,color:#333;
-
-%% Artefatti di I/O
-Bin([File Binario Ignoto]):::primary
-KB[(Knowledge Base)]:::io
-Prompts[(Istruzioni e Prompt)]:::io
-Templ[(Template Codice)]:::io
-JSONSchema[(Schema JSON\nComandi C2)]:::io
-Report[(Report & Evidenze)]:::io
-Logs[(Log di Tracciabilità)]:::io
-Output([Codice Python\nIntercettazione]):::primary
-Halt([Termine Pipeline]):::io
-
-%% Componente LLM
-LLM[Large Language Model]:::llm
-
-%% Pipeline Agenti e MCP Clients
-Classifier[Modulo di Classificazione]:::agent
-
-RE_Core[Logica Agente RE]:::agent
-SRE_Client[SRE MCP Client]:::mcp
-SandboxClient[Sandbox MCP Client]:::mcp
-
-GenAgent[Agente di Generazione Codice]:::agent
-
-%% Layer MCP Server
-SRE_MCP[Framework SRE\nMCP Server]:::mcp
-SandboxMCP[Sandbox\nMCP Server]:::mcp
-
-%% Strumenti Esecutivi
-subgraph Strumenti [Ambienti di Esecuzione]
-    SRE_Tool[Framework SRE]:::tool
-    SandboxEnv[Sandbox Dinamica]:::tool
-end
-
-%% Flusso Dati Principale
-Bin --> Classifier
-Classifier -- "Malevolo" --> RE_Core
-Classifier -. "Non Malevolo: Stop" .-> Halt
-
-RE_Core -- "Estrazione" --> Report
-Report --> GenAgent
-GenAgent --> Output
-
-%% Flusso Prompt e KB
-Prompts -. "Contesto/Regole" .-> RE_Core
-Prompts -. "Contesto/Regole" .-> GenAgent
-KB -. "Riferimenti (Opzionale)" .-> RE_Core
-
-%% Connessioni LLM
-RE_Core <--> |"Reversing/Reasoning"| LLM
-GenAgent <--> |"Code Gen"| LLM
-
-%% Connessioni MCP: Separazione Call / Result (Agent <-> Client)
-RE_Core -- "Tool Call" --> SRE_Client
-SRE_Client -- "Tool Result" --> RE_Core
-
-RE_Core -- "Tool Call" --> SandboxClient
-SandboxClient -- "Tool Result" --> RE_Core
-
-%% Connessioni MCP: Trasporto (Client <-> Server)
-SRE_Client <--> |"stdio / HTTP"| SRE_MCP
-SandboxClient <--> |"stdio / HTTP"| SandboxMCP
-
-%% Connessioni Server -> Strumenti
-SRE_MCP <--> |"Bridge / API"| SRE_Tool
-SandboxMCP <--> |"Bridge / API"| SandboxEnv
-
-%% Input per la Generazione e Logging
-Templ -. "Struttura Base" .-> GenAgent
-JSONSchema -. "Mappatura" .-> GenAgent
-RE_Core -.-> Logs
-\fi
-
-Diagramma di sequenza MCP:
-
-\iffalse
-sequenceDiagram
-participant LLM
-participant SREAgent as SRE Agent
-
-participant SandboxMCPClient as Sandbox MCP Client
-participant SandboxMCPServer as Sandbox MCP Server
-participant SandboxExecutionEnvironment as Sandbox Execution Environment
-
-participant SREFrameworkMCPClient as SRE Framework MCP Client
-participant SREFrameworkMCPServer as SRE Framework MCP Server
-participant SREFrameworkExecutionEnvironment as SRE Framework Execution Environment
-
-rect rgb(245, 245, 245)
-    Note over SREAgent, SREFrameworkMCPServer: Initialization
-    SREAgent->>SandboxMCPClient: Create MCP client instance
-    SREAgent->>SREFrameworkMCPClient: Create MCP client instance
-    SandboxMCPClient->>SandboxMCPServer: Initialize/connect MCP server
-    SREFrameworkMCPClient->>SREFrameworkMCPServer: Initialize/connect MCP server
-end
-
-rect rgb(235, 245, 255)
-    Note over LLM, SandboxExecutionEnvironment: list_tools flow
-    LLM->>SandboxMCPClient: list_tools
-    SandboxMCPClient->>SandboxMCPServer: Request tool list
-    SandboxMCPServer-->>SandboxMCPClient: Return tool list
-    SandboxMCPClient-->>LLM: list_tools response
-end
-
-Note over LLM, SREFrameworkExecutionEnvironment: Time passes and other actions occur
-
-rect rgb(235, 255, 235)
-    Note over LLM, SREFrameworkExecutionEnvironment: call_tools flow
-    LLM->>SREFrameworkMCPClient: call_tools(name: string, arguments: dictionary)
-    SREFrameworkMCPClient->>SREFrameworkMCPServer: Call tool(name: string, arguments: dictionary)
-    SREFrameworkMCPServer->>SREFrameworkExecutionEnvironment: Execute tool(name: string, arguments: dictionary)
-    SREFrameworkExecutionEnvironment-->>SREFrameworkMCPServer: Return execution result
-    SREFrameworkMCPServer-->>SREFrameworkMCPClient: Return call result
-    SREFrameworkMCPClient-->>LLM: call_tools response
-end
-\fi
+% Tool call delimitate, ad esempio, dai tag $<tool_call>$ e $</tool_call>$.
 
 %\documentclass[../thesis_paviotti.tex]{subfiles}
 %\begin{document}

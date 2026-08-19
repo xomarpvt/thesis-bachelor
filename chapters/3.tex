@@ -34,9 +34,7 @@ Il modulo generato dovrà essere implementato nel linguaggio Python e dovrà ess
 
 La scelta di utilizzare Python come linguaggio di destinazione è dovuta a diversi aspetti, tra cui due in particolare. Il primo riguarda il fatto che tale linguaggio è ampiamente utilizzato nell'ambito della cybersecurity e della \textit{Network Forensics}, grazie alla disponibilità di un ampio ecosistema di librerie e strumenti dedicati all'analisi e all'elaborazione dei dati di rete \cite{oconnor2012python}.
 
-Il secondo aspetto riguarda un requisito tecnico legato alla gestione del traffico di rete in tempo reale. L'impiego di costrutti avanzati di Python, come i generatori e i flussi di dati, attraverso l'istruzione \texttt{yield}, consente un'elaborazione continua dei messaggi C\&C, limitando il consumo di memoria \cite{ramalho2022yield}. Tale approccio permette infatti di ridurre la \textit{memory footprint} del modulo, facilitandone l'integrazione con altri sistemi e rendendolo idoneo a operare per periodi di tempo prolungati.
-
-% CITAZIONEE
+Il secondo aspetto riguarda un requisito tecnico legato alla gestione del traffico di rete in tempo reale. L'impiego di costrutti avanzati di Python, come i generatori, attraverso l'istruzione \texttt{yield}, consente di elaborare progressivamente i messaggi C\&C secondo un modello \textit{lazy}, anziché mantenerne l'intero contenuto in memoria \cite{ramalho2022yield}. Tale approccio permette infatti di limitare il consumo di memoria del modulo, facilitandone l'integrazione con altri sistemi e rendendolo idoneo a operare per periodi di tempo prolungati. % Chapter 17
 
 \section{Requisiti del problema} % 3.3
 

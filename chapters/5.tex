@@ -28,23 +28,31 @@ Python: ambiente dove il LLM può creare procedure e ragionamenti personalizzati
 Questa combinazione è già una base molto forte. Se in futuro volessi estenderla, il debugging/P-code sarebbe probabilmente un terzo livello, non una sostituzione:
 \fi
 
-\section{Orchestratore ???} % 5.0
-
 \section{Ambiente di sviluppo} % 5.1
 
 \subsection{Python} % 5.1.1
 
-\section{Riconoscimento Campione} % 5.2
+Python 3.13 e Conda.
+
+\section{Classifier} % 5.2
 
 \subsection{Virus Total (?)} % 5.2.1
 
+API: malevolo oppure non malevolo e ipotesi famiglia
+
 \subsection{YARA Rules (?)} % 5.2.2
 
-\section{Ambiente Reverse Engineering} % 5.3
+Conferma famiglia.
 
-\subsection{Ghidra} % 5.3.1
+\section{SRE Framework} % 5.3
+
+\subsection{Ghidra (Docker?)} % 5.3.1
+
+\cite{nance2026ghidrabook}
 
 \subsection{Import} % 5.3.2
+
+Headless e analisi automatica.
 
 \subsection{MCP Plugin (Github)} % 5.3.3
 
@@ -52,7 +60,11 @@ Questa combinazione è già una base molto forte. Se in futuro volessi estenderl
 
 \subsection{Selezione Tools Analisi Statica} % 5.3.5
 
+Tools YAML.
+
 \section{Ambiente Isolato Sandbox} % 5.4
+
+Docker.
 
 \subsection{Dockerfile} % 5.4.1
 
@@ -61,6 +73,8 @@ Questa combinazione è già una base molto forte. Se in futuro volessi estenderl
 \subsubsection{Scrittura File}
 
 \subsubsection{Esecuzione PY}
+
+\subsubsection{Esecuzione SH}
 
 \section{MCP Client} % 5.5
 
@@ -72,25 +86,17 @@ Questa combinazione è già una base molto forte. Se in futuro volessi estenderl
 
 \subsection{Tool Calls Handling} % 5.6.2
 
-\section{Schema} % 5.7
+\section{MessageSchema} % 5.7
 
 \subsection{Message Classification} % 5.7.1
 
-\subsection{Message JSON Schema} % 5.7.2
+\subsection{JSON Schema} % 5.7.2
 
-\subsubsection{IP JSON Schema}
-
-Lo schema JSON definisce il formato utilizzato dal sistema per rappresentare le informazioni associate ad un indirizzo IP. Il suo scopo è uniformare l'output prodotto dai moduli di intercettazione, indipendentemente dalla famiglia malware analizzata.
-
-La struttura è suddivisa in cinque sezioni principali: informazioni geografiche (geo), dati di localizzazione (location), caratteristiche della rete (network), informazioni DNS (dns) e metadati (meta). Lo schema, sviluppato secondo lo standard JSON Schema Draft 2020-12, consente inoltre di validare la correttezza della struttura prodotta e di garantire la compatibilità tra tutti i componenti del sistema.
+\subsubsection{IP Schema}
 
 \subsubsection{IP Lookup}
 
-La classe IPLookup centralizza l'arricchimento delle informazioni relative agli indirizzi IP osservati durante l'analisi. A partire da un indirizzo IPv4, vengono interrogate basi dati locali per recuperare informazioni geografiche e di rete, mentre una componente dedicata esegue interrogazioni DNS per ottenere il record PTR e verificarne la corrispondenza tramite Forward-Confirmed Reverse DNS (FCrDNS).
-
-Le informazioni raccolte vengono restituite in un oggetto conforme allo schema descritto nella sezione precedente. L'utilizzo di un'unica classe dedicata evita duplicazioni di codice e garantisce un formato uniforme dei dati prodotti da tutti i moduli generati automaticamente.
-
-\section{Template} % 5.8
+\section{Code Templates} % 5.8
 
 \subsection{Botnet} % 5.8.1
 
@@ -100,7 +106,7 @@ Le informazioni raccolte vengono restituite in un oggetto conforme allo schema d
 
 Visto che per la botnet è stato anche aggiunto un minimo di logging e che IPLookup è centralizzato, l'interfaccia è aggiornata con un costruttore nuovo.
 
-\section{Prompt Engineering} % 5.9
+\section{Prompt Archive} % 5.9 (Engineering)
 
 \subsection{Renaming} % 5.9.1
 
