@@ -8,32 +8,30 @@ Le prestazioni non sono oggetto della valutazione in quanto.
 
 \section{Ambiente sperimentale} % 6.2
 
+\subsection{LLM} % 6.2.1
 
+\begin{description}
+    \item[Qwen 3.6 27B] 
+    
+    \begin{itemize}
+        \item Architettura Dense e parametri
+        \item Contesto
+        \item Hardware (1*A100)
+        \item vLLM Recipe (quantizzazione)
+        \item Usage Parameters (0.8)
+    \end{itemize}
 
-\subsection{Hardware} % 6.2.1
+    \item[DeepSeek-V4-Flash-Preview] 
+    
+    \begin{itemize}
+        \item Architettura MoE e parametri
+        \item Contesto
+        \item Hardware (4*H100)
+        \item vLLM Recipe (quantizzazione)
+        \item Usage Parameters (1.0 thinking, 0.8)
+    \end{itemize}
 
-\subsubsection{(?) GPU: A100 e 4*H100}
-
-\subsubsection{(?) CPU e RAM}
-
-\subsection{Software} % 6.2.2
-
-\subsubsection{(?) vLLM}
-
-\subsection{Large Language Models} % 6.2.3 
-
-\subsubsection{Qwen 3.6 27B}
-
-\subsubsection{DeepSeek-V4-Flash-Preview}
-
-\begin{itemize}
-    \item Architettura
-    \item Parametri
-    \item Contesto
-    \item VLLM Recipe
-    \item Usage Parameters
-    \item Varie
-\end{itemize}
+\end{description}
 
 \section{Definizione delle metriche di valutazione} % 6.3
 

@@ -1,4 +1,8 @@
-\chapter{Implementazione} % 5
+\chapter{L'implementazione} % 5
+
+Questo capitolo ha l'obiettivo di trattare l'implementazione del sistema progettato. Verranno quindi discusse le scelte implementative effettuate e quindi descritto l'implementazione dei singoli componenti. Tutto ciò verrà fatto con diversi livelli di dettaglio, andando più nel profondo per cose interessanti/difficili, più brevemente invece per quelle banali.
+
+% È importante sottolineare come le scelte tecnologiche e le modalità di sviluppo qui presentate costituiscano una sola delle possibili soluzioni per la messa in atto del progetto.
 
 \iffalse
 
@@ -30,9 +34,12 @@ Questa combinazione è già una base molto forte. Se in futuro volessi estenderl
 
 \section{Ambiente di sviluppo} % 5.1
 
-\subsection{Python} % 5.1.1
+L'implementazione del sistema è stata realizzata in Python 3.13 \footnote{\url{https://www.python.org}}, mentre per la gestione dell'ambiente di sviluppo e delle dipendenze del progetto è stato utilizzato Conda \footnote{\url{https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/index.html}}.
 
-Python 3.13 e Conda.
+Il motivo per cui la scelta del linguaggio di implementazione è ricaduta su Python è legato principalmente all'ampio ecosistema di librerie disponibili per le funzionalità richieste dal sistema. Tra queste rientrano, in particolare, librerie dedicate all'analisi del malware, all'integrazione con LLM e agenti, alle interazioni basate sul protocollo MCP e all'interazione con gli ambienti di esecuzione. La disponibilità di strumenti già consolidati ha pertanto consentito di concentrare lo sviluppo sulla logica specifica dell'architettura proposta, riducendo la necessità di implementare direttamente funzionalità di supporto.
+
+% https://www.python.org/downloads/release/python-3130/
+% https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-python.html
 
 \section{Classifier} % 5.2
 
@@ -62,49 +69,155 @@ Headless e analisi automatica.
 
 Tools YAML.
 
-\section{Ambiente Isolato Sandbox} % 5.4
+\section{Ambiente Sandbox} % 5.4
 
-Docker.
+L'ambiente della \textsc{Sandbox} viene realizzato mediante un ambiente di esecuzione containerized, adottando Docker come tecnologia per la creazione e la gestione dei container. 
 
-\subsection{Dockerfile} % 5.4.1
+La containerization è una tecnica di isolamento a livello di sistema operativo che consente di eseguire un'applicazione e le relative dipendente all'interno di un ambiente (processo) isolato. Rispetto alle macchine virtuali, che richiedono l'esecuzione di un intero sistema operativo guest, i container rappresentano un approccio più leggero per ottenere ambienti di esecuzione separati \cite{docker2026container}.
 
-\subsection{MCP Server} % 5.4.2
+Nel contesto della \textsc{Sandbox}, Docker (fornisce i meccanismi?) necessari per (creare container??), con isolamento di filesystem, rete e consentire il controllo delle risorse computazionali. Queste caratteristiche rendono possibile di configurare l'ambiente in modo coerente con i requisiti di isolamento e sicurezza della sandbox individuati durante la fase di progettazione.
 
-\subsubsection{Scrittura File}
+\subsection{Configurazione} % 5.4.1 del Dockerfile
 
-\subsubsection{Esecuzione PY}
+La configurazione dell'ambiente \textsc{Sandbox} può essere definita mediante un \textit{Dockerfile}, che specifica l'immagine di base, le dipendenze e le impostazioni necessarie al funzionamento della sandbox. L'immagine usata è basata su Python 3.13 e Debian Slim, in modo da fornire un ambiente dalle dimensioni ridotte che permetta di mettere a disposizione del LLM la capacità di scrivere file, di eseguire codice python ed eseguire comandi della shell.
 
-\subsubsection{Esecuzione SH}
+A questo scopo, durante la fase di costruzione vengono installati gli strumenti di sistema e alcune librerie Python richieste dall'attività di analisi, in particolare quelle in ambito crittografico (\texttt{cryptography}, \texttt{pycryptodome}). Viene inoltre configurata una directory dedicata alla sandbox e viene creato un utente non root utilizzato (per l'esecuzione dei ??? processi??) all'interno del container.
+
+Ll'immagine definita servirà per creare il container. Durante la configurazione vengono implementate alcune delle principali misure di isolamento previste. Per questa implementazione si è deciso di disabilitare completamente l'accesso alla rete (così non ci si deve preoccupare di attività malevole. il LLM si dovrà adeguare con quanto installato/default). Per consentire lo scambio controllato dei \textsc{Sandbox Files}, una directory dell'host viene montata all'interno del container con permessi di lettura e scrittura. Infine si è limitato le risorse computazionali (memoria e CPU).
+
+\subsection{Sandbox MCP Server} % 5.4.2
+
+Il server ha lo scopo di interagire con l'ambiente sandbox e esporre i tool MCP. 
+Quindi utilizza la libreria python FastMCP \footnote{\url{https://gofastmcp.com/}} per l'implementazione del MCP server
+Il MCP server può quindi operare direttamente sull'ambiente, sfruttando la libreria docker SDK di python \footnote{\url{https://docker-py.readthedocs.io}}
+
+All'inizializzazione il container, se non è running, viene avviato. Le funzionalità e i tool implementati sono:
+
+\begin{description}
+    \item[File System] (listFiles, readFile, writeFile) così che il LLM possa operare su file. sono previsti messaggi di errore nel caso l'operazione fallisca.
+    \item[Python] esecuzione, con timeout, di un file python, restituendo in modo strutturato exit code, stdout e stderr.
+    \item[Comandi Shell] esecuzione diretta di comandi della shell, con un preventivo controllo sui comandi eseguiti (impedire privilege escalation, nuove shell, funzioni networking e altro) e sui caratteri usati (shell syntax), sempre output strutturato come python.
+\end{description}
 
 \section{MCP Client} % 5.5
 
-\subsection{Parse Tool MCP -> LLM} % 5.5.1
+Per i \textsc{Sandbox MCP Client} e \textsc{Ghidra MCP Client} è stata definita una classe base comune che si occupa di instaurare e mantenere la connessione con il rispettivo server mediante il metodo di trasporto \textit{stdio}. La classe gestisce il ciclo di vita della connessione attraverso un contesto asincrono, inizializzando una ClientSession (python mcp sdk) e fornendo le due funzioni di base list tools e call tool.
+
+\subsection{LLM-MCP Client} % 5.5.1 Tool Parsing
+
+La classe viene quindi estesa, introducendo quindi il livello di integrazione con il LLM. In particolare gli strumenti esposti dal server MCP vengono convertiti nel formato atteso dalle API di OpenAI, quello di tool/function generation.
+
+Infine, un'altra classe (???) fornisce anche un meccanismo per la registrazione di un client MCP: consente di selezionare, attraverso i nomi un sottoinsieme di strumenti da esporre e di applicare un prefisso (id del MCP) ai nomi dei tool.
+
+Nel complesso, queste componenti costituiscono un livello di astrazione che semplifica la gestione dei diversi client MCP e il loro collegamento con il LLM per il tool calling del \textsc{SRE Agent}.
 
 \section{LLM Client} % 5.6
 
+Questo è il componente responsabile dell'interazione tra gli agenti, il LLM e gli strumenti esposti dai client MCP.
+
+All'inizializzazione, gli strumenti disponibili vengono raccolti (dai MCP client passati) e associati al rispettivo client mediante una struttura di risoluzione, permettendo in seguito di individuare il server MCP responsabile di ciascuna richiesta generata dal LLM.
+
+Ci sono le funzionalità di impostazione dei parametri di utilizzo del LLM, in particolare temperatura, \dots.
+
+Vengono quindi messi a disposizione dei metodi per risposte singole (chat completion secondo lo standard OpenAI), con e senza l'utilizzo dei tool. Poi viene esposto il metodo per il loop dell'agente. Il loop viene implementato in modalità lossless, senza compattazione di contesto (in quanto non è normale andare oltre per le task decise in questa implementazione).
+
+Nel tool dell'agente ovviamente c'è il dispatching dei tool chiamati, eseguendoli sul rispettivo MCP, aggiungendo al contesto le risposte formattate ricevute dagli ambienti.
+
 \subsection{Logging} % 5.6.1
 
-\subsection{Tool Calls Handling} % 5.6.2
+per l'agente è necessario implementare le funzionalità di logging. a questo scopo viene fatto su due punti di vista (?) / livelli diversi:
+
+- uno completo, con il json sempre riferimento a standard OpenAI di intere conversazioni
+- uno orientato alla lettura umana: prompt iniziale, numero di step, trascrittura di ragionamento e assistant response, con tool chiamati (ma senza le risposte).
+
+% \subsection{Tool Calls Handling} % 5.6.2
 
 \section{MessageSchema} % 5.7
 
+Come individuato nella fase di analisi dei requisiti e progettazione, è necessario definire uno schema comune per i messaggi restituiti dal \texttt{Python Module}. A questo scopo è perfetto utilizzare uno JSON schema. 
+
+JSON Schema è un linguaggio dichiarativo progettato per descrivere la struttura e i vincoli dei dati rappresentati in formato JSON. Attraverso un insieme di keyword consente di specificare la tipologia dei dati, la struttura degli oggetti e delle proprietà che li compongono \cite{jsonschema2020json}.
+
+L'uso di JSON schema è ideale per due ragioni. La prima è che permette di verificare la conformità di un documento (istanza?) JSON a uno schema mediante un apposito \textit{validator}, confrontando l'istanza con le regole definite nello schema, determinando se i vincoli specificati sono rispettati. Oltre allo scopo di validazione, JSON schema può anche essere utilizzato come forma di documentazione, fornendo una descrizione di struttura e vincoli dei dati attraverso una rappresentazione comprensibile sia dall'umano che dal LLM.
+
+Da qualche parte bisogna affermare la compatibilità con i dizionari python.
+
 \subsection{Message Classification} % 5.7.1
+
+Prima di procedere all'implementazione dello schema, conviene sfruttare l'espressività (???) di JSON schema per poter distinguere (semanticamente?) i messaggi catturati dall'infrastruttura di C\&C in diverse tipologie, facilitando (per l'umano capire quali messaggi vengono scambiati) e adottando ricorsivamente schemi diversi in base al tipo.
+
+Per questa implementazione particolare si è deciso di distinguere tra i seguenti tipi di messaggi:
+
+\begin{description}
+    \item[ACK] per i messaggi di richiesta di invio acknowledgment a un precedente messaggio richiesti dal server C\&C.
+    \item[Attack] per i messaggi che contengono istruzioni di attacco.
+    \item[Heartbeat] per i messaggi di keepalive del traffico.
+    \item[Command] per i messaggi di servizio o generici, che quindi non rientrano nelle categorie precedenti oppure che non si è convinti di classificare più specificamente.
+\end{description}
 
 \subsection{JSON Schema} % 5.7.2
 
+Lo schema realizzato è riportato tra le appendici. è conforme al seguente standard \footnote{\url{https://json-schema.org/draft/2020-12/json-schema-core.html}}
+
+Al primo livello dello schema si decide di salvare timestamp temporale di ricezione del messaggio e indirizzo IP sorgente del messaggio. Quindi c'è un campo per identificare il tipo del messaggio tra quelli precedenti e poi uno schema annidato con le informazioni specifiche per il messaggio.
+
+Descrizione specifiche dei messaggi: ACK ha almeno uno status, il heartbeat ha un numero di sequenza (lato-server) e uptime opzionale, mentre command riporta il payload raw e una stringa di tipo del comando (o null) se si ha un'identificazione specifica. Tutti i messaggi hanno una nota string/null per informazioni aggiuntive.
+
+Il tipo attack è il più interessante: codice identificativo dell'attacco, nome specifico dell'attacco e protocollo di rete coinvolto, durata dell'attacco, numero e valore degli argomenti passati all'attacco (argc, argv), numero e indirizzi ip dei bersagli dell'attacco.
+
 \subsubsection{IP Schema}
+
+Nello schema c' anche un campo array per l'info degli IP coinvolti dagli attacchi, eventualmente vuoto.
+
+Questo permette di avere informazioni specifiche sui bersagli coinvolti dagli attacchi: tra queste informazioni ci sono quelle geografiche (da continente fino a città), di localizzazione (latitudine, longitudine, timezone), sulla rete a cui appartiene (CIDR, ASN e name, domain), info DNS e spazio per eventuali aggiunte.
 
 \subsubsection{IP Lookup}
 
+La responsabilità di "compilare" queste informazioni, a partire dagli IP dell'attacco, è del Python Module. Tuttavia questo deve solo invocare un modulo fisso.
+
+-> riscrivi per chiarezza. il modulo è fisso e realizzato dall'utente, passato direttamente al Module.
+
+nella pratica per implementare ci si può affidare a database locali da cui estrarre le informazioni, insieme a librerie ipaddress e dnsPython.
+% https://ipinfo.io/data/ipinfo_lite.mmdb?token=b2626200bf26b3
+% https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz
+
 \section{Code Templates} % 5.8
 
-\subsection{Botnet} % 5.8.1
+% \subsection{Aggiornamento BotNetInterface} % 5.8.0
 
-\subsection{Parser} % 5.8.2
+Come anticipato nella progettazione, conviene separare le responsabilità, per cui si utilizzeranno due file distinti, partendo comunque dal BotNet Module che rimane il main.
 
-\subsection{Aggiornamento Interface (?)} % 5.8.3
+Visto che nel modulo verranno implementate funzioni di logging e c'è la dipendenza dalla classe centralizzata IP lookup, a botnet interface si aggiunge un costruttore che permette di passare questi oggetti.
 
-Visto che per la botnet è stato anche aggiunto un minimo di logging e che IPLookup è centralizzato, l'interfaccia è aggiornata con un costruttore nuovo.
+Per la classificazione dei messaggi si usa una ENUM python (MessageClassification).
+
+\subsection{BotNet Module} % 5.8.1
+
+deve implementare  secondo i contratti definiti da BotNetInterface, le funzioni del modulo main principale, andando un po' più nello specifico, secondo quello che ci si aspetta dal modulo finale.
+
+\begin{description}
+    \item[Attributi/Costanti di classe] hostname o host ip, sequenze di handshake, ack, heartbeat ==> tutti i parametri (se) fissi del modulo (aggiungi tu)
+    \item[Costruttutore] creazione di quanto necessario, del socket, del buffer di ricezione dei messaggi, del logger e del modulo parser dei messaggi (classe).
+    \item[Connect] stabilire praticamente una connessione all'endpoint C\&C del socket e implementazione tramite funzione authentication dedicata della sequenza di inizializzazione del protocollo, così da potersi registrarsi come se fosse il dispositivo di una vittima al server di C\%C.
+    \item[Sniff] rimane in ascolto indefinito dei comandi ricevuti dal C\&C e poi c'è il metodo di heartbeat regolare. Quando riceve qualcosa applica un eventuale pre-processing allo stream (preprocess\_stream) ed estende il buffer; dal buffer si estraggono singoli pacchetti (extractPackets) e si esegue il decoding o decifratura (decodePacket) se prevista dal protocollo; quindi dai pacchetti si estraggono i messaggi (extractMessages); per ciascun messaggio si classifica il tipo (getmessagetype, secondo i principi introdotti prima) e, se il protocollo lo richiede si adotta un comportamento specifico (ad esempio ACK ai messaggi ricevuti). Il parsing del messaggio è demandato al modulo MessageParser (funzione parseMessage), quindi il dizionario viene ritornato.
+\end{description}
+
+tutto viene implementato tramite "pass" python oppure return/packet degli oggetti senza modifiche (immutati). quello che si trasmette è che l'implementazione dovrà:
+
+\begin{itemize}
+    \item se il protocollo implementa quella cosa, modifica e replicala (OVERRIDE)
+    \item se il protocollo non la implementa, lascia tutto com'è, visto che non modifica niente e passa avanti.
+\end{itemize}
+
+Affinché poi vengano passati al Code Agent, tutte le funzioni adottano commenti """""" per definire contratto/comportamento dei singoli funzioni (nei prompt quindi basterà più una descrizione di insieme e non specifica). durante la classe vengono anche mostrate informazioni riguardanti le informazioni/azioni per cui ci si aspetta il logging.
+
+\subsection{MessageParser Module} % 5.8.2
+
+deve esporre un metodo \texttt{parse\_message} che possa essere richiamato dal botnet module. questo metodo può quindi direttamente inserire le informazioni comuni a tutti i messaggi, successivamente viene eseguito il dispatch verso i metodi specifici (parse ack, command, heartbeat e attack). Nel caso di attack in più è responsabile di riempire le informazioni ipI  nfo utilizzando la rispettivamente classe.
+
+Implementa la logica secondo cui un errore di parsing dei metodi specifici fa ricadere su un messaggio generico command. alla fine il metodo deve restituire un dizionario python pronto a essere validato contro il JSON schema.
+
+Per semi implementazioni e commenti valgono stessi principi di botnet module.
 
 \section{Prompt Archive} % 5.9 (Engineering)
 
