@@ -41,62 +41,119 @@ Il motivo per cui la scelta del linguaggio di implementazione è ricaduta su Pyt
 % https://www.python.org/downloads/release/python-3130/
 % https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-python.html
 
-\section{Classifier} % 5.2
+\section{Orchestrazione / Esecuzione} % 5.2
 
-\subsection{Virus Total (?)} % 5.2.1
+\subsection{Classifier} % 5.2.1
+
+\subsubsection{Virus Total (?)}
 
 API: malevolo oppure non malevolo e ipotesi famiglia
 
-\subsection{YARA Rules (?)} % 5.2.2
+\subsubsection{YARA Rules (?)}
 
 Conferma famiglia.
 
+\subsection{SRE Agent} % 5.2.2
+
+\begin{itemize}
+    \item import in SRE Framework e analisi automatica (fun ghidra)
+    \item determina con una funzione se stripped (fun ghidra)
+    \item eventuale injection knowledge base
+    \item doppio ciclo di renaming start/stop
+    \item save (fun ghidra)
+    \item doppio ciclo di reversing con due report
+\end{itemize}
+
+contatto con SRE framework e sandbox.
+
+\subsubsection{Knowledge Base}
+
+\subsubsection{Selezione Tools Analisi Statica} % 5.3.4
+
+Per questa implementazione è stato scelto solo un sottoinsieme di tool riguardanti analisi statica del codice.
+tre ragioni:
+- semplicità, cioè riduzione delle variabili in gioco e più controllo sulle azioni (eventualmente estendibile)
+- evitare di esporre all'esecuzione reale
+- the less mcp the better (LLM)
+
+I tool scelti rientrano nelle seguenti categorie:
+Tools YAML.
+[motivazioni parte 1]
+
+\subsubsection{Selezione Tools Analisi Dinamica}
+
+Niente accesso al file. niente accesso a internet.
+
+[motivazioni parte 2] (no malware access)
+
+\subsection{Code Agent} % 5.2.3
+
+\subsubsection{Context Injection}
+
 \section{SRE Framework} % 5.3
 
-\subsection{Ghidra (Docker?)} % 5.3.1
+Il framework di SRE adottato è Ghidra, sviluppato e mantenuto dal Research Directorate della National Security Agency (NSA) e distribuito come progetto open source secondo la Apache License 2.0.
 
-\cite{nance2026ghidrabook}
+L'ambiente Ghidra, \textit{platform independent}, offre una suite ricca di strumenti e funzionalità per l'analisi binaria del codice compilato, tra cui disassembly, decompiling, graphing, debugging e scripting. Il framework supporta inoltre un'ampia varietà di \textit{instruction set} relativi a differenti architetture di processore e numerosi formati eseguibili. Le attività di analisi possono essere svolte sia in modalità interattiva, attraverso una \textit{Graphical User Interface} (GUI), sia in modalità automatizzata, rendendo Ghidra adatto all'integrazione all'interno di processi di analisi più complessi \cite{nance2026ghidrabook}.
 
-\subsection{Import} % 5.3.2
+% Cite NSA
 
-Headless e analisi automatica.
+\subsection{Ghidra} % 5.3.1
 
-\subsection{MCP Plugin (Github)} % 5.3.3
+\begin{itemize}
+    \item Headless (no GUI)
+    \item Docker Image
+    \item \footnote{\url{https://github.com/nationalsecurityagency/ghidra}}
+\end{itemize}
 
-\subsection{MCP Server (bridge)} % 5.3.4
+\subsection{MCP Plugin} % 5.3.2 (ghidra-mcp)
 
-\subsection{Selezione Tools Analisi Statica} % 5.3.5
+Per integrare le funzionalità di analisi offerte da Ghidra con il \textsc{SRE Agent} in conformità con il protocollo MCP è stato utilizzato il software open source \texttt{ghidra-mcp}, disponibile sull'omonimo repository GitHub \footnote{\url{https://github.com/bethington/ghidra-mcp}} e distribuito secondo la licenza Apache License 2.0.
 
-Tools YAML.
+Il software fornisce un'estensione per Ghidra e un insieme di componenti di supporto che permettono di rendere accessibili le funzionalità dell'ambiente di analisi attraverso il protocollo MCP, esponendo complessivamente più di duecento tool. Si tratta di una soluzione in continua evoluzione che supporta l'integrazione con Ghidra Server, la gestione di più progetti e file, l'esecuzione sia in modalità GUI sia in modalità headless e il deployment mediante Docker.
+
+% meccanismi di gestione errori e affidabilità
+
+L'insieme delle funzionalità messe a disposizione è particolarmente ampio e comprende, innanzitutto, le principali operazioni di analisi binaria, relative a funzioni, data flow, strutture dati, stringhe, operazioni di importazione ed esportazione e accesso alla memoria. A queste si aggiungono funzionalità più avanzate, tra cui, nell'ambito dell'analisi dinamica, l'emulazione del P-code e l'integrazione con il debugger, oltre a strumenti per la gestione dei progetti, del controllo di versione, degli script di Ghidra. Sono inoltre supportate l'esecuzione batch delle operazioni e l'analisi di più programmi contemporaneamente.
+
+% Analysis control
+
+\subsection{Ghidra MCP Server} % 5.3.3 (bridge)
+
+Il server MCP del software \texttt{ghidra-mcp} è implementato mediante il modulo \texttt{bridge\_mcp\_ghidra}, sviluppato in Python utilizzando la libreria FastMCP \footnote{\url{https://gofastmcp.com/}}. Il modulo costituisce il livello intermedio tra i client MCP e l'estensione di Ghidra e supporta sia il trasporto \textit{stdio}, sia il trasporto \textit{Streamable HTTP}.
+
+Una caratteristica interessante del modulo è l'organizzazione dei tool in gruppi semantici, che permette di gestire in maniera selettiva l'insieme delle funzionalità esposte al LLM. In modalità standard, il server rende disponibili tutti i gruppi di tool; tuttavia, considerata l'ampiezza del catalogo, il software può essere eseguito anche in modalità \textit{lazy}, caricando inizialmente solo i gruppi di tool principali. Gli altri gruppi possono essere individuati e successivamente caricati o rimossi durante l'esecuzione da parte del LLM, in base alle necessità.
+
+% \texttt{search_tools}, \texttt{list_tool_groups}, \texttt{load_tool_group}, \texttt{unload_tool_group} e \texttt{check_tools}
 
 \section{Ambiente Sandbox} % 5.4
 
-L'ambiente della \textsc{Sandbox} viene realizzato mediante un ambiente di esecuzione containerized, adottando Docker come tecnologia per la creazione e la gestione dei container. 
+La sandbox di SRE viene realizzata mediante un ambiente di esecuzione containerizzato, utilizzando Docker per la creazione, la configurazione e la gestione dei container.
 
-La containerization è una tecnica di isolamento a livello di sistema operativo che consente di eseguire un'applicazione e le relative dipendente all'interno di un ambiente (processo) isolato. Rispetto alle macchine virtuali, che richiedono l'esecuzione di un intero sistema operativo guest, i container rappresentano un approccio più leggero per ottenere ambienti di esecuzione separati \cite{docker2026container}.
+La containerizzazione è una tecnica di isolamento a livello di sistema operativo che consente di eseguire un'applicazione e le relative dipendenze all'interno di un ambiente isolato. Rispetto alle macchine virtuali, che richiedono l'esecuzione di un intero sistema operativo guest, i container rappresentano un approccio più leggero per ottenere ambienti di esecuzione separati \cite{docker2026container}.
 
-Nel contesto della \textsc{Sandbox}, Docker (fornisce i meccanismi?) necessari per (creare container??), con isolamento di filesystem, rete e consentire il controllo delle risorse computazionali. Queste caratteristiche rendono possibile di configurare l'ambiente in modo coerente con i requisiti di isolamento e sicurezza della sandbox individuati durante la fase di progettazione.
+Nel contesto della \textsc{SRE Sandbox}, Docker fornisce i meccanismi necessari alla creazione e alla configurazione dei container, consentendo di controllarne il filesystem, l'accesso alla rete e le risorse computazionali disponibili. Queste caratteristiche permettono di configurare l'ambiente in modo coerente con i requisiti di isolamento e sicurezza individuati durante la fase di progettazione.
 
 \subsection{Configurazione} % 5.4.1 del Dockerfile
 
-La configurazione dell'ambiente \textsc{Sandbox} può essere definita mediante un \textit{Dockerfile}, che specifica l'immagine di base, le dipendenze e le impostazioni necessarie al funzionamento della sandbox. L'immagine usata è basata su Python 3.13 e Debian Slim, in modo da fornire un ambiente dalle dimensioni ridotte che permetta di mettere a disposizione del LLM la capacità di scrivere file, di eseguire codice python ed eseguire comandi della shell.
+La configurazione dell'ambiente \textsc{SRE Sandbox} è definita mediante un \textit{Dockerfile}, che specifica l'immagine di base, le dipendenze e le impostazioni necessarie al funzionamento del container. L'immagine utilizzata è basata su Python 3.13 e Debian Slim \footnote{\url{https://hub.docker.com/_/python}}, così da fornire un ambiente contenuto, ma sufficientemente completo da permettere al LLM di creare e modificare file, eseguire codice Python e impartire comandi tramite la shell.
 
-A questo scopo, durante la fase di costruzione vengono installati gli strumenti di sistema e alcune librerie Python richieste dall'attività di analisi, in particolare quelle in ambito crittografico (\texttt{cryptography}, \texttt{pycryptodome}). Viene inoltre configurata una directory dedicata alla sandbox e viene creato un utente non root utilizzato (per l'esecuzione dei ??? processi??) all'interno del container.
+A questo scopo, durante la fase di costruzione vengono installati gli strumenti di sistema e le librerie Python necessarie alle attività previste nella sandbox, tra cui quelle dedicate alle funzionalità crittografiche, come \texttt{cryptography} \footnote{\url{https://cryptography.io}} e \texttt{pycryptodome} \footnote{\url{https://www.pycryptodome.org/}}. Viene inoltre configurata una directory dedicata alla sandbox e viene creato un utente senza privilegi di root, utilizzato per l'esecuzione dei processi all'interno del container anziché l'utente root.
 
-Ll'immagine definita servirà per creare il container. Durante la configurazione vengono implementate alcune delle principali misure di isolamento previste. Per questa implementazione si è deciso di disabilitare completamente l'accesso alla rete (così non ci si deve preoccupare di attività malevole. il LLM si dovrà adeguare con quanto installato/default). Per consentire lo scambio controllato dei \textsc{Sandbox Files}, una directory dell'host viene montata all'interno del container con permessi di lettura e scrittura. Infine si è limitato le risorse computazionali (memoria e CPU).
+L'immagine così definita viene utilizzata per creare il container della sandbox, che implementa ulteriori misure di isolamento. In particolare, l'accesso alla rete viene completamente disabilitato, limitando l'interazione del codice con risorse esterne e confinando le operazioni alle sole funzionalità e dipendenze disponibili all'interno dell'ambiente. Per consentire lo scambio controllato dei \textsc{Sandbox Files}, una directory dell'host viene montata all'interno del container con permessi di lettura e scrittura. Infine, vengono imposti limiti alle risorse computazionali disponibili, in termini di memoria e capacità di elaborazione.
 
 \subsection{Sandbox MCP Server} % 5.4.2
 
-Il server ha lo scopo di interagire con l'ambiente sandbox e esporre i tool MCP. 
-Quindi utilizza la libreria python FastMCP \footnote{\url{https://gofastmcp.com/}} per l'implementazione del MCP server
-Il MCP server può quindi operare direttamente sull'ambiente, sfruttando la libreria docker SDK di python \footnote{\url{https://docker-py.readthedocs.io}}
+Il server MCP della \textsc{Sandbox} ha il compito di interagire con l'ambiente di esecuzione ed esporne le funzionalità attraverso tool MCP. Per la sua implementazione viene utilizzata la libreria Python \textit{FastMCP} \footnote{\url{https://gofastmcp.com/}}, mentre l'interazione con il container viene gestita attraverso la libreria \textit{Docker SDK for Python} \footnote{\url{https://docker-py.readthedocs.io}}.
 
-All'inizializzazione il container, se non è running, viene avviato. Le funzionalità e i tool implementati sono:
+All'inizializzazione del server viene verificata la disponibilità del container della sandbox e, qualora questo non risulti in esecuzione, viene avviato automaticamente. Il server espone quindi un insieme di tool organizzati in due principali categorie:
 
 \begin{description}
-    \item[File System] (listFiles, readFile, writeFile) così che il LLM possa operare su file. sono previsti messaggi di errore nel caso l'operazione fallisca.
-    \item[Python] esecuzione, con timeout, di un file python, restituendo in modo strutturato exit code, stdout e stderr.
-    \item[Comandi Shell] esecuzione diretta di comandi della shell, con un preventivo controllo sui comandi eseguiti (impedire privilege escalation, nuove shell, funzioni networking e altro) e sui caratteri usati (shell syntax), sempre output strutturato come python.
+    \item[File System] I tool \texttt{list\_files}, \texttt{read\_file} e \texttt{write\_file} permettono di consultare e modificare i file presenti nell'ambiente della sandbox. Ogni operazione prevede inoltre una gestione degli errori, così da fornire un'informazione esplicita in caso di esecuzione non riuscita.
+
+    \item[Execution] Il tool \texttt{execute\_python\_file} consente di eseguire file Python all'interno del container, imponendo un limite temporale all'esecuzione. Il tool \texttt{execute\_command} permette invece di eseguire comandi della shell. Prima dell'esecuzione viene effettuato un controllo di sicurezza sui comandi richiesti per prevenire operazioni potenzialmente pericolose, come tentativi di privilege escalation, o apertura di nuove shell. In entrambi i casi, il risultato dell'esecuzione viene restituito in forma strutturata, includendo l'\textit{exit code}, \texttt{stdout} e \texttt{stderr}.
+
+    % Controllo della shell syntax
 \end{description}
 
 \section{MCP Client} % 5.5
@@ -240,15 +297,3 @@ Per semi implementazioni e commenti valgono stessi principi di botnet module.
 \subsubsection{Parser}
 
 \subsubsection{YAML}
-
-\section{Orchestrazione / Esecuzione} % 5.10
-
-\subsection{Filtro} % 5.10.1
-
-\subsection{Malware Reversing} % 5.10.2
-
-\subsubsection{Knowledge Base}
-
-\subsection{Code Generation} % 5.10.3
-
-\subsubsection{Context Injection}
