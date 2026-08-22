@@ -158,46 +158,57 @@ All'inizializzazione del server viene verificata la disponibilità del container
 
 \section{MCP Client} % 5.5
 
-Per i \textsc{Sandbox MCP Client} e \textsc{Ghidra MCP Client} è stata definita una classe base comune che si occupa di instaurare e mantenere la connessione con il rispettivo server mediante il metodo di trasporto \textit{stdio}. La classe gestisce il ciclo di vita della connessione attraverso un contesto asincrono, inizializzando una ClientSession (python mcp sdk) e fornendo le due funzioni di base list tools e call tool.
+Per i due MCP client, \textsc{Sandbox MCP Client} e \textsc{Ghidra MCP Client}, è stata definita una classe di base comune, \texttt{BaseMCPClient}, responsabile dell'instaurazione e del mantenimento della connessione con il rispettivo MCP server mediante il metodo di trasporto \textit{stdio}. Il ciclo di vita della connessione viene gestito attraverso un contesto asincrono, all'interno del quale viene inizializzata una \texttt{ClientSession} fornita dal \textit{Python MCP SDK} \footnote{\url{https://py.sdk.modelcontextprotocol.io/}}. La classe espone inoltre le due operazioni fondamentali per l'interazione con il server: la consultazione dei tool disponibili, tramite \texttt{list\_tools}, e la loro invocazione, tramite \texttt{call\_tool}.
 
 \subsection{LLM-MCP Client} % 5.5.1 Tool Parsing
 
-La classe viene quindi estesa, introducendo quindi il livello di integrazione con il LLM. In particolare gli strumenti esposti dal server MCP vengono convertiti nel formato atteso dalle API di OpenAI, quello di tool/function generation.
+La classe \texttt{BaseMCPClient} viene ulteriormente estesa da \textsc{LLMMCPClient}, che introduce il livello di integrazione con il LLM e si interpone tra la gestione della connessione MCP e le implementazioni specifiche dei singoli client. In particolare, i tool esposti dai server MCP vengono convertiti nel formato utilizzato dal meccanismo di \textit{function calling} delle OpenAI API \footnote{\url{https://developers.openai.com/api/docs/guides/function-calling}}, includendo le informazioni relative al nome, alla descrizione e ai parametri richiesti.
 
-Infine, un'altra classe (???) fornisce anche un meccanismo per la registrazione di un client MCP: consente di selezionare, attraverso i nomi un sottoinsieme di strumenti da esporre e di applicare un prefisso (id del MCP) ai nomi dei tool.
+Entrambi i client specifici estendono quindi \texttt{LLMMCPClient}, ereditandone le funzionalità comuni. Poiché i server sono stati implementati secondo modalità di interazione uniformi e già predisposte all'utilizzo da parte di LLM, non è stato necessario introdurre ulteriori funzionalità, come una formattazione specifica per le risposte, nelle classi derivate.
 
-Nel complesso, queste componenti costituiscono un livello di astrazione che semplifica la gestione dei diversi client MCP e il loro collegamento con il LLM per il tool calling del \textsc{SRE Agent}.
+A completamento di questa struttura, una classe dedicata fornisce un meccanismo per la registrazione dei client MCP e dei relativi tool. Essa consente di applicare opzionalmente ai nomi dei tool un \textit{namespace}, costituito da un prefisso identificativo del client MCP, e di selezionare, specificandone i nomi, un sottoinsieme dei tool disponibili. In questo modo, i tool esclusi possono essere nascosti dall'insieme di strumenti esposti al LLM. % LLMMCPRegistration
 
-\section{LLM Client} % 5.6
+Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP e ne semplificano l'integrazione con il LLM. I tool forniti dagli ambienti di esecuzione possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \textit{tool calling} previsto per il \textsc{SRE Agent}.
 
-Questo è il componente responsabile dell'interazione tra gli agenti, il LLM e gli strumenti esposti dai client MCP.
+\section{LLM} % 5.6
 
-All'inizializzazione, gli strumenti disponibili vengono raccolti (dai MCP client passati) e associati al rispettivo client mediante una struttura di risoluzione, permettendo in seguito di individuare il server MCP responsabile di ciascuna richiesta generata dal LLM.
+% l'implementazione dell'agente a uno specifico servizio o fornitore esterno. La scelta del modello utilizzato può pertanto essere modificata a livello del server di inferenza, mantenendo invariata l'interfaccia utilizzata dall'applicazione. L'utilizzo di un'interfaccia compatibile con le API OpenAI permette di separare il componente responsabile dell'interazione con il modello dall'implementazione sottostante del server di inferenza.
 
-Ci sono le funzionalità di impostazione dei parametri di utilizzo del LLM, in particolare temperatura, \dots.
+\subsection{Server} % 5.6.1
 
-Vengono quindi messi a disposizione dei metodi per risposte singole (chat completion secondo lo standard OpenAI), con e senza l'utilizzo dei tool. Poi viene esposto il metodo per il loop dell'agente. Il loop viene implementato in modalità lossless, senza compattazione di contesto (in quanto non è normale andare oltre per le task decise in questa implementazione).
+Il LLM utilizzato dall'applicazione viene eseguito tramite un'istanza esterna di \textit{vLLM} \footnote{\url{https://vllm.ai/}}, un framework open source progettato per l'inferenza e il \textit{serving} di LLM. Il server vLLM è quindi responsabile dell'esecuzione del modello e della gestione delle richieste di inferenza provenienti dall'applicazione.
 
-Nel tool dell'agente ovviamente c'è il dispatching dei tool chiamati, eseguendoli sul rispettivo MCP, aggiungendo al contesto le risposte formattate ricevute dagli ambienti.
+L'interfaccia esposta da vLLM è compatibile con le API OpenAI \footnote{\url{https://docs.vllm.ai/en/stable/serving/online_serving/openai_compatible_server/}}, permettendo all'applicazione di interagire con il modello attraverso un'interfaccia standardizzata. Questa configurazione consente di utilizzare modelli LLM eseguiti localmente, senza vincolare l'applicazione a uno specifico modello o fornitore esterno.
 
-\subsection{Logging} % 5.6.1
+\subsection{Client} % 5.6.2
 
-per l'agente è necessario implementare le funzionalità di logging. a questo scopo viene fatto su due punti di vista (?) / livelli diversi:
+Il \texttt{LLM Client} rappresenta il componente responsabile dell'interazione tra \textsc{SRE Agent}/\textsc{Code Agent} e il LLM, integrando inoltre gli strumenti esposti attraverso i client MCP.
 
-- uno completo, con il json sempre riferimento a standard OpenAI di intere conversazioni
-- uno orientato alla lettura umana: prompt iniziale, numero di step, trascrittura di ragionamento e assistant response, con tool chiamati (ma senza le risposte).
+Alla sua inizializzazione vengono specificati i client MCP con i quali il LLM può interagire, quindi gli strumenti da essi esposti vengono raccolti e salvati in una struttura di risoluzione. Questa associazione permetterà successivamente di individuare, a partire dal nome del tool richiesto dal LLM, il client MCP responsabile della sua gestione. Il \texttt{LLM Client} si occupa quindi anche dell'invocazione dei tool richiesti, inoltrando ciascuna tool call al client MCP corrispondente e recuperandone il risultato.
 
-% \subsection{Tool Calls Handling} % 5.6.2
+Il componente permette inoltre di configurare i \textit{sampling parameters} (parametri di campionamento), ovvero le variabili utilizzate per controllare le caratteristiche della generazione del testo, tra cui \texttt{temperature}, \texttt{top\_p}, \texttt{top\_k}, \texttt{min\_p}, \texttt{presence\_penalty} e \texttt{repetition\_penalty}. È inoltre possibile controllare la modalità di ragionamento del LLM, abilitandola o disabilitandola tramite \texttt{preserve\_thinking} e specificandone il livello mediante \texttt{reasoning\_effort}.
+
+Sono quindi messi a disposizione metodi per effettuare richieste singole al LLM mediante \textit{chat completion}, secondo l'interfaccia prevista dalle OpenAI API \footnote{\url{https://developers.openai.com/api/reference/resources/chat}} e dal relativo SDK Python \footnote{\url{https://pypi.org/project/openai/}}. Le richieste possono essere effettuate sia con sia senza l'utilizzo dei tool; i parametri di campionamento, così come eventuali altri parametri supportati dal client, possono inoltre essere specificati o sovrascritti per la singola richiesta.
+
+Infine, il componente fornisce la struttura di base dell'agente che viene utilizzata dal \textsc{SRE Agent}. Questa è realizzata mediante un ciclo iterativo che gestisce autonomamente lo stato della conversazione, l'invocazione del LLM, l'esecuzione dei tool e l'inserimento nel contesto dei risultati ottenuti, proseguendo l'elaborazione fino al raggiungimento dell'obiettivo. L'implementazione segue il paradigma \textit{ReAct}, alternando le fasi di ragionamento e di azione, preservando il ragionamento prodotto dal LLM, affidando al modello la selezione dei tool ed eseguendo sequenzialmente le tool call.
+
+All'interno del ciclo di esecuzione non sono stati introdotti meccanismi di compattazione del contesto, così da mantenere la massima fedeltà alla cronologia dell'esecuzione e non perdere informazione. Sebbene questa scelta possa comportare il raggiungimento del limite della finestra di contesto, tale eventualità non si è rilevata problematica per gli utilizzi considerati nell'ambito di questa implementazione.
+
+\subsubsection{Logging}
+
+A supporto dell'esecuzione dell'agente, sono state implementate le funzionalità di logging individuate durante la fase di progettazione, secondo due modalità distinte e complementari.
+
+La prima è orientata alla conservazione completa dell'esecuzione e produce un output strutturato in formato JSON, conforme al formato utilizzato dalle OpenAI API \footnote{\url{https://developers.openai.com/api/reference/resources/chat}}. Il log contiene l'intera cronologia della conversazione, includendo in particolare le tool call effettuate e i relativi risultati. La struttura adottata permette quindi di analizzare oppure importare e continuare a elaborare successivamente la singola esecuzione
+
+La seconda modalità è invece orientata alla consultazione da parte dell'utente e presenta una sintesi leggibile dell'esecuzione. In particolare, vengono riportati il prompt iniziale e, per ciascun passo, alcune statistiche relative all'elaborazione (numero di token e tempo di esecuzione parziali), insieme al ragionamento e alla risposte prodotte dal LLM, oltre all'indicazione delle sole tool call effettuate. I risultati restituiti dai tool non vengono inclusi in questa visualizzazione, in modo da mantenere il focus sulla Chain of Thought sviluppata dal LLM.
 
 \section{MessageSchema} % 5.7
 
-Come individuato nella fase di analisi dei requisiti e progettazione, è necessario definire uno schema comune per i messaggi restituiti dal \texttt{Python Module}. A questo scopo è perfetto utilizzare uno JSON schema. 
+Come individuato già a partire dalla fase di analisi dei requisiti, è necessario definire uno schema comune per i messaggi restituiti dal \texttt{Python Module}. A questo scopo è stato adottato \textit{JSON Schema}, particolarmente adatto a descrivere e verificare strutture dati rappresentate in formato JSON.
 
-JSON Schema è un linguaggio dichiarativo progettato per descrivere la struttura e i vincoli dei dati rappresentati in formato JSON. Attraverso un insieme di keyword consente di specificare la tipologia dei dati, la struttura degli oggetti e delle proprietà che li compongono \cite{jsonschema2020json}.
+JSON Schema è un linguaggio dichiarativo progettato per descrivere la struttura e i vincoli dei dati rappresentati in formato JSON. Attraverso un insieme di parole chiave consente di specificare in modo chiaro le proprietà dei dati, con i tipi di dati consentiti, i campi obbligatori, i formati richiesti e altre restrizioni strutturali \cite{jsonschema2020json}.
 
-L'uso di JSON schema è ideale per due ragioni. La prima è che permette di verificare la conformità di un documento (istanza?) JSON a uno schema mediante un apposito \textit{validator}, confrontando l'istanza con le regole definite nello schema, determinando se i vincoli specificati sono rispettati. Oltre allo scopo di validazione, JSON schema può anche essere utilizzato come forma di documentazione, fornendo una descrizione di struttura e vincoli dei dati attraverso una rappresentazione comprensibile sia dall'umano che dal LLM.
-
-Da qualche parte bisogna affermare la compatibilità con i dizionari python.
+L'utilizzo di JSON Schema risulta particolarmente adatto per due motivi. Il primo è la possibilità di verificare la conformità di un documento JSON, denominato \textit{instance}, rispetto a uno schema mediante un apposito \textit{validator}, confrontando automaticamente la struttura e i contenuti dell'istanza con i vincoli definiti nello schema. Il secondo riguarda il suo utilizzo come forma di documentazione: lo schema fornisce infatti una descrizione esplicita della struttura e dei vincoli dei dati, comprensibile sia dallo sviluppatore, sia da un LLM.
 
 \subsection{Message Classification} % 5.7.1
 
@@ -214,7 +225,7 @@ Per questa implementazione particolare si è deciso di distinguere tra i seguent
 
 \subsection{JSON Schema} % 5.7.2
 
-Lo schema realizzato è riportato tra le appendici. è conforme al seguente standard \footnote{\url{https://json-schema.org/draft/2020-12/json-schema-core.html}}
+Lo schema realizzato, conforme al JSON Schema Draft 2020-12 \footnote{\url{https://json-schema.org/draft/2020-12/json-schema-core.html}} è riportato tra le appendici. % \Cref{fig}
 
 Al primo livello dello schema si decide di salvare timestamp temporale di ricezione del messaggio e indirizzo IP sorgente del messaggio. Quindi c'è un campo per identificare il tipo del messaggio tra quelli precedenti e poi uno schema annidato con le informazioni specifiche per il messaggio.
 
@@ -237,6 +248,17 @@ La responsabilità di "compilare" queste informazioni, a partire dagli IP dell'a
 nella pratica per implementare ci si può affidare a database locali da cui estrarre le informazioni, insieme a librerie ipaddress e dnsPython.
 % https://ipinfo.io/data/ipinfo_lite.mmdb?token=b2626200bf26b3
 % https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz
+
+% https://ipinfo.io/developers/ipinfo-lite-database
+% https://ipinfo.io/developers/ipinfo-lite-database#attribution-and-licensing
+% IPinfo Lite (Free) (Formato mmdb) 
+
+% Free for commercial use with attribution. IPinfo Lite provides accurate country- and continent-level geolocation plus basic ASN details, delivered per-network (CIDR). Columns: network, country, country_code, continent, continent_code, asn, as_name, as_domain. Updated daily and licensed CC-BY-SA 4.0.
+
+% GeoLite City, Country, ASN
+
+% https://dev.maxmind.com/geoip/docs/databases/
+% https://www.maxmind.com/en/geolite/eula
 
 \section{Code Templates} % 5.8
 
@@ -267,6 +289,8 @@ tutto viene implementato tramite "pass" python oppure return/packet degli oggett
 \end{itemize}
 
 Affinché poi vengano passati al Code Agent, tutte le funzioni adottano commenti """""" per definire contratto/comportamento dei singoli funzioni (nei prompt quindi basterà più una descrizione di insieme e non specifica). durante la classe vengono anche mostrate informazioni riguardanti le informazioni/azioni per cui ci si aspetta il logging.
+
+Da qualche parte bisogna affermare la compatibilità con i dizionari python. json.dumps(mio dizionario) (nell'yield)
 
 \subsection{MessageParser Module} % 5.8.2
 
