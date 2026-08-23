@@ -212,83 +212,78 @@ L'utilizzo di JSON Schema risulta particolarmente adatto per due motivi. Il prim
 
 \subsection{Message Classification} % 5.7.1
 
-Prima di procedere all'implementazione dello schema, conviene sfruttare l'espressività (???) di JSON schema per poter distinguere (semanticamente?) i messaggi catturati dall'infrastruttura di C\&C in diverse tipologie, facilitando (per l'umano capire quali messaggi vengono scambiati) e adottando ricorsivamente schemi diversi in base al tipo.
+Tra i costrutti messi a disposizione da JSON Schema rientra \texttt{oneOf}, che consente di specificare che un'istanza deve risultare valida rispetto a uno e un solo schema tra quelli definiti. Tale costrutto può essere sfruttato, nell'ambito dell'applicazione considerata, per distinguere semanticamente i messaggi catturati dall'infrastruttura di C\&C in diverse tipologie. In questo modo, oltre a facilitare l'interpretazione dei messaggi da parte dell'utente, è possibile associare a ciascuna tipologia uno schema specifico, definendo ricorsivamente i campi appropriati in funzione della classificazione del messaggio.
 
-Per questa implementazione particolare si è deciso di distinguere tra i seguenti tipi di messaggi:
+Per l'implementazione considerata sono state pertanto individuate le seguenti quattro categorie:
 
 \begin{description}
-    \item[ACK] per i messaggi di richiesta di invio acknowledgment a un precedente messaggio richiesti dal server C\&C.
-    \item[Attack] per i messaggi che contengono istruzioni di attacco.
-    \item[Heartbeat] per i messaggi di keepalive del traffico.
-    \item[Command] per i messaggi di servizio o generici, che quindi non rientrano nelle categorie precedenti oppure che non si è convinti di classificare più specificamente.
+    \item[ACK] identifica i messaggi mediante i quali il server C\&C richiede l'invio di un acknowledgment in risposta a un precedente messaggio.
+    \item[Attack] identifica i messaggi contenenti istruzioni relative all'esecuzione di un attacco.
+    \item[Heartbeat] identifica i messaggi utilizzati per il mantenimento della connessione e per il keepalive del traffico.
+    \item[Command] identifica i messaggi di servizio o generici che non rientrano nelle categorie precedenti, oppure i messaggi per i quali non si è in grado di effettuare una classificazione più specifica.
 \end{description}
 
 \subsection{JSON Schema} % 5.7.2
 
-Lo schema realizzato, conforme al JSON Schema Draft 2020-12 \footnote{\url{https://json-schema.org/draft/2020-12/json-schema-core.html}} è riportato tra le appendici. % \Cref{fig}
+Lo schema realizzato, conforme allo standard JSON Schema Draft 2020-12 \footnote{\url{https://json-schema.org/draft/2020-12/json-schema-core.html}}, è riportato integralmente nelle appendici. Al primo livello dello schema vengono memorizzati il \textit{timestamp} di ricezione del messaggio e l'indirizzo IP sorgente. Inoltre, è presente un campo dedicato alla classificazione del messaggio, secondo le tipologie introdotte nella sezione precedente, a cui segue uno schema annidato contenente le informazioni specifiche relative alla tipologia individuata. % \Cref{fig}
 
-Al primo livello dello schema si decide di salvare timestamp temporale di ricezione del messaggio e indirizzo IP sorgente del messaggio. Quindi c'è un campo per identificare il tipo del messaggio tra quelli precedenti e poi uno schema annidato con le informazioni specifiche per il messaggio.
+Per ciascuna categoria sono quindi definiti vincoli e proprietà specifici. I messaggi \texttt{ACK} contengono l'informazione associata allo stato della richiesta di acknowledgment, mentre i messaggi \texttt{Heartbeat} riportano un numero di sequenza lato server e, opzionalmente, il tempo di connessione del bot. I messaggi \textit{Command} includono invece il \textit{payload} originale e, quando è possibile determinarla, una stringa che identifica la tipologia del comando. Infine, tutte le tipologie di messaggio prevedono un campo opzionale \texttt{notes}, destinato a contenere informazioni aggiuntive sotto forma di stringa oppure valorizzato a \texttt{null}.
 
-Descrizione specifiche dei messaggi: ACK ha almeno uno status, il heartbeat ha un numero di sequenza (lato-server) e uptime opzionale, mentre command riporta il payload raw e una stringa di tipo del comando (o null) se si ha un'identificazione specifica. Tutti i messaggi hanno una nota string/null per informazioni aggiuntive.
-
-Il tipo attack è il più interessante: codice identificativo dell'attacco, nome specifico dell'attacco e protocollo di rete coinvolto, durata dell'attacco, numero e valore degli argomenti passati all'attacco (argc, argv), numero e indirizzi ip dei bersagli dell'attacco.
+La tipologia \texttt{Attack} è quella caratterizzata dalla struttura più articolata. Per ciascun messaggio vengono infatti memorizzati il codice identificativo e il nome dell'attacco, il protocollo di rete coinvolto e la durata dell'esecuzione. Lo schema permette inoltre di rappresentare gli argomenti forniti all'attacco attraverso il numero di elementi (\texttt{argc}) e i relativi valori (\texttt{argv}). Infine, vengono memorizzati il numero dei bersagli coinvolti e il relativo elenco di indirizzi IP di destinazione.
 
 \subsubsection{IP Schema}
 
-Nello schema c' anche un campo array per l'info degli IP coinvolti dagli attacchi, eventualmente vuoto.
+Lo schema include inoltre un array dedicato alle informazioni relative agli indirizzi IP coinvolti negli attacchi, che può rimanere vuoto qualora non siano disponibili ulteriori informazioni sui bersagli. Per ciascun indirizzo è possibile memorizzare dati relativi sia alla sua localizzazione sia alla rete di appartenenza.
 
-Questo permette di avere informazioni specifiche sui bersagli coinvolti dagli attacchi: tra queste informazioni ci sono quelle geografiche (da continente fino a città), di localizzazione (latitudine, longitudine, timezone), sulla rete a cui appartiene (CIDR, ASN e name, domain), info DNS e spazio per eventuali aggiunte.
+In particolare, lo schema consente di rappresentare informazioni geografiche a diversi livelli, dal continente fino alla città, oltre a dati di geolocalizzazione quali latitudine, longitudine e \textit{timezone}. Sono inoltre previste informazioni sulla rete di appartenenza dell'indirizzo IP, con la relativa notazione CIDR e i principali attributi dell'\textit{Autonomous System} (AS), quali numero identificativo (ASN), nome e dominio. Lo schema include infine informazioni relative alla risoluzione DNS e ad altri eventuali metadati associati all'indirizzo.
 
 \subsubsection{IP Lookup}
 
-La responsabilità di "compilare" queste informazioni, a partire dagli IP dell'attacco, è del Python Module. Tuttavia questo deve solo invocare un modulo fisso.
+L'arricchimento dei dati relativi agli indirizzi IP deve essere gestito dai singoli \textsc{Python Module}; tuttavia, per evitare la duplicazione del codice e garantire uniformità nelle modalità di recupero delle informazioni, questa funzionalità è stata centralizzata in un componente dedicato, \texttt{IPLookup}, condiviso tra i diversi moduli e richiamabile quando necessario.
 
--> riscrivi per chiarezza. il modulo è fisso e realizzato dall'utente, passato direttamente al Module.
+Il modulo \texttt{IPLookup} implementa una classe progettata per interrogare database locali in formato \texttt{.mmdb} (\textit{MaxMind DB}), quali i database \textit{IPinfo Lite} \footnote{\url{https://ipinfo.io/developers/ipinfo-lite-database}} e \textit{GeoLite2}, nelle varianti \textit{City}, \textit{Country} e \textit{ASN} \footnote{\url{https://dev.maxmind.com/geoip/docs/databases/}}, così da estrarre le informazioni associate agli indirizzi IP. L'interazione con questi dataset avviene tramite l'apposita libreria Python \textit{maxminddb} \footnote{\url{https://maxminddb.readthedocs.io/en/latest/}}, mentre i database sono aggiornati frequentemente e distribuiti gratuitamente, secondo le relative condizioni di licenza \footnote{\url{https://ipinfo.io/developers/ipinfo-lite-database} (CC BY-SA 4.0)} \footnote{\url{https://www.maxmind.com/en/geolite/eula} (EULA con CC BY-SA 4.0)}.
 
-nella pratica per implementare ci si può affidare a database locali da cui estrarre le informazioni, insieme a librerie ipaddress e dnsPython.
-% https://ipinfo.io/data/ipinfo_lite.mmdb?token=b2626200bf26b3
-% https://download.maxmind.com/geoip/databases/GeoLite2-ASN/download?suffix=tar.gz
+% IPinfo Lite (Free): https://ipinfo.io/developers/ipinfo-lite-database - https://ipinfo.io/developers/ipinfo-lite-database#attribution-and-licensing
 
-% https://ipinfo.io/developers/ipinfo-lite-database
-% https://ipinfo.io/developers/ipinfo-lite-database#attribution-and-licensing
-% IPinfo Lite (Free) (Formato mmdb) 
+% GeoLite City, Country, ASN: https://dev.maxmind.com/geoip/docs/databases/ - https://www.maxmind.com/en/geolite/eula
 
-% Free for commercial use with attribution. IPinfo Lite provides accurate country- and continent-level geolocation plus basic ASN details, delivered per-network (CIDR). Columns: network, country, country_code, continent, continent_code, asn, as_name, as_domain. Updated daily and licensed CC-BY-SA 4.0.
-
-% GeoLite City, Country, ASN
-
-% https://dev.maxmind.com/geoip/docs/databases/
-% https://www.maxmind.com/en/geolite/eula
+% Da un punto di vista legale, i database di IPinfo sono generalmente rilasciati sotto licenza Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0), mentre i database GeoLite2 di MaxMind richiedono l'accettazione di un loro specifico End User License Agreement (EULA) gratuito per l'uso (che include CC BY-SA 4.0). 
 
 \section{Code Templates} % 5.8
 
 % \subsection{Aggiornamento BotNetInterface} % 5.8.0
 
-Come anticipato nella progettazione, conviene separare le responsabilità, per cui si utilizzeranno due file distinti, partendo comunque dal BotNet Module che rimane il main.
+Come anticipato nella fase di progettazione, per separare le responsabilità relative alla cattura e all'elaborazione dei messaggi vengono utilizzati due file distinti, dedicati rispettivamente alla fase di cattura e a quella di parsing dei messaggi secondo il \textsc{MessageSchema}. Il punto di ingresso principale è il \textsc{BotNet Module}, che implementa la \texttt{BotNetInterface}.
 
-Visto che nel modulo verranno implementate funzioni di logging e c'è la dipendenza dalla classe centralizzata IP lookup, a botnet interface si aggiunge un costruttore che permette di passare questi oggetti.
+Per rappresentare a livello di codice la classificazione dei messaggi viene utilizzata un'enumerazione Python \footnote{\url{https://docs.python.org/3/library/enum.html}}, \texttt{MessageClassification}, che definisce le quattro tipologie di messaggio individuate nello schema.
 
-Per la classificazione dei messaggi si usa una ENUM python (MessageClassification).
+Infine, poiché il primo modulo utilizza funzionalità di logging, mentre il secondo dipende dalla classe centralizzata \texttt{IPLookup}, alla \texttt{BotNetInterface} è stato aggiunto un costruttore che permette di fornire tali oggetti durante l'inizializzazione. L'interfaccia completa è riportata nelle appendici.
 
 \subsection{BotNet Module} % 5.8.1
 
-deve implementare  secondo i contratti definiti da BotNetInterface, le funzioni del modulo main principale, andando un po' più nello specifico, secondo quello che ci si aspetta dal modulo finale.
+Il template completo del modulo è riportato nell'appendice. La responsabilità del \textsc{BotNet Module} consiste nell'implementare i metodi definiti dalla \texttt{BotNetInterface}, rispettandone i contratti, e nel fornire lo scheletro del modulo principale che dovrà essere completato in funzione dello specifico protocollo analizzato. Il template definisce pertanto sia le responsabilità che le modalità con cui le diverse fasi dell'interazione con l'infrastruttura C\&C devono essere implementate.
+
+Il template completo è nell'appendice. La responsabilità è implementare i metodi di \texttt{BotNetInterface}, secondo i contratti definiti dall'interfaccia e poi definire lo scheletro (?) delle funzioni del modulo main principale, andando un po' più nello specifico, mostrando quello che ci si aspetta dal modulo finale.
+
+La struttura del modulo può essere descritta secondo le seguenti aree:
 
 \begin{description}
-    \item[Attributi/Costanti di classe] hostname o host ip, sequenze di handshake, ack, heartbeat ==> tutti i parametri (se) fissi del modulo (aggiungi tu)
-    \item[Costruttutore] creazione di quanto necessario, del socket, del buffer di ricezione dei messaggi, del logger e del modulo parser dei messaggi (classe).
-    \item[Connect] stabilire praticamente una connessione all'endpoint C\&C del socket e implementazione tramite funzione authentication dedicata della sequenza di inizializzazione del protocollo, così da potersi registrarsi come se fosse il dispositivo di una vittima al server di C\%C.
-    \item[Sniff] rimane in ascolto indefinito dei comandi ricevuti dal C\&C e poi c'è il metodo di heartbeat regolare. Quando riceve qualcosa applica un eventuale pre-processing allo stream (preprocess\_stream) ed estende il buffer; dal buffer si estraggono singoli pacchetti (extractPackets) e si esegue il decoding o decifratura (decodePacket) se prevista dal protocollo; quindi dai pacchetti si estraggono i messaggi (extractMessages); per ciascun messaggio si classifica il tipo (getmessagetype, secondo i principi introdotti prima) e, se il protocollo lo richiede si adotta un comportamento specifico (ad esempio ACK ai messaggi ricevuti). Il parsing del messaggio è demandato al modulo MessageParser (funzione parseMessage), quindi il dizionario viene ritornato.
+    \item[Attributi e costanti di classe.] Contengono i parametri statici specifici del protocollo, quali l'\textit{hostname} o l'indirizzo IP del server C\&C, le sequenze utilizzate durante l'handshake, i messaggi o i parametri relativi agli acknowledgment e agli heartbeat e, più in generale, i valori costanti necessari alla comunicazione.
+    
+    \item[Costruttore \texttt{\_\_init\_\_}.] Inizializza le risorse e i componenti necessari all'esecuzione del modulo, tra cui il \textit{socket}, il \textit{buffer} utilizzato per la ricezione dei dati, il \textit{logger} \footnote{\url{https://docs.python.org/3/library/logging.html}} e il modulo \texttt{MessageParser}, responsabile dell'elaborazione dei messaggi.
+    
+    \item[Metodo \texttt{connect}.] Stabilisce la connessione con l'endpoint C\&C e avvia, mediante il metodo dedicato \texttt{authentication}, la sequenza di inizializzazione prevista dal protocollo. Questa fase permette al modulo di registrarsi presso il server di C\&C, simulando il comportamento del dispositivo di una potenziale vittima.
+    
+    \item[Metodo \texttt{sniff}.] Rimane in ascolto dei dati provenienti dal server C\&C e gestisce, quando previsto, l'invio periodico dei messaggi di keepalive, tramite il metodo dedicato \texttt{heartbeat}. I dati ricevuti vengono eventualmente sottoposti a un pre-processing tramite \texttt{preprocess\_stream} e quindi sono aggiunti al buffer; da quest'ultimo vengono estratti i pacchetti mediante \texttt{extract\_packets}. I pacchetti vengono quindi eventualmente decodificati o decifrati tramite \texttt{decode\_packet}, dai quali vengono estratti i singoli messaggi mediante \texttt{extract\_messages}. Ogni messaggio viene catalogato tramite \texttt{get\_message\_type} secondo la classificazione precedentemente introdotta e, qualora sia richiesto dal protocollo, con \texttt{handle\_message} si esegue l'azione attesa dal server, come ad esempio l'invio di un acknowledgment. Il parsing del contenuto del messaggio viene invece demandato al \texttt{MessageParser} tramite il metodo \texttt{parse\_message}, che restituisce il risultato sotto forma di dizionario Python che poi c'è l'yield. L'uso dizionario direttamente compatibile con la successiva serializzazione in oggetto JSON mediante \texttt{json.dumps}.
 \end{description}
 
+Per rendere il template del modulo direttamente utilizzabile nella successiva generazione del codice, tutti i metodi sono accompagnati da \textit{docstring} che ne descrivono il contratto, il comportamento atteso e le operazioni che devono essere implementate. In questo modo, nei prompt forniti al LLM basterà fornire una descrizione più di insieme, senza tornare troppo ad andare nei dettagli. Nel template sono inoltre evidenziate le informazioni e le operazioni per le quali è previsto il logging, così da mantenere coerente anche questo aspetto nell'implementazione finale.
+
+Affinché poi vengano utilizzate all'interno dei prompt, tutte le funzioni adottano commenti """""" per definire contratto/comportamento dei singoli funzioni (nei prompt quindi basterà più una descrizione di insieme e non specifica). durante la classe vengono anche mostrate informazioni riguardanti le informazioni/azioni per cui ci si aspetta il logging.
+
 tutto viene implementato tramite "pass" python oppure return/packet degli oggetti senza modifiche (immutati). quello che si trasmette è che l'implementazione dovrà:
-
-\begin{itemize}
-    \item se il protocollo implementa quella cosa, modifica e replicala (OVERRIDE)
-    \item se il protocollo non la implementa, lascia tutto com'è, visto che non modifica niente e passa avanti.
-\end{itemize}
-
-Affinché poi vengano passati al Code Agent, tutte le funzioni adottano commenti """""" per definire contratto/comportamento dei singoli funzioni (nei prompt quindi basterà più una descrizione di insieme e non specifica). durante la classe vengono anche mostrate informazioni riguardanti le informazioni/azioni per cui ci si aspetta il logging.
+- se il protocollo implementa quella cosa, modifica e replicala (OVERRIDE)
+- se il protocollo non la implementa, lascia tutto com'è, visto che non modifica niente e passa avanti.
 
 Da qualche parte bisogna affermare la compatibilità con i dizionari python. json.dumps(mio dizionario) (nell'yield)
 
