@@ -4,34 +4,6 @@ Questo capitolo ha l'obiettivo di trattare l'implementazione del sistema progett
 
 % È importante sottolineare come le scelte tecnologiche e le modalità di sviluppo qui presentate costituiscano una sola delle possibili soluzioni per la messa in atto del progetto.
 
-\iffalse
-
-L'architettura proposta:
-
-\textbf{Natura statica dell'analisi}.
-L'intero processo di analisi del campione dovrà essere basato esclusivamente su tecniche di analisi statica. Il sistema non dovrà quindi richiedere l'esecuzione del campione, né ricorrere a tecniche di analisi dinamica, debugging o osservazione diretta del comportamento durante l'esecuzione.
-L'architettura basata su **Python MCP e Ghidra MCP con sole capacità statiche** rappresenta un approccio orientato al reverse engineering assistito da LLM, in cui i due componenti assumono ruoli complementari. Ghidra fornisce al modello una rappresentazione strutturata del programma analizzato, mettendo a disposizione informazioni quali funzioni, decompilato, riferimenti incrociati, grafi delle chiamate, stringhe e porzioni di memoria o byte selezionati. Python MCP agisce invece come ambiente di elaborazione generale, permettendo al modello di costruire ed eseguire strumenti personalizzati per trasformare, analizzare e interpretare le informazioni estratte da Ghidra.
-Uno dei principali vantaggi di questa architettura è la flessibilità offerta da Python. Poiché il modello linguistico può generare codice Python durante l'analisi, è in grado di creare strumenti specifici per il problema affrontato senza richiedere un supporto predefinito. Ad esempio, quando viene individuata una struttura dati cifrata o una tabella di simboli offuscata, Ghidra può fornire i byte rilevanti mentre Python può essere utilizzato per implementare algoritmi di decodifica, testare ipotesi, confrontare risultati o ricostruire il formato dei dati. Questo rende il sistema particolarmente efficace in attività come l'analisi di configurazioni nascoste, il riconoscimento di pattern, la manipolazione di dati binari e la generazione automatica di strumenti di analisi.
-L'utilizzo congiunto di Ghidra statico e Python permette inoltre di automatizzare attività complesse che richiederebbero normalmente numerosi passaggi manuali da parte di un analista. Ghidra consente di navigare la struttura del binario e identificare aree di interesse, mentre Python permette di effettuare elaborazioni più generali, come analisi statistiche, clustering, confronto tra campioni, generazione di report o integrazione con librerie esterne. In questo senso, Python MCP non sostituisce le capacità di reverse engineering di Ghidra, ma estende il sistema fornendo al modello la possibilità di creare procedure personalizzate sulla base delle informazioni recuperate.
-Un confronto con un'architettura più completa, composta da **Python MCP e Ghidra MCP con capacità dinamiche di debugging ed esecuzione tramite P-code emulator**, evidenzia una differenza principalmente legata alla possibilità di osservare il comportamento runtime del programma. L'integrazione di strumenti dinamici permetterebbe al modello di eseguire porzioni di codice, osservare registri, memoria e flusso di esecuzione, verificando direttamente ipotesi formulate durante l'analisi statica. Questa capacità risulta particolarmente utile in presenza di codice offuscato, routine di unpacking, algoritmi di decrittazione con chiavi generate dinamicamente o comportamenti difficili da ricostruire esclusivamente dal codice.
-Tuttavia, l'aggiunta di capacità dinamiche non rende superata l'architettura basata esclusivamente sull'analisi statica. La maggior parte delle attività preliminari di reverse engineering consiste infatti nella comprensione della struttura del programma, nell'identificazione delle funzioni rilevanti e nella ricostruzione delle relazioni tra componenti. In questi scenari, l'analisi statica combinata con un ambiente di scripting flessibile può essere più efficiente rispetto all'esecuzione diretta del codice, soprattutto quando è necessario analizzare numerosi campioni o creare pipeline automatizzate.
-In conclusione, le due architetture possono essere considerate complementari. L'approccio **Python MCP + Ghidra statico** fornisce un ambiente versatile per l'analisi, la trasformazione dei dati e la costruzione automatica di strumenti, risultando sufficiente per molte attività di reverse engineering assistito. L'aggiunta delle capacità dinamiche di Ghidra introduce invece un ulteriore livello di verifica sperimentale, permettendo al modello di passare dalla deduzione del comportamento alla sua osservazione diretta. Un sistema completo potrebbe quindi utilizzare l'analisi statica come fase principale di comprensione e ricorrere all'esecuzione dinamica solo quando necessario per validare ipotesi o analizzare comportamenti non osservabili staticamente.
-\fi
-
-\iffalse
-Ma c'è anche un aspetto spesso sottovalutato: dare a un LLM un debugger completo non significa automaticamente ottenere un agente migliore. Aggiungere capacità dinamiche aumenta anche la complessità:
-deve decidere cosa eseguire;
-deve preparare un ambiente corretto;
-deve interpretare trace molto grandi;
-deve evitare di perdersi in dettagli irrilevanti;
-deve gestire casi in cui l'esecuzione non è rappresentativa.
-Un agente con molti strumenti non è necessariamente più efficace di un agente con gli strumenti giusti.
-La tua scelta ha anche un vantaggio progettuale: hai separato bene i ruoli.
-Ghidra statico: fonte autorevole della conoscenza sul binario.
-Python: ambiente dove il LLM può creare procedure e ragionamenti personalizzati.
-Questa combinazione è già una base molto forte. Se in futuro volessi estenderla, il debugging/P-code sarebbe probabilmente un terzo livello, non una sostituzione:
-\fi
-
 \section{Ambiente di sviluppo} % 5.1
 
 L'implementazione del sistema è stata realizzata in Python 3.13 \footnote{\url{https://www.python.org}}, mentre per la gestione dell'ambiente di sviluppo e delle dipendenze del progetto è stato utilizzato Conda \footnote{\url{https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/index.html}}.
@@ -45,13 +17,13 @@ Il motivo per cui la scelta del linguaggio di implementazione è ricaduta su Pyt
 
 \subsection{Classifier} % 5.2.1
 
-\subsubsection{Virus Total (?)}
+\subsubsection{Virus Total}
 
-API: malevolo oppure non malevolo e ipotesi famiglia
+Test malevolo e ipotesi famiglia.
 
-\subsubsection{YARA Rules (?)}
+\subsubsection{YARA Rules}
 
-Conferma famiglia.
+Conferma della famiglia.
 
 \subsection{SRE Agent} % 5.2.2
 
@@ -77,18 +49,12 @@ tre ragioni:
 - the less mcp the better (LLM)
 
 I tool scelti rientrano nelle seguenti categorie:
-Tools YAML.
-[motivazioni parte 1]
 
 \subsubsection{Selezione Tools Analisi Dinamica}
 
-Niente accesso al file. niente accesso a internet.
-
-[motivazioni parte 2] (no malware access)
+Niente accesso al file e niente accesso a internet.
 
 \subsection{Code Agent} % 5.2.3
-
-\subsubsection{Context Injection}
 
 \section{SRE Framework} % 5.3
 
@@ -151,7 +117,7 @@ All'inizializzazione del server viene verificata la disponibilità del container
 \begin{description}
     \item[File System] I tool \texttt{list\_files}, \texttt{read\_file} e \texttt{write\_file} permettono di consultare e modificare i file presenti nell'ambiente della sandbox. Ogni operazione prevede inoltre una gestione degli errori, così da fornire un'informazione esplicita in caso di esecuzione non riuscita.
 
-    \item[Execution] Il tool \texttt{execute\_python\_file} consente di eseguire file Python all'interno del container, imponendo un limite temporale all'esecuzione. Il tool \texttt{execute\_command} permette invece di eseguire comandi della shell. Prima dell'esecuzione viene effettuato un controllo di sicurezza sui comandi richiesti per prevenire operazioni potenzialmente pericolose, come tentativi di privilege escalation, o apertura di nuove shell. In entrambi i casi, il risultato dell'esecuzione viene restituito in forma strutturata, includendo l'\textit{exit code}, \texttt{stdout} e \texttt{stderr}.
+    \item[Execution] Il tool \texttt{execute\_python\_file} consente di eseguire file Python all'interno del container, imponendo un limite temporale all'esecuzione. Il tool \texttt{execute\_command} permette invece di eseguire comandi della shell. Prima dell'esecuzione viene effettuato un controllo di sicurezza sui comandi richiesti per prevenire operazioni potenzialmente pericolose, come tentativi di privilege escalation, o apertura di nuove shell. In entrambi i casi, il risultato dell'esecuzione viene restituito in forma strutturata, includendo l'\texttt{exit code}, \texttt{stdout} e \texttt{stderr}.
 
     % Controllo della shell syntax
 \end{description}
@@ -171,8 +137,6 @@ A completamento di questa struttura, una classe dedicata fornisce un meccanismo 
 Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP e ne semplificano l'integrazione con il LLM. I tool forniti dagli ambienti di esecuzione possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \textit{tool calling} previsto per il \textsc{SRE Agent}.
 
 \section{LLM} % 5.6
-
-% l'implementazione dell'agente a uno specifico servizio o fornitore esterno. La scelta del modello utilizzato può pertanto essere modificata a livello del server di inferenza, mantenendo invariata l'interfaccia utilizzata dall'applicazione. L'utilizzo di un'interfaccia compatibile con le API OpenAI permette di separare il componente responsabile dell'interazione con il modello dall'implementazione sottostante del server di inferenza.
 
 \subsection{Server} % 5.6.1
 
@@ -253,66 +217,78 @@ Il modulo \texttt{IPLookup} implementa una classe progettata per interrogare dat
 
 % \subsection{Aggiornamento BotNetInterface} % 5.8.0
 
-Come anticipato nella fase di progettazione, per separare le responsabilità relative alla cattura e all'elaborazione dei messaggi vengono utilizzati due file distinti, dedicati rispettivamente alla fase di cattura e a quella di parsing dei messaggi secondo il \textsc{MessageSchema}. Il punto di ingresso principale è il \textsc{BotNet Module}, che implementa la \texttt{BotNetInterface}.
+Come suggerito durante la fase di progettazione, per separare le responsabilità relative alla cattura e all'elaborazione dei messaggi vengono utilizzati due file distinti, dedicati rispettivamente alla fase di cattura e a quella di parsing dei messaggi secondo il \textsc{MessageSchema}. Il punto di ingresso principale è il \textsc{BotNet Module}, che implementa la \texttt{BotNetInterface}.
 
-Per rappresentare a livello di codice la classificazione dei messaggi viene utilizzata un'enumerazione Python \footnote{\url{https://docs.python.org/3/library/enum.html}}, \texttt{MessageClassification}, che definisce le quattro tipologie di messaggio individuate nello schema.
+Per rappresentare a livello di codice la classificazione dei messaggi viene utilizzata un'enumerazione Python \footnote{\url{https://docs.python.org/3/library/enum.html}}, \texttt{MessageType}, che definisce le quattro tipologie di messaggio individuate nello schema.
 
 Infine, poiché il primo modulo utilizza funzionalità di logging, mentre il secondo dipende dalla classe centralizzata \texttt{IPLookup}, alla \texttt{BotNetInterface} è stato aggiunto un costruttore che permette di fornire tali oggetti durante l'inizializzazione. L'interfaccia completa è riportata nelle appendici.
 
 \subsection{BotNet Module} % 5.8.1
 
-Il template completo del modulo è riportato nell'appendice. La responsabilità del \textsc{BotNet Module} consiste nell'implementare i metodi definiti dalla \texttt{BotNetInterface}, rispettandone i contratti, e nel fornire lo scheletro del modulo principale che dovrà essere completato in funzione dello specifico protocollo analizzato. Il template definisce pertanto sia le responsabilità che le modalità con cui le diverse fasi dell'interazione con l'infrastruttura C\&C devono essere implementate.
-
-Il template completo è nell'appendice. La responsabilità è implementare i metodi di \texttt{BotNetInterface}, secondo i contratti definiti dall'interfaccia e poi definire lo scheletro (?) delle funzioni del modulo main principale, andando un po' più nello specifico, mostrando quello che ci si aspetta dal modulo finale.
+Il template completo del modulo è riportato nell'appendice. La responsabilità del \textsc{BotNet Module} consiste nell'implementare i metodi definiti dalla \texttt{BotNetInterface}, rispettandone i contratti, e nel fornire lo scheletro del modulo principale che dovrà essere completato in funzione dello specifico protocollo analizzato. Il template definisce pertanto le funzioni del modulo e le modalità con cui le diverse fasi dell'interazione con l'infrastruttura C\&C devono essere implementate.
 
 La struttura del modulo può essere descritta secondo le seguenti aree:
 
 \begin{description}
-    \item[Attributi e costanti di classe.] Contengono i parametri statici specifici del protocollo, quali l'\textit{hostname} o l'indirizzo IP del server C\&C, le sequenze utilizzate durante l'handshake, i messaggi o i parametri relativi agli acknowledgment e agli heartbeat e, più in generale, i valori costanti necessari alla comunicazione.
+    % Attributi e costanti di classe.
+    \item[Attributi di classe.] Contengono i parametri statici specifici del protocollo, quali l'\textit{hostname} o l'indirizzo IP del server C\&C, le sequenze utilizzate durante l'handshake, i messaggi o i parametri relativi agli acknowledgment e agli heartbeat e, più in generale, i valori costanti necessari alla comunicazione.
     
-    \item[Costruttore \texttt{\_\_init\_\_}.] Inizializza le risorse e i componenti necessari all'esecuzione del modulo, tra cui il \textit{socket}, il \textit{buffer} utilizzato per la ricezione dei dati, il \textit{logger} \footnote{\url{https://docs.python.org/3/library/logging.html}} e il modulo \texttt{MessageParser}, responsabile dell'elaborazione dei messaggi.
+    \item[Costruttore \texttt{\_\_init\_\_}.] Inizializza le risorse e i componenti necessari all'esecuzione del modulo, tra cui il \textit{socket}, il \textit{buffer} utilizzato per la ricezione dei dati, il \textit{logger} e il modulo \texttt{MessageParser}, responsabile dell'elaborazione dei messaggi.
     
     \item[Metodo \texttt{connect}.] Stabilisce la connessione con l'endpoint C\&C e avvia, mediante il metodo dedicato \texttt{authentication}, la sequenza di inizializzazione prevista dal protocollo. Questa fase permette al modulo di registrarsi presso il server di C\&C, simulando il comportamento del dispositivo di una potenziale vittima.
     
-    \item[Metodo \texttt{sniff}.] Rimane in ascolto dei dati provenienti dal server C\&C e gestisce, quando previsto, l'invio periodico dei messaggi di keepalive, tramite il metodo dedicato \texttt{heartbeat}. I dati ricevuti vengono eventualmente sottoposti a un pre-processing tramite \texttt{preprocess\_stream} e quindi sono aggiunti al buffer; da quest'ultimo vengono estratti i pacchetti mediante \texttt{extract\_packets}. I pacchetti vengono quindi eventualmente decodificati o decifrati tramite \texttt{decode\_packet}, dai quali vengono estratti i singoli messaggi mediante \texttt{extract\_messages}. Ogni messaggio viene catalogato tramite \texttt{get\_message\_type} secondo la classificazione precedentemente introdotta e, qualora sia richiesto dal protocollo, con \texttt{handle\_message} si esegue l'azione attesa dal server, come ad esempio l'invio di un acknowledgment. Il parsing del contenuto del messaggio viene invece demandato al \texttt{MessageParser} tramite il metodo \texttt{parse\_message}, che restituisce il risultato sotto forma di dizionario Python che poi c'è l'yield. L'uso dizionario direttamente compatibile con la successiva serializzazione in oggetto JSON mediante \texttt{json.dumps}.
+    \item[Metodo \texttt{sniff}.] Rimane in ascolto dei dati provenienti dal server C\&C e gestisce, quando previsto, l'invio periodico dei messaggi di keepalive tramite il metodo dedicato \texttt{heartbeat}. I dati ricevuti vengono eventualmente sottoposti a un pre-processing tramite \texttt{preprocess\_stream} e sono successivamente aggiunti al buffer. Da quest'ultimo, tramite \texttt{extract\_packets}, vengono estratti i pacchetti, che possono essere quindi decodificati o decifrati tramite \texttt{decode\_packet}. Dai pacchetti elaborati vengono estratti i singoli messaggi mediante \texttt{extract\_messages}, per poi essere classificati secondo il \texttt{MessageType} tramite \texttt{get\_message\_type}. Inoltre, quando previsto dal protocollo, \texttt{handle\_message} permette di eseguire l'azione attesa dal server, in risposta al messaggio ricevuto, come ad esempio l'invio di un acknowledgment. Il parsing del contenuto del messaggio viene invece demandato al \texttt{MessageParser} tramite il metodo \texttt{parse\_message}, che produce un dizionario Python, successivamente restituito tramite \texttt{yield}. L'utilizzo di un dizionario garantisce inoltre la compatibilità diretta con la successiva serializzazione in formato JSON, per la quale sarà sufficiente usare la funzione \texttt{json.dumps} \footnote{\url{https://docs.python.org/3/library/json.html}}.
 \end{description}
 
-Per rendere il template del modulo direttamente utilizzabile nella successiva generazione del codice, tutti i metodi sono accompagnati da \textit{docstring} che ne descrivono il contratto, il comportamento atteso e le operazioni che devono essere implementate. In questo modo, nei prompt forniti al LLM basterà fornire una descrizione più di insieme, senza tornare troppo ad andare nei dettagli. Nel template sono inoltre evidenziate le informazioni e le operazioni per le quali è previsto il logging, così da mantenere coerente anche questo aspetto nell'implementazione finale.
+Per rendere il template del modulo direttamente utilizzabile nella successiva generazione del codice, tutti i metodi sono accompagnati da \textit{docstring} che ne descrivono il contratto, il comportamento atteso e le operazioni che devono essere implementate. In questo modo, nei prompt forniti al LLM è sufficiente riportare una descrizione più generale del protocollo, senza dover specificare nuovamente tutti i dettagli tecnici. Nel template sono inoltre esplicitamente indicati gli eventi per i quali è previsto il logging, realizzato l'omonima libreria Python \footnote{\url{https://docs.python.org/3/library/logging.html}}, così da mantenere coerente anche questo aspetto nella versione finale del modulo.
 
-Affinché poi vengano utilizzate all'interno dei prompt, tutte le funzioni adottano commenti """""" per definire contratto/comportamento dei singoli funzioni (nei prompt quindi basterà più una descrizione di insieme e non specifica). durante la classe vengono anche mostrate informazioni riguardanti le informazioni/azioni per cui ci si aspetta il logging.
-
-tutto viene implementato tramite "pass" python oppure return/packet degli oggetti senza modifiche (immutati). quello che si trasmette è che l'implementazione dovrà:
-- se il protocollo implementa quella cosa, modifica e replicala (OVERRIDE)
-- se il protocollo non la implementa, lascia tutto com'è, visto che non modifica niente e passa avanti.
-
-Da qualche parte bisogna affermare la compatibilità con i dizionari python. json.dumps(mio dizionario) (nell'yield)
+Una caratteristica particolare del template è l'implementazione iniziale dei metodi ausiliari mediante la keyword \texttt{pass}, utilizzata come \textit{placeholder}, oppure restituendo invariati gli oggetti ricevuti. Questa scelta permette di esplicitare al LLM quali funzionalità sono opzionali e dipendenti dallo specifico protocollo: se una determinata funzionalità è prevista dal protocollo, allora il relativo metodo dovrà essere sovrascritto implementandone la logica specifica; in caso contrario, il comportamento predefinito del template può essere mantenuto invariato.
 
 \subsection{MessageParser Module} % 5.8.2
 
-deve esporre un metodo \texttt{parse\_message} che possa essere richiamato dal botnet module. questo metodo può quindi direttamente inserire le informazioni comuni a tutti i messaggi, successivamente viene eseguito il dispatch verso i metodi specifici (parse ack, command, heartbeat e attack). Nel caso di attack in più è responsabile di riempire le informazioni ipI  nfo utilizzando la rispettivamente classe.
+Il template completo del modulo è riportato nell'appendice. La responsabilità del \textsc{MessageParser Module} consiste nell'implementare il metodo \texttt{parse\_message}, richiamato dal \textsc{BotNet Module}. Tale metodo esegue il parsing di un messaggio e restituisce un dizionario Python conforme alla struttura definita dal \textsc{MessageSchema}, pronto per essere sottoposto alla relativa validazione.
 
-Implementa la logica secondo cui un errore di parsing dei metodi specifici fa ricadere su un messaggio generico command. alla fine il metodo deve restituire un dizionario python pronto a essere validato contro il JSON schema.
+Il metodo \texttt{parse\_message} provvede inizialmente all'estrazione delle informazioni comuni alle diverse tipologie di messaggio, per poi invocare il metodo dedicato all'elaborazione della specifica categoria: \texttt{parse\_ack}, \texttt{parse\_command}, \texttt{parse\_heartbeat} o \texttt{parse\_attack}. Nel caso dei messaggi di tipo \texttt{Attack}, il parser recupera inoltre le informazioni associate agli indirizzi IP dei bersagli dell'attacco mediante la classe \texttt{IPLookup}.
 
-Per semi implementazioni e commenti valgono stessi principi di botnet module.
+Il modulo implementa inoltre una logica di fallback nel caso in cui il parsing specifico non abbia esito positivo. Se uno dei metodi dedicati non riesce a interpretare il messaggio o incorre in un errore, questo viene classificato come un messaggio generico \texttt{Command}, garantendo comunque la produzione di un risultato conforme allo schema previsto.
 
-\section{Prompt Archive} % 5.9 (Engineering)
+Anche per il \textsc{MessageParser Module} valgono gli stessi principi già adottati per il \textsc{BotNet Module} in merito alle descrizioni tramite docstring e alle modalità di implementazione.
+
+\section{Prompt Archive} % 5.9 (Prompt Engineering)
+
+\begin{itemize}
+    \item Si presentano tutti i prompt, cominciando per tutti dal system prompt e poi proseguendo con gli user prompt.
+    \item I prompt verranno riportati tra le appendici, completi oppure con alcuni snippet.
+    \item per l'introduzione dei materiali viene fatta la context injection, prevedendo dei "tag" che vengono valorizzati dinamicamente in base all'uso.
+\end{itemize}
+
+% \subsubsection{Context Injection}
 
 \subsection{Renaming} % 5.9.1
 
-\subsubsection{Start}
-
-\subsubsection{Continue}
+\begin{description}
+    \item[Sysem Prompt.] 
+    \item[Start Prompt.] 
+    \item[Continue Prompt.] 
+\end{description}
 
 \subsection{Reversing} % 5.9.2
 
-\subsubsection{Pt. 1}
+\begin{description}
+    \item[Sysem Prompt.] 
+    \item[1st half Prompt.] 
+    \item[2nd half Prompt.] 
+\end{description}
 
-\subsubsection{Pt. 2}
+\subsection{Code Agent} % 5.9.3
 
-\subsection{Coding} % 5.9.3
+\begin{description}
 
-\subsubsection{Botnet}
+    \item[System Prompt.] Definisce come ruolo del LLM quello di agente specializzato nella generazione di codice Python per moduli di sicurezza di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti. Il prompt descrive inoltre le modalità di estrazione delle informazioni a partire dalla documentazione fornita e stabilisce gli standard di implementazione e qualità del codice da seguire. In particolare, richiede l'utilizzo di Python 3.11+, l'adozione di buone pratiche di sviluppo, con modularità, separazione delle responsabilità tra i componenti e chiarezza del codice, oltre a una gestione adeguata delle eccezioni e del logging.
 
-\subsubsection{Parser}
+    \item[BotNet Prompt.] Definisce il compito di generazione del modulo di cattura, specificando che l'implementazione deve essere contenuta in un singolo file e ricostruire i layer di comunicazione e trasporto della botnet. Il prompt fornisce quindi i materiali di riferimento, ciascuno affiancato da una breve descrizione: la \texttt{BotNetInterface}, i \texttt{SRE Reports}, il template del \texttt{BotNet Module} e l'enumerazione \texttt{MessageType}. Vengono successivamente definiti i requisiti per l'implementazione dei metodi \texttt{connect} e \texttt{sniff}, specificando in generale il comportamento atteso. Infine, si richiede di rispettare il template esistente e di implementare esclusivamente le funzionalità previste dalla specifica, escludendo qualsiasi comportamento offensivo e restituendo in output il file completo.
 
-\subsubsection{YAML}
+    \item[MessageParser Prompt.] Poiché questa generazione segue sequenzialmente quella del \texttt{BotNet Module}, il prompt si limita a estendere i materiali di riferimento con il \texttt{MessageSchema} e il template del \texttt{MessageParser Module}. Il compito definito è la generazione del modulo di parsing, il cui punto di ingresso è rappresentato dal metodo \texttt{parse\_message}, responsabile di indirizzare i messaggi verso i parser specifici. Viene inoltre richiesto di utilizzare il tipo di messaggio generico \texttt{Command} come \textit{fallback} in caso di errore durante il parsing. Anche in questo caso, il prompt richiede il rispetto del template, delle richieste definite e del formato di output previsto.
+\end{description}
+
+% \texttt{IPSchema} viene escluso in quanto non necessario per il \texttt{MessageSchema}
