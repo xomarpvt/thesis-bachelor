@@ -40,6 +40,8 @@ contatto con SRE framework e sandbox.
 
 \subsubsection{Knowledge Base}
 
+Zero-shot prompting to few-shot prompting.
+
 \subsubsection{Selezione Tools Analisi Statica} % 5.3.4
 
 Per questa implementazione è stato scelto solo un sottoinsieme di tool riguardanti analisi statica del codice.
@@ -55,6 +57,8 @@ I tool scelti rientrano nelle seguenti categorie:
 Niente accesso al file e niente accesso a internet.
 
 \subsection{Code Agent} % 5.2.3
+
+Multi-turn prompting
 
 \section{SRE Framework} % 5.3
 
@@ -256,35 +260,32 @@ Anche per il \textsc{MessageParser Module} valgono gli stessi principi già adot
 
 \section{Prompt Archive} % 5.9 (Prompt Engineering)
 
-\begin{itemize}
-    \item Si presentano tutti i prompt, cominciando per tutti dal system prompt e poi proseguendo con gli user prompt.
-    \item I prompt verranno riportati tra le appendici, completi oppure con alcuni snippet.
-    \item per l'introduzione dei materiali viene fatta la context injection, prevedendo dei "tag" che vengono valorizzati dinamicamente in base all'uso.
-\end{itemize}
+In questa sezione vengono presentati i prompt utilizzati nei due componenti principali del sistema, ossia il \textsc{SRE Agent}, per le attività di \textit{Renaming} e \textit{Reversing}, e il \textsc{Code Agent}. Per ciascuna di queste attività vengono dapprima descritti il \textit{System Prompt} e successivamente gli \textit{User Prompt} specifici. I prompt completi (o gli snippet?) sono riportati nelle appendici.
 
-% \subsubsection{Context Injection}
+Per aggiungere dinamicamente ai prompt le informazioni necessarie alle diverse attività viene utilizzato un meccanismo di \textit{context injection}, basato su placeholder che possono essere sostituiti con il contenuto richiesto. Questo meccanismo viene utilizzato sia per i materiali di riferimento forniti al \textsc{Code Agent}, sia, nel caso del \textsc{SRE Agent}, così da poter includere nel prompt, quando disponibile, il contenuto della knowledge base.
 
 \subsection{Renaming} % 5.9.1
 
 \begin{description}
-    \item[Sysem Prompt.] 
-    \item[Start Prompt.] 
-    \item[Continue Prompt.] 
+    \item[System Prompt.] Definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria, con particolare attenzione alla ricostruzione della logica di programmi stripped e al renaming delle funzioni. Richiede di identificare sistematicamente lo scopo delle funzioni, ricostruirne le relazioni e proporre nomi coerenti sulla base di evidenze verificabili. Il prompt stabilisce inoltre l'utilizzo delle funzionalità di analisi statica del \textsc{SRE Framework}, sfruttando informazioni quali disassembly, decompilazione e cross-reference per supportare le decisioni di ridenominazione.
+    
+    \item[Start Prompt.] Definisce il compito di ridenominazione delle funzioni all'interno di un binario stripped, partendo dall'identificazione della funzione \texttt{main} e procedendo ricorsivamente a partire da essa. L'attività principale consiste nel ridenominare le funzioni e, quando necessario, anche i parametri delle funzioni e le variabili locali, così da facilitare le successive attività di analisi. Il prompt suggerisce quindi i tool da utilizzare per effettuare le ridenominazioni. Infine, richiede di basare le ridenominazioni sulle evidenze raccolte durante l'analisi, riportando il ragionamento seguito e il relativo livello di confidenza in un breve output che riepiloga le attività svolte.
+    
+    \item[Continue Prompt.] Definisce il compito di verificare e migliorare le ridenominazioni già effettuate su funzioni, parametri e variabili, individuando quelle inesatte e correggendole quando necessario. Il prompt richiede inoltre di identificare ulteriori opportunità di ridenominazione, cercando sempre di privilegiare gli elementi che hanno un impatto maggiore sulla comprensione del malware ed evitando di introdurre nomi potenzialmente fuorvianti. Rimangono invariate rispetto al prompt precedente le indicazioni relative ai tool, ai principi di analisi e all'output da produrre.
 \end{description}
 
 \subsection{Reversing} % 5.9.2
 
 \begin{description}
-    \item[Sysem Prompt.] 
-    \item[1st half Prompt.] 
-    \item[2nd half Prompt.] 
+    \item[System Prompt.] Definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria. Richiede di produrre risultati tecnici rigorosi, precisi e verificabili, basando ogni conclusione su evidenze direttamente osservabili nel binario e indicando esplicitamente il livello di confidenza tra fatto verificato, ipotesi analitica e informazione sconosciuta. Il prompt stabilisce inoltre l'utilizzo combinato delle funzionalità di analisi statica del \textsc{SRE Framework} e degli strumenti disponibili all'interno della \textsc{Sandbox} per validare ipotesi, estrarre informazioni, analizzare dati offuscati e automatizzare attività ripetitive.
+    \item[Transport Prompt.] Definisce il compito di analizzare e documentare il \textit{Transport Layer} del malware, con particolare attenzione al recupero dell'infrastruttura C\&C e all'inizializzazione della connessione. Il prompt richiede di ricostruire le modalità con cui vengono ottenuti l'indirizzo e la porta del server C\&C, incluse eventuali tecniche di offuscamento, cifratura o l'utilizzo di una tabella di stringhe, e di descrivere il relativo protocollo e ciclo di connessione. Infine, richiede di produrre una specifica tecnica completa, sufficientemente dettagliata per la comprensione umana e direttamente utilizzabile per la successiva implementazione.
+    \item[Communication Prompt.] Definisce il compito di analizzare e documentare il \textit{Communication Layer} del malware, con particolare attenzione alle fasi di autenticazione e instaurazione della sessione C\&C e al successivo ciclo di elaborazione dei comandi. Il prompt richiede di individuare e ricostruire i meccanismi di autenticazione e crittografia, il formato e il parsing dei messaggi, la gestione dei comandi e le modalità di mantenimento della sessione.  Le indicazioni relative agli standard di analisi e alla struttura e al contenuto dell'output rimangono invariate.
 \end{description}
 
 \subsection{Code Agent} % 5.9.3
 
 \begin{description}
-
-    \item[System Prompt.] Definisce come ruolo del LLM quello di agente specializzato nella generazione di codice Python per moduli di sicurezza di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti. Il prompt descrive inoltre le modalità di estrazione delle informazioni a partire dalla documentazione fornita e stabilisce gli standard di implementazione e qualità del codice da seguire. In particolare, richiede l'utilizzo di Python 3.11+, l'adozione di buone pratiche di sviluppo, con modularità, separazione delle responsabilità tra i componenti e chiarezza del codice, oltre a una gestione adeguata delle eccezioni e del logging.
+    \item[System Prompt.] Definisce il ruolo del LLM come agente specializzato nella generazione di codice Python per moduli di sicurezza di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti. Il prompt descrive inoltre le modalità di estrazione delle informazioni a partire dalla documentazione fornita e stabilisce gli standard di implementazione e qualità del codice da seguire. In particolare, richiede l'utilizzo di Python 3.11+, l'adozione di buone pratiche di sviluppo, con la produzione di codice chiaro, oltre a una gestione adeguata delle eccezioni e del logging.
 
     \item[BotNet Prompt.] Definisce il compito di generazione del modulo di cattura, specificando che l'implementazione deve essere contenuta in un singolo file e ricostruire i layer di comunicazione e trasporto della botnet. Il prompt fornisce quindi i materiali di riferimento, ciascuno affiancato da una breve descrizione: la \texttt{BotNetInterface}, i \texttt{SRE Reports}, il template del \texttt{BotNet Module} e l'enumerazione \texttt{MessageType}. Vengono successivamente definiti i requisiti per l'implementazione dei metodi \texttt{connect} e \texttt{sniff}, specificando in generale il comportamento atteso. Infine, si richiede di rispettare il template esistente e di implementare esclusivamente le funzionalità previste dalla specifica, escludendo qualsiasi comportamento offensivo e restituendo in output il file completo.
 
