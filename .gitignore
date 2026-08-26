@@ -10,6 +10,7 @@ thesis*.lof
 thesis*.lot
 thesis*.fls
 thesis*.fdb_latexmk
+thesis*.pdf
 /bibliography/
 /workspace/
 /chapters/*.aux

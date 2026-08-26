@@ -19,19 +19,25 @@ La scelta del linguaggio di implementazione è ricaduta su Python principalmente
 
 \subsection{Classifier} % 5.2.1
 
+Inizialmente, vengono calcolati gli hash del file binario, tra cui il digest SHA-256, mediante la libreria \texttt{hashlib}\footnote{\url{https://docs.python.org/3/library/hashlib.html}}. L'hashing riveste un ruolo fondamentale nell'analisi del malware, poiché consente di identificare univocamente un campione tramite una \textit{fingerprint}. L'hash può quindi essere utilizzato come etichetta identificativa del file e, soprattutto, come riferimento per condividere e confrontare informazioni tra reverse engineer. Ad esempio, il digest calcolato può essere impiegato per verificare la presenza del campione all'interno di database di malware o di servizi online di \textit{threat intelligence} \cite{sikorski2012malware}.
+
 \subsubsection{Virus Total}
+
+A questo scopo viene utilizzato il servizio VirusTotal\footnote{\url{https://virustotal.com}}, che consente di sottoporre un file all'analisi di numerosi \textit{antivirus engine}, fornendo un report che elenca i rilevamenti di attività malevola, le informazioni tecniche sul campione e che suggerisce un nome e una categoria di \textit{Malware Threat}.
+
+Nell'implementazione è stata utilizzata l'API pubblica di VirusTotal, disponibile gratuitamente entro specifici limiti di utilizzo e destinata a un impiego non commerciale e non professionale \footnote{\url{https://docs.virustotal.com/reference/overview}}. Per ottimizzare il processo, viene prima effettuata una richiesta HTTP GET utilizzando l'hash SHA-256 del file, verificando se il campione è già presente nel database. In caso di esito positivo, viene recuperato direttamente il report associato; in caso contrario, il file viene caricato tramite una richiesta HTTP POST e sottoposto ad analisi, al termine della quale viene recuperato il relativo report.
+
+Le informazioni ottenute vengono quindi utilizzate per determinare la natura del campione mediante un'euristica basata sia sul numero assoluto di rilevamenti sia sulla percentuale di antivirus engine che lo classificano come malevolo. Quando il campione non supera tale soglia, allora viene scartato e l'analisi termina.
 
 \subsubsection{YARA}
 
 \iffalse
 
-Come prima cosa si calcolano gli hash del file binario, tra cui in particolare il SHA256, attraverso la libreria hashlib \footnote{\url{https://docs.python.org/3/library/hashlib.html}}. L'hashing è molto importante, visto che permette di identificare univocamente il malware, attraverso appunto l'hash, che rappresenta una sorta di fingerprint. Questa può successivamente essere utilizzata come label (etichetta) del file, ma lo scopo più utile è quella di condivisione tra malware analisti, così per aiutarli a identificare malware e per cercare online se file già identificato \cite{sikorski2012malware}. % Capitolo 1
-
 \subsubsection{Virus Total}
 
-Qui entra in gioco il servizio di Virus Total \footnote{\url{https://virustotal.com}} che permette di scansionare file con diversi antivirus engines, generando poi un report che fornisce informazioni su malevolicità, sul nome e altre informazioni.
+Proprio questo scopo "entra in gioco" e viene coinvolto il servizio di Virus Total \footnote{\url{https://virustotal.com}} che permette di scansionare file con diversi antivirus engines, generando poi un report che fornisce informazioni su malevolicità, sul nome e altre informazioni.
 
-In questa implementazione, si utilizza l'API pubblica di Virus Total. L'API è gratuita, con limite al numero di richieste e uso limitatamente non commerciale/professionale \footnote{\url{https://docs.virustotal.com/reference/overview}}. Quindi come prima cosa per efficienza si consulta il database di virus total con il file hash 256, richiedendo il report tramite una request HTTP GET. Se malware già presente restituisce il report, altrimenti mai visto, quindi si esegue l'upload tramite HTTP POST, si aspetta il termine dell'analisi e poi si ottiene il report.
+In questa implementazione, è stata utilizzata l'API pubblica di Virus Total. L'API è gratuita, con limite al numero di richieste e uso limitatamente non commerciale/professionale \footnote{\url{https://docs.virustotal.com/reference/overview}}. Quindi come prima cosa per efficienza si consulta il database di virus total con il file hash SHA-256, richiedendo il report tramite una request HTTP GET. Se malware già presente restituisce il report, altrimenti mai visto, quindi si esegue l'upload tramite HTTP POST, si aspetta il termine dell'analisi e poi si ottiene il report.
 
 Grazie a queste informazioni si può realizzare il filtro di distinzione malevolo/no, attraverso una euristica di rilevamento basata sulla percentuale e sul numero assoluto di rilevamenti ottenuti. in caso negativo si blocca. In più il report dà anche altre informazioni che possono essere utili, come il suggerimento di nome e categoria di "Malware Threat".
 
@@ -47,6 +53,7 @@ quello che fa il componente è: carica tutte le regole YARA definite, una defini
 Nel caso in cui si trovi uno, allora quella è l'informazione della famiglia
 quindi per ogni famiglia definisco regola: classifico in base a quella regola: se individuo una famiglia quella è l'informazione mandata avanti (per la knowledge base).
 \fi
+
 \iffalse
 https://virustotal.github.io/yara/
 https://virustotal.github.io/yara-x/
@@ -58,15 +65,15 @@ https://virustotal.github.io/yara-x/docs/api/python/
 \subsection{SRE Agent} % 5.2.2
 
 \begin{itemize}
-    \item import in SRE Framework e analisi automatica (fun ghidra)
-    \item determina con una funzione se stripped (fun ghidra)
-    \item eventuale injection knowledge base
-    \item doppio ciclo di renaming start/stop
-    \item save (fun ghidra)
-    \item doppio ciclo di reversing con due report
+    \item Import in SRE Framework del file e analisi automatica (fun ghidra).
+    \item Determina con una funzione se il campione è stripped (fun ghidra).
+    \item Questo provoca l'eventuale context injection della knowledge base.
+    \item Se stripped si esegue il doppio ciclo di renaming start/stop.
+    \item Si salva il file (fun ghidra).
+    \item Si esegue il doppio ciclo di reversing producendo i due report.
 \end{itemize}
 
-contatto con SRE framework e sandbox.
+Si interfaccia con SRE framework e sandbox.
 
 \subsubsection{Knowledge Base}
 
@@ -75,7 +82,8 @@ Zero-shot prompting to few-shot prompting.
 \subsubsection{Selezione Tools Analisi Statica} % 5.3.4
 
 Per questa implementazione è stato scelto solo un sottoinsieme di tool riguardanti analisi statica del codice.
-tre ragioni:
+
+Per tre ragioni:
 - semplicità, cioè riduzione delle variabili in gioco e più controllo sulle azioni (eventualmente estendibile)
 - evitare di esporre all'esecuzione reale
 - the less mcp the better (LLM)
