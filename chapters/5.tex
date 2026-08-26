@@ -1,6 +1,8 @@
 \chapter{L'implementazione} % 5
 
-Questo capitolo ha l'obiettivo di trattare l'implementazione del sistema progettato. Verranno quindi discusse le scelte implementative effettuate e quindi descritto l'implementazione dei singoli componenti. Tutto ciò verrà fatto con diversi livelli di dettaglio, andando più nel profondo per cose interessanti/difficili, più brevemente invece per quelle banali.
+Questo capitolo è dedicato all'implementazione del sistema progettato. Verranno illustrate le principali scelte implementative adottate e descritte le modalità di realizzazione dei singoli componenti, con un livello di dettaglio variabile in funzione della complessità e della rilevanza dei diversi aspetti.
+
+% Le soluzioni più significative o caratterizzate da una maggiore complessità saranno approfondite maggiormente, mentre gli elementi di natura più semplice verranno trattati in modo più sintetico.
 
 % È importante sottolineare come le scelte tecnologiche e le modalità di sviluppo qui presentate costituiscano una sola delle possibili soluzioni per la messa in atto del progetto.
 
@@ -8,7 +10,7 @@ Questo capitolo ha l'obiettivo di trattare l'implementazione del sistema progett
 
 L'implementazione del sistema è stata realizzata in Python 3.13 \footnote{\url{https://www.python.org}}, mentre per la gestione dell'ambiente di sviluppo e delle dipendenze del progetto è stato utilizzato Conda \footnote{\url{https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/index.html}}.
 
-Il motivo per cui la scelta del linguaggio di implementazione è ricaduta su Python è legato principalmente all'ampio ecosistema di librerie disponibili per le funzionalità richieste dal sistema. Tra queste rientrano, in particolare, librerie dedicate all'analisi del malware, all'integrazione con LLM e agenti, alle interazioni basate sul protocollo MCP e all'interazione con gli ambienti di esecuzione. La disponibilità di strumenti già consolidati ha pertanto consentito di concentrare lo sviluppo sulla logica specifica dell'architettura proposta, riducendo la necessità di implementare direttamente funzionalità di supporto.
+La scelta del linguaggio di implementazione è ricaduta su Python principalmente grazie all'ampio ecosistema di librerie disponibili per le funzionalità richieste dal sistema. Tra queste rientrano, in particolare, librerie dedicate all'analisi del malware, all'integrazione con LLM, agenti, MCP e all'interazione con gli ambienti di esecuzione. La disponibilità di strumenti già consolidati ha pertanto consentito di concentrare lo sviluppo sulla logica specifica dell'architettura proposta, riducendo la necessità di implementare direttamente funzionalità di supporto.
 
 % https://www.python.org/downloads/release/python-3130/
 % https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-python.html
@@ -19,11 +21,39 @@ Il motivo per cui la scelta del linguaggio di implementazione è ricaduta su Pyt
 
 \subsubsection{Virus Total}
 
-Test malevolo e ipotesi famiglia.
+\subsubsection{YARA}
 
-\subsubsection{YARA Rules}
+\iffalse
 
-Conferma della famiglia.
+Come prima cosa si calcolano gli hash del file binario, tra cui in particolare il SHA256, attraverso la libreria hashlib \footnote{\url{https://docs.python.org/3/library/hashlib.html}}. L'hashing è molto importante, visto che permette di identificare univocamente il malware, attraverso appunto l'hash, che rappresenta una sorta di fingerprint. Questa può successivamente essere utilizzata come label (etichetta) del file, ma lo scopo più utile è quella di condivisione tra malware analisti, così per aiutarli a identificare malware e per cercare online se file già identificato \cite{sikorski2012malware}. % Capitolo 1
+
+\subsubsection{Virus Total}
+
+Qui entra in gioco il servizio di Virus Total \footnote{\url{https://virustotal.com}} che permette di scansionare file con diversi antivirus engines, generando poi un report che fornisce informazioni su malevolicità, sul nome e altre informazioni.
+
+In questa implementazione, si utilizza l'API pubblica di Virus Total. L'API è gratuita, con limite al numero di richieste e uso limitatamente non commerciale/professionale \footnote{\url{https://docs.virustotal.com/reference/overview}}. Quindi come prima cosa per efficienza si consulta il database di virus total con il file hash 256, richiedendo il report tramite una request HTTP GET. Se malware già presente restituisce il report, altrimenti mai visto, quindi si esegue l'upload tramite HTTP POST, si aspetta il termine dell'analisi e poi si ottiene il report.
+
+Grazie a queste informazioni si può realizzare il filtro di distinzione malevolo/no, attraverso una euristica di rilevamento basata sulla percentuale e sul numero assoluto di rilevamenti ottenuti. in caso negativo si blocca. In più il report dà anche altre informazioni che possono essere utili, come il suggerimento di nome e categoria di "Malware Threat".
+
+\subsubsection{YARA}
+
+Per la conforma della famiglia si ricorre invece all'applicazione delle YARA rules. YARA è progetto open source usato per identificare e classificare campioni di malware. Questo viene fatto attraverso le cosiddette regole, delle descrizioni, un insieme di stringhe o pattern binari che possono essere trovati; questi vengono applicati per classificare un campione \cite{sikorski2012malware}. % Appendice B, pagina 475
+
+% With YARA-X you can create descriptions of malware families (or whatever you want to describe) based on textual or binary patterns. Each description (a.k.a. rule) consists of a set of patterns and a boolean expression which determine its logic.
+
+In particolare si usa yara-x \footnote{\url{https://github.com/VirusTotal/yara-x/}}, con la relativa libreria python \footnote{\url{https://virustotal.github.io/yara-x/docs/api/python/}}. YARA-X è una nuova implementazione che punta alla compatibilità, correggendo limitazioni e ambiguità del linguaggio originale e introducendo nuove funzionalità.
+
+quello che fa il componente è: carica tutte le regole YARA definite, una definita appositamente per ciascuna famiglia che si vuole trattare. Successivamente, il file binario viene confrontato (scan) rispetto a tutte le YARA rules, alla ricerca di un match.
+Nel caso in cui si trovi uno, allora quella è l'informazione della famiglia
+quindi per ogni famiglia definisco regola: classifico in base a quella regola: se individuo una famiglia quella è l'informazione mandata avanti (per la knowledge base).
+\fi
+\iffalse
+https://virustotal.github.io/yara/
+https://virustotal.github.io/yara-x/
+https://github.com/virustotal/yara
+https://github.com/VirusTotal/yara-x/
+https://virustotal.github.io/yara-x/docs/api/python/
+\fi
 
 \subsection{SRE Agent} % 5.2.2
 
@@ -60,11 +90,15 @@ Niente accesso al file e niente accesso a internet.
 
 Multi-turn prompting
 
+% Visto che i SRE report sono la parte dispendiosa, anche generare il codice non è dispendioso, quindi si può procedere anche se non è interessante.
+
 \section{SRE Framework} % 5.3
 
 Il framework di SRE adottato è Ghidra, sviluppato e mantenuto dal Research Directorate della National Security Agency (NSA) e distribuito come progetto open source secondo la Apache License 2.0.
 
-L'ambiente Ghidra, \textit{platform independent}, offre una suite ricca di strumenti e funzionalità per l'analisi binaria del codice compilato, tra cui disassembly, decompiling, graphing, debugging e scripting. Il framework supporta inoltre un'ampia varietà di \textit{instruction set} relativi a differenti architetture di processore e numerosi formati eseguibili. Le attività di analisi possono essere svolte sia in modalità interattiva, attraverso una \textit{Graphical User Interface} (GUI), sia in modalità automatizzata, rendendo Ghidra adatto all'integrazione all'interno di processi di analisi più complessi \cite{nance2026ghidrabook}.
+% Platform independent
+
+L'ambiente Ghidra, offre una suite ricca di strumenti e funzionalità per l'analisi binaria del codice compilato, tra cui disassembly, decompiling, graphing, debugging e scripting. Il framework supporta inoltre un'ampia varietà di \textit{instruction set} relativi a differenti architetture di processore e numerosi formati eseguibili. Le attività di analisi possono essere svolte sia in modalità interattiva, attraverso una \textit{Graphical User Interface} (GUI), sia in modalità automatizzata, rendendo Ghidra adatto all'integrazione all'interno di processi di analisi più complessi \cite{nance2026ghidrabook}.
 
 % Cite NSA
 
@@ -106,17 +140,23 @@ Nel contesto della \textsc{SRE Sandbox}, Docker fornisce i meccanismi necessari 
 
 \subsection{Configurazione} % 5.4.1 del Dockerfile
 
-La configurazione dell'ambiente \textsc{SRE Sandbox} è definita mediante un \textit{Dockerfile}, che specifica l'immagine di base, le dipendenze e le impostazioni necessarie al funzionamento del container. L'immagine utilizzata è basata su Python 3.13 e Debian Slim \footnote{\url{https://hub.docker.com/_/python}}, così da fornire un ambiente contenuto, ma sufficientemente completo da permettere al LLM di creare e modificare file, eseguire codice Python e impartire comandi tramite la shell.
+La configurazione dell'ambiente \textsc{SRE Sandbox} è definita mediante un \textit{Dockerfile}, che specifica l'immagine di base, le dipendenze e le impostazioni necessarie al funzionamento del container. L'immagine utilizzata è basata su Python 3.13 e Debian Slim \footnote{\url{https://hub.docker.com/_/python}}, così da fornire un ambiente contenuto, ma sufficientemente completo da permettere al LLM di svolgere le operazioni richieste.
 
-A questo scopo, durante la fase di costruzione vengono installati gli strumenti di sistema e le librerie Python necessarie alle attività previste nella sandbox, tra cui quelle dedicate alle funzionalità crittografiche, come \texttt{cryptography} \footnote{\url{https://cryptography.io}} e \texttt{pycryptodome} \footnote{\url{https://www.pycryptodome.org/}}. Viene inoltre configurata una directory dedicata alla sandbox e viene creato un utente senza privilegi di root, utilizzato per l'esecuzione dei processi all'interno del container anziché l'utente root.
+% creare e modificare file, eseguire codice Python e impartire comandi tramite la shell.
 
-L'immagine così definita viene utilizzata per creare il container della sandbox, che implementa ulteriori misure di isolamento. In particolare, l'accesso alla rete viene completamente disabilitato, limitando l'interazione del codice con risorse esterne e confinando le operazioni alle sole funzionalità e dipendenze disponibili all'interno dell'ambiente. Per consentire lo scambio controllato dei \textsc{Sandbox Files}, una directory dell'host viene montata all'interno del container con permessi di lettura e scrittura. Infine, vengono imposti limiti alle risorse computazionali disponibili, in termini di memoria e capacità di elaborazione.
+A questo scopo, durante la fase di costruzione vengono installati gli strumenti di sistema e le librerie Python necessarie alle attività previste nella sandbox, tra cui quelle dedicate alle funzionalità crittografiche, come \texttt{cryptography} \footnote{\url{https://cryptography.io}} e \texttt{pycryptodome} \footnote{\url{https://www.pycryptodome.org/}}. Viene inoltre configurata una directory dedicata alla sandbox e viene creato un utente senza privilegi di root, utilizzato per l'esecuzione dei processi all'interno del container.
+
+% al posto dell'utente di root.
+
+L'immagine così definita viene utilizzata per creare il container della sandbox, introducendo ulteriori misure di isolamento. In particolare, l'accesso alla rete viene completamente disabilitato, limitando l'interazione con risorse esterne e confinando le operazioni alle sole funzionalità e dipendenze disponibili all'interno dell'ambiente. Per consentire lo scambio controllato dei \textsc{Sandbox Files}, una directory dell'host viene montata all'interno del container con permessi di lettura e scrittura. Infine, vengono imposti limiti alle risorse computazionali disponibili, in termini di memoria e capacità di elaborazione.
 
 \subsection{Sandbox MCP Server} % 5.4.2
 
-Il server MCP della \textsc{Sandbox} ha il compito di interagire con l'ambiente di esecuzione ed esporne le funzionalità attraverso tool MCP. Per la sua implementazione viene utilizzata la libreria Python \textit{FastMCP} \footnote{\url{https://gofastmcp.com/}}, mentre l'interazione con il container viene gestita attraverso la libreria \textit{Docker SDK for Python} \footnote{\url{https://docker-py.readthedocs.io}}.
+Il server MCP della \textsc{Sandbox} ha il compito di interagire con l'ambiente ed esporne le funzionalità attraverso tool MCP. Per la sua implementazione viene utilizzata la libreria Python \textit{FastMCP} \footnote{\url{https://gofastmcp.com/}}, mentre l'interazione con il container viene gestita attraverso la libreria \textit{Docker SDK for Python} \footnote{\url{https://docker-py.readthedocs.io}}.
 
-All'inizializzazione del server viene verificata la disponibilità del container della sandbox e, qualora questo non risulti in esecuzione, viene avviato automaticamente. Il server espone quindi un insieme di tool organizzati in due principali categorie:
+% Durante l'inizializzazione del server viene verificata la disponibilità del container della sandbox e, qualora questo non risulti in esecuzione, viene avviato automaticamente.
+
+Il server espone quindi un insieme di tool organizzati in due principali categorie:
 
 \begin{description}
     \item[File System] I tool \texttt{list\_files}, \texttt{read\_file} e \texttt{write\_file} permettono di consultare e modificare i file presenti nell'ambiente della sandbox. Ogni operazione prevede inoltre una gestione degli errori, così da fornire un'informazione esplicita in caso di esecuzione non riuscita.
@@ -128,17 +168,19 @@ All'inizializzazione del server viene verificata la disponibilità del container
 
 \section{MCP Client} % 5.5
 
-Per i due MCP client, \textsc{Sandbox MCP Client} e \textsc{Ghidra MCP Client}, è stata definita una classe di base comune, \texttt{BaseMCPClient}, responsabile dell'instaurazione e del mantenimento della connessione con il rispettivo MCP server mediante il metodo di trasporto \textit{stdio}. Il ciclo di vita della connessione viene gestito attraverso un contesto asincrono, all'interno del quale viene inizializzata una \texttt{ClientSession} fornita dal \textit{Python MCP SDK} \footnote{\url{https://py.sdk.modelcontextprotocol.io/}}. La classe espone inoltre le due operazioni fondamentali per l'interazione con il server: la consultazione dei tool disponibili, tramite \texttt{list\_tools}, e la loro invocazione, tramite \texttt{call\_tool}.
+Per i due MCP client, \textsc{Sandbox MCP Client} e \textsc{Ghidra MCP Client}, è stata definita una classe di base comune, \texttt{BaseMCPClient}, responsabile dell'instaurazione e del mantenimento della connessione con il rispettivo MCP server mediante il metodo di trasporto \textit{stdio}. Il ciclo di vita della connessione viene gestito attraverso un contesto asincrono, all'interno del quale viene inizializzata una \texttt{ClientSession} fornita dal \textit{Python MCP SDK} \footnote{\url{https://py.sdk.modelcontextprotocol.io/}}. La classe espone le due operazioni fondamentali per l'interazione con il server: la consultazione dei tool disponibili, con \texttt{list\_tools}, e la loro invocazione, con \texttt{call\_tool}.
 
 \subsection{LLM-MCP Client} % 5.5.1 Tool Parsing
 
-La classe \texttt{BaseMCPClient} viene ulteriormente estesa da \textsc{LLMMCPClient}, che introduce il livello di integrazione con il LLM e si interpone tra la gestione della connessione MCP e le implementazioni specifiche dei singoli client. In particolare, i tool esposti dai server MCP vengono convertiti nel formato utilizzato dal meccanismo di \textit{function calling} delle OpenAI API \footnote{\url{https://developers.openai.com/api/docs/guides/function-calling}}, includendo le informazioni relative al nome, alla descrizione e ai parametri richiesti.
+La classe \texttt{BaseMCPClient} viene ulteriormente estesa da \texttt{LLMMCPClient}, che introduce il livello di integrazione con il LLM e si interpone tra la gestione della connessione MCP e le implementazioni specifiche dei singoli client. In particolare, i tool esposti dai server MCP vengono convertiti nel formato utilizzato dal meccanismo di \textit{function calling} delle OpenAI API \footnote{\url{https://developers.openai.com/api/docs/guides/function-calling}}, includendo le informazioni relative al nome, alla descrizione e ai parametri richiesti.
 
 Entrambi i client specifici estendono quindi \texttt{LLMMCPClient}, ereditandone le funzionalità comuni. Poiché i server sono stati implementati secondo modalità di interazione uniformi e già predisposte all'utilizzo da parte di LLM, non è stato necessario introdurre ulteriori funzionalità, come una formattazione specifica per le risposte, nelle classi derivate.
 
 A completamento di questa struttura, una classe dedicata fornisce un meccanismo per la registrazione dei client MCP e dei relativi tool. Essa consente di applicare opzionalmente ai nomi dei tool un \textit{namespace}, costituito da un prefisso identificativo del client MCP, e di selezionare, specificandone i nomi, un sottoinsieme dei tool disponibili. In questo modo, i tool esclusi possono essere nascosti dall'insieme di strumenti esposti al LLM. % LLMMCPRegistration
 
-Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP e ne semplificano l'integrazione con il LLM. I tool forniti dagli ambienti di esecuzione possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \textit{tool calling} previsto per il \textsc{SRE Agent}.
+Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP, semplificando l'integrazione con il LLM. I tool forniti dagli ambienti di esecuzione possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \textit{tool calling} previsto.
+
+% previsto per il \textsc{SRE Agent}.
 
 \section{LLM} % 5.6
 
@@ -146,21 +188,24 @@ Nel complesso, queste componenti costituiscono un livello di astrazione comune p
 
 Il LLM utilizzato dall'applicazione viene eseguito tramite un'istanza esterna di \textit{vLLM} \footnote{\url{https://vllm.ai/}}, un framework open source progettato per l'inferenza e il \textit{serving} di LLM. Il server vLLM è quindi responsabile dell'esecuzione del modello e della gestione delle richieste di inferenza provenienti dall'applicazione.
 
-L'interfaccia esposta da vLLM è compatibile con le API OpenAI \footnote{\url{https://docs.vllm.ai/en/stable/serving/online_serving/openai_compatible_server/}}, permettendo all'applicazione di interagire con il modello attraverso un'interfaccia standardizzata. Questa configurazione consente di utilizzare modelli LLM eseguiti localmente, senza vincolare l'applicazione a uno specifico modello o fornitore esterno.
+L'interfaccia esposta da vLLM è compatibile con le API OpenAI \footnote{\url{https://docs.vllm.ai/en/stable/serving/online_serving/openai_compatible_server/}}, permettendo all'applicazione di interagire con il modello attraverso un'interfaccia standardizzata. Questa configurazione consente di utilizzare LLM eseguiti localmente, senza vincolare l'applicazione a uno specifico modello o fornitore esterno.
 
 \subsection{Client} % 5.6.2
 
 Il \texttt{LLM Client} rappresenta il componente responsabile dell'interazione tra \textsc{SRE Agent}/\textsc{Code Agent} e il LLM, integrando inoltre gli strumenti esposti attraverso i client MCP.
 
-Alla sua inizializzazione vengono specificati i client MCP con i quali il LLM può interagire, quindi gli strumenti da essi esposti vengono raccolti e salvati in una struttura di risoluzione. Questa associazione permetterà successivamente di individuare, a partire dal nome del tool richiesto dal LLM, il client MCP responsabile della sua gestione. Il \texttt{LLM Client} si occupa quindi anche dell'invocazione dei tool richiesti, inoltrando ciascuna tool call al client MCP corrispondente e recuperandone il risultato.
+Alla sua inizializzazione vengono specificati i client MCP con i quali il LLM può interagire, quindi gli strumenti da essi esposti vengono raccolti e salvati in una struttura di risoluzione. Questa associazione permetterà successivamente di individuare, a partire dal nome del tool richiesto dal LLM, il client MCP responsabile della sua gestione. Il \texttt{LLM Client} si occupa quindi anche dell'invocazione dei tool, inoltrando ciascuna tool call al client MCP corrispondente e recuperandone il risultato.
 
-Il componente permette inoltre di configurare i \textit{sampling parameters} (parametri di campionamento), ovvero le variabili utilizzate per controllare le caratteristiche della generazione del testo, tra cui \texttt{temperature}, \texttt{top\_p}, \texttt{top\_k}, \texttt{min\_p}, \texttt{presence\_penalty} e \texttt{repetition\_penalty}. È inoltre possibile controllare la modalità di ragionamento del LLM, abilitandola o disabilitandola tramite \texttt{preserve\_thinking} e specificandone il livello mediante \texttt{reasoning\_effort}.
+Il componente permette inoltre di configurare i \textit{sampling parameters} (parametri di campionamento), ovvero le variabili utilizzate per controllare le caratteristiche della generazione del testo, tra cui \texttt{temperature}, \texttt{top\_p}, \texttt{top\_k}, \texttt{min\_p}, \texttt{presence\_penalty} e \texttt{repetition\_penalty}. È inoltre possibile scegliere la modalità di ragionamento del LLM, abilitandola o disabilitandola tramite \texttt{preserve\_thinking} e specificandone il livello mediante \texttt{reasoning\_effort}.
 
-Sono quindi messi a disposizione metodi per effettuare richieste singole al LLM mediante \textit{chat completion}, secondo l'interfaccia prevista dalle OpenAI API \footnote{\url{https://developers.openai.com/api/reference/resources/chat}} e dal relativo SDK Python \footnote{\url{https://pypi.org/project/openai/}}. Le richieste possono essere effettuate sia con sia senza l'utilizzo dei tool; i parametri di campionamento, così come eventuali altri parametri supportati dal client, possono inoltre essere specificati o sovrascritti per la singola richiesta.
+Sono quindi messi a disposizione metodi per effettuare richieste singole, con o senza tool, al LLM mediante \textit{chat completion}, secondo l'interfaccia prevista dalle OpenAI API \footnote{\url{https://developers.openai.com/api/reference/resources/chat}} e dal relativo SDK Python \footnote{\url{https://pypi.org/project/openai/}}.
+
+% Le richieste possono essere effettuate con o senza l'utilizzo dei tool.
+% I parametri di campionamento, così come eventuali altri parametri supportati dal client, possono inoltre essere specificati o sovrascritti per la singola richiesta.
 
 Infine, il componente fornisce la struttura di base dell'agente che viene utilizzata dal \textsc{SRE Agent}. Questa è realizzata mediante un ciclo iterativo che gestisce autonomamente lo stato della conversazione, l'invocazione del LLM, l'esecuzione dei tool e l'inserimento nel contesto dei risultati ottenuti, proseguendo l'elaborazione fino al raggiungimento dell'obiettivo. L'implementazione segue il paradigma \textit{ReAct}, alternando le fasi di ragionamento e di azione, preservando il ragionamento prodotto dal LLM, affidando al modello la selezione dei tool ed eseguendo sequenzialmente le tool call.
 
-All'interno del ciclo di esecuzione non sono stati introdotti meccanismi di compattazione del contesto, così da mantenere la massima fedeltà alla cronologia dell'esecuzione e non perdere informazione. Sebbene questa scelta possa comportare il raggiungimento del limite della finestra di contesto, tale eventualità non si è rilevata problematica per gli utilizzi considerati nell'ambito di questa implementazione.
+All'interno del ciclo di esecuzione non sono stati introdotti meccanismi di compattazione del contesto, così da mantenere la massima fedeltà alla cronologia dell'esecuzione e non perdere informazione. Sebbene questa scelta possa comportare il raggiungimento del limite della finestra di contesto, tale eventualità non si è rivelata problematica per gli utilizzi considerati nell'ambito di questa implementazione.
 
 \subsubsection{Logging}
 
@@ -168,7 +213,7 @@ A supporto dell'esecuzione dell'agente, sono state implementate le funzionalità
 
 La prima è orientata alla conservazione completa dell'esecuzione e produce un output strutturato in formato JSON, conforme al formato utilizzato dalle OpenAI API \footnote{\url{https://developers.openai.com/api/reference/resources/chat}}. Il log contiene l'intera cronologia della conversazione, includendo in particolare le tool call effettuate e i relativi risultati. La struttura adottata permette quindi di analizzare oppure importare e continuare a elaborare successivamente la singola esecuzione
 
-La seconda modalità è invece orientata alla consultazione da parte dell'utente e presenta una sintesi leggibile dell'esecuzione. In particolare, vengono riportati il prompt iniziale e, per ciascun passo, alcune statistiche relative all'elaborazione (numero di token e tempo di esecuzione parziali), insieme al ragionamento e alla risposte prodotte dal LLM, oltre all'indicazione delle sole tool call effettuate. I risultati restituiti dai tool non vengono inclusi in questa visualizzazione, in modo da mantenere il focus sulla Chain of Thought sviluppata dal LLM.
+La seconda modalità è invece orientata alla consultazione da parte dell'utente e presenta una sintesi leggibile dell'esecuzione. In particolare, vengono riportati il prompt iniziale e, per ciascun passo, alcune statistiche relative all'elaborazione (numero di token e tempo di esecuzione parziali), insieme al ragionamento, alle tool call e alle risposte prodotte dal LLM. I risultati restituiti dai tool non vengono inclusi in questa visualizzazione, in modo da mantenere il focus sulla Chain of Thought sviluppata dal LLM.
 
 \section{MessageSchema} % 5.7
 
@@ -201,7 +246,7 @@ La tipologia \texttt{Attack} è quella caratterizzata dalla struttura più artic
 
 \subsubsection{IP Schema}
 
-Lo schema include inoltre un array dedicato alle informazioni relative agli indirizzi IP coinvolti negli attacchi, che può rimanere vuoto qualora non siano disponibili ulteriori informazioni sui bersagli. Per ciascun indirizzo è possibile memorizzare dati relativi sia alla sua localizzazione sia alla rete di appartenenza.
+Lo schema include anche un array dedicato alle informazioni relative agli indirizzi IP coinvolti negli attacchi, che può rimanere vuoto qualora non siano disponibili ulteriori informazioni sui bersagli. Per ciascun indirizzo è possibile memorizzare dati relativi alla sua localizzazione e alla rete di appartenenza.
 
 In particolare, lo schema consente di rappresentare informazioni geografiche a diversi livelli, dal continente fino alla città, oltre a dati di geolocalizzazione quali latitudine, longitudine e \textit{timezone}. Sono inoltre previste informazioni sulla rete di appartenenza dell'indirizzo IP, con la relativa notazione CIDR e i principali attributi dell'\textit{Autonomous System} (AS), quali numero identificativo (ASN), nome e dominio. Lo schema include infine informazioni relative alla risoluzione DNS e ad altri eventuali metadati associati all'indirizzo.
 
@@ -210,6 +255,8 @@ In particolare, lo schema consente di rappresentare informazioni geografiche a d
 L'arricchimento dei dati relativi agli indirizzi IP deve essere gestito dai singoli \textsc{Python Module}; tuttavia, per evitare la duplicazione del codice e garantire uniformità nelle modalità di recupero delle informazioni, questa funzionalità è stata centralizzata in un componente dedicato, \texttt{IPLookup}, condiviso tra i diversi moduli e richiamabile quando necessario.
 
 Il modulo \texttt{IPLookup} implementa una classe progettata per interrogare database locali in formato \texttt{.mmdb} (\textit{MaxMind DB}), quali i database \textit{IPinfo Lite} \footnote{\url{https://ipinfo.io/developers/ipinfo-lite-database}} e \textit{GeoLite2}, nelle varianti \textit{City}, \textit{Country} e \textit{ASN} \footnote{\url{https://dev.maxmind.com/geoip/docs/databases/}}, così da estrarre le informazioni associate agli indirizzi IP. L'interazione con questi dataset avviene tramite l'apposita libreria Python \textit{maxminddb} \footnote{\url{https://maxminddb.readthedocs.io/en/latest/}}, mentre i database sono aggiornati frequentemente e distribuiti gratuitamente, secondo le relative condizioni di licenza \footnote{\url{https://ipinfo.io/developers/ipinfo-lite-database} (CC BY-SA 4.0)} \footnote{\url{https://www.maxmind.com/en/geolite/eula} (EULA con CC BY-SA 4.0)}.
+
+% Non si capisce chi deve aggiornare i database (non è responsabilità di questo software).
 
 % IPinfo Lite (Free): https://ipinfo.io/developers/ipinfo-lite-database - https://ipinfo.io/developers/ipinfo-lite-database#attribution-and-licensing
 
@@ -244,9 +291,9 @@ La struttura del modulo può essere descritta secondo le seguenti aree:
     \item[Metodo \texttt{sniff}.] Rimane in ascolto dei dati provenienti dal server C\&C e gestisce, quando previsto, l'invio periodico dei messaggi di keepalive tramite il metodo dedicato \texttt{heartbeat}. I dati ricevuti vengono eventualmente sottoposti a un pre-processing tramite \texttt{preprocess\_stream} e sono successivamente aggiunti al buffer. Da quest'ultimo, tramite \texttt{extract\_packets}, vengono estratti i pacchetti, che possono essere quindi decodificati o decifrati tramite \texttt{decode\_packet}. Dai pacchetti elaborati vengono estratti i singoli messaggi mediante \texttt{extract\_messages}, per poi essere classificati secondo il \texttt{MessageType} tramite \texttt{get\_message\_type}. Inoltre, quando previsto dal protocollo, \texttt{handle\_message} permette di eseguire l'azione attesa dal server, in risposta al messaggio ricevuto, come ad esempio l'invio di un acknowledgment. Il parsing del contenuto del messaggio viene invece demandato al \texttt{MessageParser} tramite il metodo \texttt{parse\_message}, che produce un dizionario Python, successivamente restituito tramite \texttt{yield}. L'utilizzo di un dizionario garantisce inoltre la compatibilità diretta con la successiva serializzazione in formato JSON, per la quale sarà sufficiente usare la funzione \texttt{json.dumps} \footnote{\url{https://docs.python.org/3/library/json.html}}.
 \end{description}
 
-Per rendere il template del modulo direttamente utilizzabile nella successiva generazione del codice, tutti i metodi sono accompagnati da \textit{docstring} che ne descrivono il contratto, il comportamento atteso e le operazioni che devono essere implementate. In questo modo, nei prompt forniti al LLM è sufficiente riportare una descrizione più generale del protocollo, senza dover specificare nuovamente tutti i dettagli tecnici. Nel template sono inoltre esplicitamente indicati gli eventi per i quali è previsto il logging, realizzato l'omonima libreria Python \footnote{\url{https://docs.python.org/3/library/logging.html}}, così da mantenere coerente anche questo aspetto nella versione finale del modulo.
+Per rendere il template del modulo direttamente utilizzabile nella successiva generazione del codice, tutti i metodi sono accompagnati da \textit{docstring} che ne descrivono il contratto, il comportamento atteso e le operazioni che devono essere implementate. In questo modo, nei prompt forniti al LLM è sufficiente riportare una descrizione più generale del protocollo, senza dover specificare nuovamente tutti i dettagli tecnici. Nel template sono inoltre esplicitamente indicati gli eventi per i quali è previsto il logging, realizzato con l'omonima libreria Python \footnote{\url{https://docs.python.org/3/library/logging.html}}, così da mantenere coerente anche questo aspetto nella versione finale del modulo.
 
-Una caratteristica particolare del template è l'implementazione iniziale dei metodi ausiliari mediante la keyword \texttt{pass}, utilizzata come \textit{placeholder}, oppure restituendo invariati gli oggetti ricevuti. Questa scelta permette di esplicitare al LLM quali funzionalità sono opzionali e dipendenti dallo specifico protocollo: se una determinata funzionalità è prevista dal protocollo, allora il relativo metodo dovrà essere sovrascritto implementandone la logica specifica; in caso contrario, il comportamento predefinito del template può essere mantenuto invariato.
+Una caratteristica particolare del template è l'implementazione dei metodi ausiliari mediante la keyword \texttt{pass}, utilizzata come \textit{placeholder}, oppure restituendo invariati gli oggetti ricevuti. Questa scelta permette di esplicitare al LLM quali funzionalità sono opzionali e dipendenti dallo specifico protocollo: se una determinata funzionalità è prevista dal protocollo, allora il relativo metodo dovrà essere sovrascritto implementandone la logica specifica; in caso contrario, il comportamento predefinito del template può essere mantenuto invariato.
 
 \subsection{MessageParser Module} % 5.8.2
 
@@ -260,7 +307,7 @@ Anche per il \textsc{MessageParser Module} valgono gli stessi principi già adot
 
 \section{Prompt Archive} % 5.9 (Prompt Engineering)
 
-In questa sezione vengono presentati i prompt utilizzati nei due componenti principali del sistema, ossia il \textsc{SRE Agent}, per le attività di \textit{Renaming} e \textit{Reversing}, e il \textsc{Code Agent}. Per ciascuna di queste attività vengono dapprima descritti il \textit{System Prompt} e successivamente gli \textit{User Prompt} specifici. I prompt completi (o gli snippet?) sono riportati nelle appendici.
+In questa sezione vengono presentati i prompt utilizzati nei due componenti principali del sistema, ossia il \textsc{SRE Agent}, per le attività di \textit{Renaming} e \textit{Reversing}, e il \textsc{Code Agent}. Per ciascuna di queste attività vengono dapprima descritti il \textit{System Prompt} e successivamente gli \textit{User Prompt} specifici. I prompt completi sono riportati nelle appendici.
 
 Per aggiungere dinamicamente ai prompt le informazioni necessarie alle diverse attività viene utilizzato un meccanismo di \textit{context injection}, basato su placeholder che possono essere sostituiti con il contenuto richiesto. Questo meccanismo viene utilizzato sia per i materiali di riferimento forniti al \textsc{Code Agent}, sia, nel caso del \textsc{SRE Agent}, così da poter includere nel prompt, quando disponibile, il contenuto della knowledge base.
 
@@ -287,9 +334,9 @@ Per aggiungere dinamicamente ai prompt le informazioni necessarie alle diverse a
 \begin{description}
     \item[System Prompt.] Definisce il ruolo del LLM come agente specializzato nella generazione di codice Python per moduli di sicurezza di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti. Il prompt descrive inoltre le modalità di estrazione delle informazioni a partire dalla documentazione fornita e stabilisce gli standard di implementazione e qualità del codice da seguire. In particolare, richiede l'utilizzo di Python 3.11+, l'adozione di buone pratiche di sviluppo, con la produzione di codice chiaro, oltre a una gestione adeguata delle eccezioni e del logging.
 
-    \item[BotNet Prompt.] Definisce il compito di generazione del modulo di cattura, specificando che l'implementazione deve essere contenuta in un singolo file e ricostruire i layer di comunicazione e trasporto della botnet. Il prompt fornisce quindi i materiali di riferimento, ciascuno affiancato da una breve descrizione: la \texttt{BotNetInterface}, i \texttt{SRE Reports}, il template del \texttt{BotNet Module} e l'enumerazione \texttt{MessageType}. Vengono successivamente definiti i requisiti per l'implementazione dei metodi \texttt{connect} e \texttt{sniff}, specificando in generale il comportamento atteso. Infine, si richiede di rispettare il template esistente e di implementare esclusivamente le funzionalità previste dalla specifica, escludendo qualsiasi comportamento offensivo e restituendo in output il file completo.
+    \item[BotNet Prompt.] Definisce il compito di generazione del modulo di cattura, specificando che l'implementazione deve essere contenuta in un singolo file e deve ricostruire i layer di comunicazione e trasporto della botnet. Il prompt fornisce quindi i materiali di riferimento, ciascuno affiancato da una breve descrizione: la \texttt{BotNetInterface}, i \texttt{SRE Reports}, il template del \texttt{BotNet Module} e l'enumerazione \texttt{MessageType}. Vengono successivamente definiti i requisiti per l'implementazione dei metodi \texttt{connect} e \texttt{sniff}, specificando in generale il comportamento atteso. Infine, si richiede di rispettare il template esistente e di implementare esclusivamente le funzionalità previste dalla specifica, escludendo qualsiasi comportamento offensivo e restituendo in output il file completo.
 
     \item[MessageParser Prompt.] Poiché questa generazione segue quella del \texttt{BotNet Module}, il prompt si limita a estendere i materiali di riferimento con il \texttt{MessageSchema} e il template del \texttt{MessageParser}. Il compito definito è la generazione del modulo di parsing, il cui punto di ingresso è rappresentato dal metodo \texttt{parse\_message}, responsabile di indirizzare i messaggi verso i parser specifici. Viene inoltre richiesto di utilizzare il tipo di messaggio generico \texttt{Command} come \textit{fallback} in caso di errore durante il parsing. Anche in questo caso, il prompt richiede il rispetto del template, delle richieste definite e del formato di output previsto.
+    
+    % \texttt{IPSchema} viene escluso in quanto non necessario per il \texttt{MessageSchema}
 \end{description}
-
-% \texttt{IPSchema} viene escluso in quanto non necessario per il \texttt{MessageSchema}

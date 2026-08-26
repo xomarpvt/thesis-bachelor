@@ -6,7 +6,7 @@ Questo capitolo ha l'obiettivo di introdurre il problema affrontato nella tesi. 
 
 Il problema oggetto di studio e sviluppo in questa tesi consiste nella progettazione e nella successiva implementazione di un sistema in grado di ricevere in ingresso un file binario arbitrario e, qualora questo appartenga a una botnet, generare automaticamente un modulo software capace di catturare le comunicazioni Command-and-Control ricevute dall'infrastruttura di comando e di tradurle in una rappresentazione strutturata. % Server C\&C
 
-La motivazione principale alla base di questo lavoro consiste nell'automatizzare e velocizzare, ove possibile, le attività richieste di malware analysis e produzione del codice. Quando svolte manualmente da un esperto di cybersecurity, tali attività richiedono competenze specialistiche, un grande investimento di tempo e un significativo impegno operativo.
+La motivazione principale alla base di questo lavoro consiste nell'automatizzare e velocizzare, ove possibile, le attività richieste di analisi del malware e produzione del codice. Quando svolte manualmente da un esperto di cybersecurity, tali attività richiedono competenze specialistiche, un grande investimento di tempo e un significativo impegno operativo.
 
 La responsabilità primaria del sistema consiste pertanto nell'analizzare in maniera autonoma campioni di malware appartenenti a diverse botnet, al fine di ricavare tutte le informazioni necessarie alla generazione di un modulo di cattura. Tale modulo dovrà soddisfare sia i requisiti derivanti dalla definizione iniziale del problema, sia quelli che verranno progressivamente individuati e formalizzati nel corso del presente capitolo e delle successive fasi di progettazione e implementazione.
 
@@ -58,8 +58,9 @@ Per chiarezza espositiva, tali requisiti possono essere suddivisi in due categor
         
         Il sistema dovrà operare in maniera completamente autonoma, senza richiedere interventi da parte dell'utente durante le diverse fasi dell'analisi. Un utente del sistema dovrà fornire esclusivamente il file binario in ingresso e, nel caso in cui questo appartenga a una botnet, si limiterà a ricevere il risultato prodotto dal sistema al termine del processo di analisi.
         
-        L'utente potrà poi intervenire solo a processo concluso, eseguendo il modulo generato o operando su di esso, apportando correzioni, adattamenti o miglioramenti. A tal fine, è fondamentale garantire un adeguato livello di trasparenza rispetto alle operazioni svolte dal sistema durante l'analisi, mantenendo traccia delle attività eseguite. Ciò consentirà di agevolare l'utente nella comprensione del processo seguito dal sistema e di semplificare le eventuali modifiche che vorrà apportare al modulo generato.
+        L'utente potrà poi intervenire solo a processo concluso, eseguendo il modulo generato o operando su di esso, apportando correzioni o miglioramenti. A tal fine, è fondamentale garantire un adeguato livello di trasparenza rispetto alle operazioni svolte dal sistema durante l'analisi, così da agevolare la comprensione del processo da parte dell'utente e facilitare eventuali modifiche al modulo generato.
 
+        % mantenendo traccia delle attività eseguite,
     \end{itemize}
 
     \item[Requisiti di sicurezza.] \hspace{1em}
@@ -92,13 +93,15 @@ In particolare, la conformità dell'output si articola su due livelli distinti:
     % Contratto del modulo.
     \item[Interfaccia del modulo.] \hspace{1em} \texttt{BotNetInterface}
     
-    Per rendere i moduli generati immediatamente utilizzabili da sistemi esterni, è necessario definire un'interfaccia standardizzata. In questo modo, qualsiasi componente che ne conosca la struttura potrà caricare e utilizzare direttamente il modulo prodotto, senza conoscerne i dettagli interni e senza richiedere alcun adattamento.
+    Per rendere i moduli generati immediatamente utilizzabili da sistemi esterni, è necessario definire un'interfaccia standardizzata. In questo modo, qualsiasi componente che ne conosca la struttura potrà caricare e utilizzare direttamente il modulo prodotto, senza conoscerne i dettagli interni.
+    
+    % e senza richiedere alcun adattamento.
 
     Per tale motivo, ogni modulo generato dal sistema dovrà implementare l'interfaccia astratta \texttt{BotNetInterface}. Tale interfaccia impone la presenza nel modulo di due metodi fondamentali:
     
     \begin{itemize}
         \item Metodo \texttt{connect}. Ha lo scopo di inizializzare o, eventualmente, ripristinare la connessione con il server C\&C. Verrà eseguito all'avvio del modulo, prima dell'inizio dell'attività di cattura, e successivamente ogni volta che il metodo \texttt{sniff} terminerà la propria esecuzione a causa della chiusura della connessione o di un errore non recuperabile.
-        \item Metodo \texttt{sniff}. Ha lo scopo di mantenere attiva la connessione con il server C\&C ed eseguire la cattura dei messaggi. Il metodo è progettato per rimanere in esecuzione indefinitamente e dovrà essere implementato come un generatore \textit{Python}, restituendo mediante l'istruzione \texttt{yield} gli oggetti corrispondenti ai messaggi catturati, non appena questi sono stati ricevuti e decodificati.
+        \item Metodo \texttt{sniff}. Ha lo scopo di mantenere attiva la connessione con il server C\&C ed eseguire la cattura dei messaggi. Il metodo è progettato per rimanere in esecuzione indefinitamente e dovrà essere implementato come un generatore Python, restituendo mediante l'istruzione \texttt{yield} gli oggetti corrispondenti ai messaggi catturati, dopo averli ricevuti e decodificati.
     \end{itemize}
 
     L'interfaccia astratta che ogni modulo generato dovrà implementare è riportata in \Cref{fig:botnet_interface}.
