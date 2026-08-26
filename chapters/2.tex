@@ -62,7 +62,7 @@ Il modello C\&C introduce però una vulnerabilità intrinseca: la necessità per
 
 % \cite{silva2013botnets} Capitolo 2.4
 
-\begin{figure}[ht]
+\begin{figure}[t]
     \centering
     \begin{tikzpicture}[
         node distance=10mm,
@@ -245,7 +245,7 @@ I \textit{tools} rappresentano operazioni invocabili dal LLM e sono descritti tr
 
 Dal punto di vista dei livelli di comunicazione, il \textit{data layer} definisce il protocollo di scambio tra Client e Server, basato su JSON-RPC 2.0, specificando il formato dei messaggi e la relativa semantica. Il \textit{transport layer}, invece, definisce il meccanismo di trasporto e il canale attraverso cui avviene lo scambio dei messaggi, occupandosi della gestione della connessione e del \textit{message framing}. Attualmente il protocollo supporta due meccanismi di trasporto: lo \textit{stdio transport}, che utilizza gli stream di input e output standard per la comunicazione tra processi locali sulla stessa macchina e lo \textit{Streamable HTTP transport}, basato su richieste HTTP, che consente la comunicazione con server remoti.
 
-\begin{figure}[ht]
+\begin{figure}[t]
     \centering
     \includegraphics[scale=.5]{img/mcp.png}
     \caption[Architettura del Model Context Protocol (MCP)]{Architettura del Model Context Protocol (MCP) \cite{anthropic2024mcp}}
@@ -271,7 +271,7 @@ In questo contesto si inseriscono i due lavori descritti di seguito.
         \item \textit{LLM4Decompile-Ref}. In questo caso, dopo il disassemblaggio, il codice viene inizialmente decompilato mediante Ghidra; successivamente, il modello utilizza il codice decompilato come punto di partenza per migliorarne leggibilità e correttezza semantica. L'intervento non si limita alla semplice revisione dei nomi e dei tipi delle variabili, ma mira a una rielaborazione più generale del codice, aumentando la potenziale eseguibilità rispetto alla sola decompilazione automatica.
     \end{itemize}
 
-    \begin{figure}[ht]
+    \begin{figure}[t]
         \centering
         \includegraphics[scale=.40]{img/decompile.png}
         \caption[Approcci LLM4Decompile-End e -Ref per la decompilazione]{Approcci LLM4Decompile-End e -Ref per la decompilazione \cite{tan2024llm4decompile}} % di codice binario
@@ -327,7 +327,7 @@ A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di s
 
     Le valutazioni sperimentali mostrano prestazioni superiori al $97\%$ sia nella rilevazione del malware sia nella classificazione della relativa famiglia. Oltre ai risultati quantitativi, gli autori evidenziano come l'approccio multi-agente migliori l'interpretabilità delle decisioni rispetto ai tradizionali modelli \textit{black-box}, fornendo classificazioni supportate dalle evidenze raccolte durante il processo di analisi.
 
-    \begin{figure}[ht]
+    \begin{figure}[t]
         \centering
         \includegraphics[scale=.40]{img/masdroid.png}
         \caption[Panoramica dell'architettura di MASDroid]{Panoramica dell'architettura di MASDroid \cite{wei2026masdroid}}

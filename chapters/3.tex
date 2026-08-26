@@ -106,7 +106,7 @@ In particolare, la conformità dell'output si articola su due livelli distinti:
 
     L'interfaccia astratta che ogni modulo generato dovrà implementare è riportata in \Cref{fig:botnet_interface}.
 
-    \begin{figure}[ht]
+    \begin{figure}[t]
         \centering
         \begin{minipage}{0.5\linewidth}
             \begin{lstlisting}[frame=single]
@@ -126,7 +126,7 @@ class BotNetInterface(ABC):
     
     La \Cref{fig:botnet_main} mostra invece un possibile esempio di utilizzo pratico di un modulo conforme all'interfaccia definita.
 
-    \begin{figure}[ht]
+    \begin{figure}[t]
         \centering
         \begin{minipage}{0.5\linewidth} % pass
             \begin{lstlisting}[frame=single]
@@ -161,7 +161,7 @@ Considerando il sistema come una generica \textit{black box}, la trattazione del
 
 Da un lato, il sistema sviluppato si deve occupare dell'analisi del file binario di input e, qualora siano soddisfatte le condizioni previste, della generazione del relativo output. Dall'altro, viene rappresentato un possibile utilizzo operativo del modulo generato da parte di un utente, che può impiegarlo per la cattura del traffico dell'infrastruttura C\&C e per la restituzione dei messaggi intercettati in forma strutturata.
 
-\begin{figure}[ht]
+\begin{figure}[t]
     \centering
     \resizebox{\textwidth}{!}{%
         \begin{tikzpicture}[
