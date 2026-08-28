@@ -49,6 +49,46 @@ Le prestazioni non sono oggetto della valutazione.
 
 \subsection{Qualità del codice generato} % 6.3.4
 
+Metriche che valutano funzionalità, correttezza e conformità:
+
+\begin{table}[t]
+    \centering
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Metrica} & \textbf{Descrizione} \\
+        \hline
+        \emph{syntax\_correctness} & Verifica che il codice generato sia sintatticamente valido e che non presenti errori di compilazione o di importazione tali da impedirne il caricamento nell'ambiente di esecuzione previsto. \\
+        \hline
+        \emph{protocol\_conformance} & Misura il grado con cui i moduli \texttt{BotNet} e \texttt{MessageParser} riproducono correttamente il comportamento del protocollo descritto nel \textsc{SRE Report}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
+        \hline
+        \emph{human\_independence} & Misura la capacità del modulo generato di raggiungere autonomamente il comportamento atteso, senza richiedere modifiche o correzioni manuali da parte dell'umano. \\
+        \hline
+        \emph{architectural\_adherence} & Verifica che il modulo \texttt{BotNet} sia conforme al contratto definito dall'interfaccia \texttt{BotNetInterface}, accertando che implementi i metodi richiesti (\texttt{connect} e \texttt{sniff}), e che utilizzi il metodo \texttt{parse\_message} del modulo \texttt{MessageParser} per il parsing dei messaggi. \\
+        \hline
+        \emph{schema\_validation} & Misura la conformità dei dati prodotti dal modulo, rappresentati come dizionari Python, al JSON Schema \texttt{MessageSchema}, verificando il rispetto della struttura prevista, dei campi obbligatori e opzionali, dei relativi tipi e degli ulteriori vincoli specificati. \\
+        \hline
+    \end{tabularx}
+    \caption{Metriche Codice}
+    \label{tab:codice}
+\end{table}
+
+Commenti:
+
+\begin{itemize}
+    \item syntax\_correctness, architectural\_adherence e schema\_validation : dovrebbero senza problemi prendere tutti il massimo, non credo ci siano errori di questo tipo.
+    \item protocol\_conformance : leggermente più complesso, ma anche questo dovrebbe avere voti alti.
+    \item human\_independence : valuta l'human effort, con i potenziali cambiamenti che dovresti fare per renderli funzionali come il codice che avevi in esecuzione.
+    \item la classificazione dei messaggi (ACK, Attack, Command, Heartbeat) può essere considerata in protocol\_conformance o human\_independence, dove va meglio.
+\end{itemize}
+
+Altre metriche di qualità/stilistiche che per ora evitiamo:
+
+\begin{itemize}
+    \item \emph{robustness}: misura la capacità del modulo di gestire correttamente condizioni anomale, input inattesi ed errori operativi senza compromettere il corretto funzionamento o terminare in modo ingiustificato.
+    \item \emph{template\_compliance}: misura il grado con cui il modulo mantiene la struttura e i meccanismi di implementazione previsti dai template, riutilizzando e adattando, ove appropriato, le funzionalità e i metodi già forniti anziché introdurre duplicazioni o reimplementazioni non necessarie.
+    \item \emph{code\_maintainability}: misura quanto il codice generato risulti facilmente comprensibile, modificabile e manutenibile, considerando la chiarezza della struttura, la complessità della logica e la separazione delle responsabilità.
+\end{itemize}
+
 \section{Campagna sperimentale} % 6.4
 
 \subsection{Dataset} % 6.4.1
@@ -69,24 +109,24 @@ Le prestazioni non sono oggetto della valutazione.
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{|c|c|p{3.5cm}|c|c|c|c|}
+    \begin{tabular}{|c|c|p{3.2cm}|c|c|c|c|}
         \hline
         \textbf{ID} & \textbf{Nome}                & \textbf{SHA256}
         & \textbf{Dimensione}  & \textbf{Architettura} & \textbf{Formato} & \textbf{Stripped}     \\ \hline
 
-        01          & \textsl{ghost}               & \makecell{0446b258525e6b35\\28dcf0d9da15387f\\32f8de9e54492697\\9e9095462415e84e}
+        01          & \textsc{ghost}               & \makecell{0446b258525e6b35\\28dcf0d9da15387f\\32f8de9e54492697\\9e9095462415e84e}
         & $197.64$ KB          & MIPS (32-bit)         & ELF              & $\times$              \\ \hline % 202,380 bytes + statically linked
 
-        02          & \textsl{marvisxoxo}          & \makecell{c5e55543cfd8f453\\4986b4fde98d96d7\\a8b38dc3afdd80da\\5b622d955cebfb32}
+        02          & \textsc{marvisxoxo}          & \makecell{c5e55543cfd8f453\\4986b4fde98d96d7\\a8b38dc3afdd80da\\5b622d955cebfb32}
         & $163.12$ KB          & ARM (32-bit)          & ELF              & $\times$              \\ \hline % 167,032 bytes + statically linked
 
-        03          & \textsl{deepsorrow}          & \makecell{f6d0e5142fd0d1a0\\f07e916c9c7432ff\\cbacc2a6d4eb0594\\f1524cb7661477ce}
+        03          & \textsc{deepsorrow}          & \makecell{f6d0e5142fd0d1a0\\f07e916c9c7432ff\\cbacc2a6d4eb0594\\f1524cb7661477ce}
         & $127.10$ KB          & x86 (32-bit)          & ELF              & $\checkmark$          \\ \hline % 130,152 bytes + statically linked
 
-        04          & \textsl{hopto}               & \makecell{021e1c202a1d8def\\d3752ab749e50dac\\53645e40fa09d50a\\ea9fa8004f48ba27}
+        04          & \textsc{hopto}               & \makecell{021e1c202a1d8def\\d3752ab749e50dac\\53645e40fa09d50a\\ea9fa8004f48ba27}
         & $114.98$ KB          & x86 (64-bit)          & ELF              & $\checkmark$          \\ \hline % 117,744 bytes + statically linked
 
-        05          & \textsl{onboardboat}         & \makecell{9299d85a2b47b198\\d6381f4cc3afd296\\f271c1f0c303c8ae\\144a667bcf58e4c1}
+        05          & \textsc{onboardboat}         & \makecell{9299d85a2b47b198\\d6381f4cc3afd296\\f271c1f0c303c8ae\\144a667bcf58e4c1}
         & $65.35$ KB           & ARM (32-bit)          & ELF              & $\checkmark$          \\ \hline % 66,920 bytes + statically linked
     \end{tabular}
     \caption{Campioni}

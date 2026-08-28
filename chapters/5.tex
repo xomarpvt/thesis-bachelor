@@ -1,4 +1,4 @@
-\chapter{L'implementazione} % 5
+\chapter{BotScope: implementazione} % 5
 
 Questo capitolo è dedicato all'implementazione del sistema progettato. Verranno illustrate le principali scelte implementative adottate e descritte le modalità di realizzazione dei singoli componenti, con un livello di dettaglio variabile in funzione della complessità e della rilevanza dei diversi aspetti.
 
@@ -27,32 +27,15 @@ A questo scopo viene utilizzato il servizio VirusTotal\footnote{\url{https://vir
 
 Nell'implementazione è stata utilizzata l'API pubblica di VirusTotal, disponibile gratuitamente entro specifici limiti di utilizzo e destinata a un impiego non commerciale e non professionale \footnote{\url{https://docs.virustotal.com/reference/overview}}. Per ottimizzare il processo, viene prima effettuata una richiesta HTTP GET utilizzando l'hash SHA-256 del file, verificando se il campione è già presente nel database. In caso di esito positivo, viene recuperato direttamente il report associato; in caso contrario, il file viene caricato tramite una richiesta HTTP POST e sottoposto ad analisi, al termine della quale viene recuperato il relativo report.
 
-Le informazioni ottenute vengono quindi utilizzate per determinare la natura del campione mediante un'euristica basata sia sul numero assoluto di rilevamenti sia sulla percentuale di antivirus engine che lo classificano come malevolo. Quando il campione non supera tale soglia, allora viene scartato e l'analisi termina.
+Le informazioni ottenute vengono utilizzate per determinare la natura del campione mediante un'euristica basata sul numero assoluto di rilevamenti e sulla percentuale di antivirus engine che lo classificano come malevolo. Quando il campione non supera la soglia prefissata viene scartato e l'analisi termina.
 
 \subsubsection{YARA}
 
-\iffalse
+Per l'individuazione della famiglia del malware si ricorre invece all'applicazione delle \emph{YARA rules}. YARA è un progetto open source utilizzato per identificare e classificare campioni di malware attraverso regole che definiscono specifiche caratteristiche ricercabili all'interno dei file analizzati. Tali regole combinano pattern, come stringhe e sequenze di byte, con condizioni logiche che determinano quando una regola corrisponde al campione esaminato \cite{sikorski2012malware}. % Appendice B, pagina 475
 
-\subsubsection{Virus Total}
+Per questa implementazione viene utilizzato YARA-X \footnote{\url{https://github.com/VirusTotal/yara-x/}}, insieme alla relativa libreria Python \footnote{\url{https://virustotal.github.io/yara-x/docs/api/python/}}. YARA-X è una nuova implementazione del linguaggio di YARA, progettata per mantenere la compatibilità con le regole esistenti, introducendo anche correzioni e nuove funzionalità.
 
-Proprio questo scopo "entra in gioco" e viene coinvolto il servizio di Virus Total \footnote{\url{https://virustotal.com}} che permette di scansionare file con diversi antivirus engines, generando poi un report che fornisce informazioni su malevolicità, sul nome e altre informazioni.
-
-In questa implementazione, è stata utilizzata l'API pubblica di Virus Total. L'API è gratuita, con limite al numero di richieste e uso limitatamente non commerciale/professionale \footnote{\url{https://docs.virustotal.com/reference/overview}}. Quindi come prima cosa per efficienza si consulta il database di virus total con il file hash SHA-256, richiedendo il report tramite una request HTTP GET. Se malware già presente restituisce il report, altrimenti mai visto, quindi si esegue l'upload tramite HTTP POST, si aspetta il termine dell'analisi e poi si ottiene il report.
-
-Grazie a queste informazioni si può realizzare il filtro di distinzione malevolo/no, attraverso una euristica di rilevamento basata sulla percentuale e sul numero assoluto di rilevamenti ottenuti. in caso negativo si blocca. In più il report dà anche altre informazioni che possono essere utili, come il suggerimento di nome e categoria di "Malware Threat".
-
-\subsubsection{YARA}
-
-Per la conforma della famiglia si ricorre invece all'applicazione delle YARA rules. YARA è progetto open source usato per identificare e classificare campioni di malware. Questo viene fatto attraverso le cosiddette regole, delle descrizioni, un insieme di stringhe o pattern binari che possono essere trovati; questi vengono applicati per classificare un campione \cite{sikorski2012malware}. % Appendice B, pagina 475
-
-% With YARA-X you can create descriptions of malware families (or whatever you want to describe) based on textual or binary patterns. Each description (a.k.a. rule) consists of a set of patterns and a boolean expression which determine its logic.
-
-In particolare si usa yara-x \footnote{\url{https://github.com/VirusTotal/yara-x/}}, con la relativa libreria python \footnote{\url{https://virustotal.github.io/yara-x/docs/api/python/}}. YARA-X è una nuova implementazione che punta alla compatibilità, correggendo limitazioni e ambiguità del linguaggio originale e introducendo nuove funzionalità.
-
-quello che fa il componente è: carica tutte le regole YARA definite, una definita appositamente per ciascuna famiglia che si vuole trattare. Successivamente, il file binario viene confrontato (scan) rispetto a tutte le YARA rules, alla ricerca di un match.
-Nel caso in cui si trovi uno, allora quella è l'informazione della famiglia
-quindi per ogni famiglia definisco regola: classifico in base a quella regola: se individuo una famiglia quella è l'informazione mandata avanti (per la knowledge base).
-\fi
+Il \textsc{Classifier} carica quindi l'insieme delle YARA rules definite, con regole specifiche per ciascuna famiglia di malware supportata, e le compila, preparandole per l'analisi del file binario. Successivamente, il campione viene confrontato con tutte le regole caricate, alla ricerca di una corrispondenza. Nel caso venga individuato un match, la regola corrispondente permette di individuare la famiglia del campione, fornendo al \textsc{SRE Agent} un informazione aggiuntiva a supporto dell'analisi.
 
 \iffalse
 https://virustotal.github.io/yara/
@@ -60,6 +43,7 @@ https://virustotal.github.io/yara-x/
 https://github.com/virustotal/yara
 https://github.com/VirusTotal/yara-x/
 https://virustotal.github.io/yara-x/docs/api/python/
+funzioni \texttt{compile} e \texttt{scan}.
 \fi
 
 \subsection{SRE Agent} % 5.2.2
