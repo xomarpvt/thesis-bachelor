@@ -1,0 +1,96 @@
+
+%<*tab1>
+\begin{tabularx}{\textwidth}{|l|l|X|}
+    \hline
+    \textbf{ID Difficoltà} & \textbf{Score} & \textbf{Descrizione} \\
+    \hline
+    \emph{ghidra\_dbf} & $[0-20]$ & Quantifica la difficoltà per un reverse engineer nel comprendere e interpretare il risultato della decompilazione prodotto dal framework di SRE utilizzato, in questo caso Ghidra. \\
+    \hline
+    \emph{statically\_linked} & $\{0,10\}$ &  Indica che il binario è stato collegato staticamente, incorporando il codice delle librerie esterne utilizzate e aumentando così la quantità di codice da analizzare. \\
+    \hline
+    \emph{stripped} & $\{0,20\}$ &  Indica che il binario è stato sottoposto al processo di stripping, con la conseguente rimozione di informazioni simboliche quali nomi di funzioni, parametri e variabili. \\
+    \hline
+    \emph{obfuscated\_cc} & $[0-10]$ & Quantifica il livello di offuscamento degli endpoint di C\&C, considerando le modalità di memorizzazione e recupero, che possono variare da valori presenti in chiaro a valori cifrati, offuscati o recuperati dinamicamente a runtime. \\
+    \hline
+    \emph{dns\_other\_cc} & $\{0,5\}$ & Indica che la risoluzione dell'endpoint di C\&C avviene tramite DNS o coinvolge altri meccanismi di risoluzione complessi. \\
+    \hline
+    \emph{enc\_str} & $[0-10]$ & Quantifica il livello di offuscamento della tabella delle stringhe, quando questa è presente, passando dalla memorizzazione in chiaro all'utilizzo di meccanismi di cifratura o offuscamento più complessi. \\
+    \hline
+    \emph{protocol} & $[0-20]$ & Quantifica la complessità del protocollo di comunicazione utilizzato dal malware, considerando la struttura e le modalità di scambio dei dati, che possono variare da protocolli testuali e semplici a protocolli binari strutturati e più articolati. \\
+    \hline
+    \emph{passwd} & $\{0,5\}$ & Indica che il malware richiede una password o una chiave per completare con successo il processo di autenticazione. \\
+    \hline
+    \emph{fingerprint} & $\{0,5\}$ & Indica che il malware raccoglie informazioni relative al sistema compromesso. \\
+    \hline
+    \emph{enc\_conn} & $\{0,10\}$ & Indica che il malware utilizza un algoritmo di cifratura per cifrare e decifrare il traffico di comunicazione. \\
+    \hline
+    \emph{dyn\_att} & $\{0,20\}$ & Indica che il malware registra dinamicamente, a runtime, alcuni metodi di attacco. \\
+    \hline
+    \emph{non\_std\_parsing} & $\{0,10\}$ & Indica che per il parsing dei comandi ricevuti dal server C\&C il malware utilizza dei metodi che non sono tipici della famiglia di appartenenza. \\
+    \hline
+    \emph{has\_response} & $\{0,10\}$ & Indica che il malware risponde ai comandi ricevuti dal server C\&C. \\
+    \hline
+    \emph{heartbeat} & $[0-10]$ & Quantifica la complessità del meccanismo di heartbeat utilizzato dal malware, che può variare da una semplice comunicazione periodica a meccanismi più complessi basati su challenge-response. \\
+    \midrule
+    \emph{Totale} & $[0-165]$ & \\
+    \bottomrule
+\end{tabularx}
+%</tab1>
+
+%<*tab2>
+\begin{tabularx}{\textwidth}{|l|l|X|}
+    \hline
+    \textbf{ID Elemento} & \textbf{Score} & \textbf{Descrizione} \\
+    \hline
+    \emph{host\_info} & $[0-10]$ & Misura il grado di successo nel recupero di endpoint C2 (quindi compreso IP hostname porta eccetera) \\
+    \hline
+    \emph{crypto\_obfuscation} & $[0-15]$ & Misura ... algoritmo di decifratura eventuale della tabella delle stringhe + tutti i parametri coinvolti + contenuto originale della tabella delle stringhe + il funzionamento dell'algoritmo di cifratura del traffico (entrambi se presenti) ((oppure se non presenti confermare la mancanza)) \\
+    \hline
+    \emph{protocol\_parsing} & $[0-20]$ & Misura ... individuazione protocollo di comunicazione utilizzato + formato dei pacchetti e logica di parsing/framing. \\
+    \hline
+    \emph{login\_heartbeat} & $[0-15]$ & Misura il grado di successo nel riconoscere /individuare la procedura di autenticazione, insieme ordine cosa mandato + ricostruire la logica di heartbeat, insieme a frequenza + messaggi (payload) usati per ciascuno dei due \\
+    \hline
+    \emph{payload\_capabilities} & $[0-20]$ & Misura ... attack method mapping individuazione e riconoscimento corretto delle procedure di attacco in base a funzione + payload di attacco \\
+    \hline
+    \emph{cc\_lifecycle} & $[0-20]$ & Misura ... ciclo di vita? (presenza o assenza di:) acknowledgment dei messaggi C2 ricevuti, trasmissione di feedback al c2, gestione di failure connection, riconnessione, quit shutudown stop kill single instance. \\
+    % no status reporting, execution acknowledgment, or feedback transmitted back to the C2. quit shutdown
+    % Connection failure handling, Reconnect on connect failure. stop kill + single instance port
+    \hline
+    \emph{consistency\_reliability} & $[0-10]$ & Misura contraddizioni nella documentazione realizzata con informazioni più volte che si contraddicono, anche se da una parte (la principale) sono corrette. \\
+    % Cross-document consistency issues:
+    \midrule
+    \emph{Totale} & $[0-100]$ & \\
+    \bottomrule
+\end{tabularx}
+%</tab2>
+
+
+%<*tab3>
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Metrica} & \textbf{Descrizione} \\
+    \hline
+    \emph{syntax\_correctness} & Verifica che il codice generato sia sintatticamente valido e che non presenti errori di compilazione o di importazione tali da impedirne il caricamento nell'ambiente di esecuzione previsto. \\
+    \hline
+    \emph{protocol\_conformance} & Misura il grado con cui i moduli \texttt{BotNet} e \texttt{MessageParser} riproducono correttamente il comportamento del protocollo descritto nel \textsc{SRE Report}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
+    \hline
+    \emph{human\_independence} & Misura la capacità del modulo generato di raggiungere autonomamente il comportamento atteso, senza richiedere modifiche o correzioni manuali da parte dell'umano. \\
+    \hline
+    \emph{architectural\_adherence} & Verifica che il modulo \texttt{BotNet} sia conforme al contratto definito dall'interfaccia \texttt{BotNetInterface}, accertando che implementi i metodi richiesti (\texttt{connect} e \texttt{sniff}), e che utilizzi il metodo \texttt{parse\_message} del modulo \texttt{MessageParser} per il parsing dei messaggi. \\
+    \hline
+    \emph{schema\_validation} & Misura la conformità dei dati prodotti dal modulo, rappresentati come dizionari Python, al JSON Schema \texttt{MessageSchema}, verificando il rispetto della struttura prevista, dei campi obbligatori e opzionali, dei relativi tipi e degli ulteriori vincoli specificati. \\
+    \hline
+\end{tabularx}
+%</tab3>
+
+\iffalse
+
+Metriche di qualità del codice e stilistiche non considerate:
+
+\begin{itemize}
+    \item \emph{robustness}: misura la capacità del modulo di gestire correttamente condizioni anomale, input inattesi ed errori operativi senza compromettere il corretto funzionamento o terminare in modo ingiustificato.
+    \item \emph{template\_compliance}: misura il grado con cui il modulo mantiene la struttura e i meccanismi di implementazione previsti dai template, riutilizzando e adattando, ove appropriato, le funzionalità e i metodi già forniti anziché introdurre duplicazioni o reimplementazioni non necessarie.
+    \item \emph{code\_maintainability}: misura quanto il codice generato risulti facilmente comprensibile, modificabile e manutenibile, considerando la chiarezza della struttura, la complessità della logica e la separazione delle responsabilità.
+\end{itemize}
+
+\fi

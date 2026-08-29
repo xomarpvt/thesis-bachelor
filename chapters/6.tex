@@ -43,9 +43,62 @@ Le prestazioni non sono oggetto della valutazione.
 
 \subsection{Complessità del campione} % 6.3.1
 
+L'obiettivo è caratterizzare la complessità dei campioni.
+
+Scoring convention: **higher = harder to analyze**;
+range parameters in [min-max], others boolean. Max possible total = **165**.
+
+Sono tutti boolani, quindi o punteggio 0 o punteggio massimo, ad eccezione di 1, 2, 3, 4; per i quali si usa un valore graded all'interno del range 0 max
+
+I punteggi vanno da 0, cioè non c'è questa difficoltà al massimo indicato per ciascuna categoria.
+
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+\begin{table}[t]
+    \centering
+    \ExecuteMetaData[chapters/6/tables_1.tex]{tab1}
+    \caption{Complessità}
+    \label{tab:complessita}
+\end{table}
+
 \subsection{Efficacia dell'attività di rinomina} % 6.3.2
 
+Per questo aspetto i parametri principali da valutare sono due.
+
+il primo è quello che riguarda la percentuale di funzione rinominate sul totale (da qui in poi identificato con $Renamed \%$). Considerando però come è stata impostata la rinomina (partendo dal main) e che i campioni hanno 100+ funzioni, non sarà possibile aspettarsi score tanto vicino al 100 per cento, visto che le funzioni sono tante. quelle principali sono coinvolte, quelle minori no. -> spiegare diminishing returns
+
+il secondo riguarda la percentuale di funzioni tra quelle rinominate a cui è stato assegnato un nome corretto (da qui in poi identificato con $Correct \%$).
+
+per chiarezza, inoltre, si può definire una score composita che combina X e Y. visto che già accennato i diminishing returns di X, si applica una trasformazione (?) normalizzazione (?) logaritmica. Questa è la score finale (anche questa è una percentuale):
+
+\(Renaming Score = \frac{f(X) * Y}{100}\)
+
+Questa è formula, log, dove $k>0$ controlla il grado di (diminishing returns ?)
+
+\(f(X) = \log (1+k*X/100) / log(1+k)\)
+
+La formula da un reward a copertura e correttezza, tenendo conto con smaller gains to increases in coverage.
+
+\iffalse
+We define a composite score combining renaming coverage and renaming correctness. Since increasing coverage is expected to yield diminishing returns, we apply a normalized logarithmic transformation:
+f(R)=log⁡(1+kR)log⁡(1+k)
+where R is the fraction of renamed functions and k>0 controls the degree of diminishing returns. The final score is defined as:
+Score=f(R)*C
+where C is the fraction of renamed functions that were renamed correctly. This formulation rewards both broad coverage and high correctness, while assigning progressively smaller gains to increases in coverage.
+\fi
+
 \subsection{Accuratezza del recupero degli artefatti} % 6.3.3
+
+recupero artefatti e logica del modulo.
+
+qui sono molto importanti i voti parziali. bisogna considerare che il LLM può fare un errore all'ultimo, ma l'umano potrebbe essere avvicinato alla risposta, semplificando in ogni caso il suo lavoro. (entro un certo limite di misleading)
+
+\begin{table}[t]
+    \centering
+    \ExecuteMetaData[chapters/6/tables_1.tex]{tab2}
+    \caption{Artefatti}
+    \label{tab:artefatti}
+\end{table}
+
 
 \subsection{Qualità del codice generato} % 6.3.4
 
@@ -53,49 +106,21 @@ Metriche che valutano funzionalità, correttezza e conformità:
 
 \begin{table}[t]
     \centering
-    \begin{tabularx}{\textwidth}{|l|X|}
-        \hline
-        \textbf{Metrica} & \textbf{Descrizione} \\
-        \hline
-        \emph{syntax\_correctness} & Verifica che il codice generato sia sintatticamente valido e che non presenti errori di compilazione o di importazione tali da impedirne il caricamento nell'ambiente di esecuzione previsto. \\
-        \hline
-        \emph{protocol\_conformance} & Misura il grado con cui i moduli \texttt{BotNet} e \texttt{MessageParser} riproducono correttamente il comportamento del protocollo descritto nel \textsc{SRE Report}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
-        \hline
-        \emph{human\_independence} & Misura la capacità del modulo generato di raggiungere autonomamente il comportamento atteso, senza richiedere modifiche o correzioni manuali da parte dell'umano. \\
-        \hline
-        \emph{architectural\_adherence} & Verifica che il modulo \texttt{BotNet} sia conforme al contratto definito dall'interfaccia \texttt{BotNetInterface}, accertando che implementi i metodi richiesti (\texttt{connect} e \texttt{sniff}), e che utilizzi il metodo \texttt{parse\_message} del modulo \texttt{MessageParser} per il parsing dei messaggi. \\
-        \hline
-        \emph{schema\_validation} & Misura la conformità dei dati prodotti dal modulo, rappresentati come dizionari Python, al JSON Schema \texttt{MessageSchema}, verificando il rispetto della struttura prevista, dei campi obbligatori e opzionali, dei relativi tipi e degli ulteriori vincoli specificati. \\
-        \hline
-    \end{tabularx}
+    \ExecuteMetaData[chapters/6/tables_1.tex]{tab3}
     \caption{Metriche Codice}
     \label{tab:codice}
 \end{table}
 
-Commenti:
-
-\begin{itemize}
-    \item syntax\_correctness, architectural\_adherence e schema\_validation : dovrebbero senza problemi prendere tutti il massimo, non credo ci siano errori di questo tipo.
-    \item protocol\_conformance : leggermente più complesso, ma anche questo dovrebbe avere voti alti.
-    \item human\_independence : valuta l'human effort, con i potenziali cambiamenti che dovresti fare per renderli funzionali come il codice che avevi in esecuzione.
-    \item la classificazione dei messaggi (ACK, Attack, Command, Heartbeat) può essere considerata in protocol\_conformance o human\_independence, dove va meglio.
-\end{itemize}
-
-Altre metriche di qualità/stilistiche che per ora evitiamo:
-
-\begin{itemize}
-    \item \emph{robustness}: misura la capacità del modulo di gestire correttamente condizioni anomale, input inattesi ed errori operativi senza compromettere il corretto funzionamento o terminare in modo ingiustificato.
-    \item \emph{template\_compliance}: misura il grado con cui il modulo mantiene la struttura e i meccanismi di implementazione previsti dai template, riutilizzando e adattando, ove appropriato, le funzionalità e i metodi già forniti anziché introdurre duplicazioni o reimplementazioni non necessarie.
-    \item \emph{code\_maintainability}: misura quanto il codice generato risulti facilmente comprensibile, modificabile e manutenibile, considerando la chiarezza della struttura, la complessità della logica e la separazione delle responsabilità.
-\end{itemize}
 
 \section{Campagna sperimentale} % 6.4
 
-\subsection{Dataset} % 6.4.1
+\subsection{Dataset} % 6.4.2
+
+Catturati praticamente dalla honeypot università di udine e presi da MalwareBazaar database. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
 
 % \subsubsection{Famiglia Gafgyt}
 
-\subsubsection{Famiglia Mirai}
+\subsection{Famiglia Mirai} % 6.4.1
 
 \subsubsection{Snippet MD K.B. / Yara}
 
@@ -103,7 +128,7 @@ Altre metriche di qualità/stilistiche che per ora evitiamo:
 
 % \subsubsection{(?) Criteri di selezione}
 
-\subsection{Descrizione dei campioni} % 6.4.2
+\subsection{Descrizione dei campioni} % 6.4.3
 
 % \subsubsection{Hash, architettura, dimensione, famiglia}
 
@@ -138,6 +163,13 @@ Altre metriche di qualità/stilistiche che per ora evitiamo:
 \subsubsection{Difficoltà}
 
 \section{Risultati sperimentali}  % 6.5
+
+\begin{table}
+\centering
+\ExecuteMetaData[chapters/6/tables_2.tex]{tab1}
+\caption{Renaming performance}
+\label{tab:renaming-performance}
+\end{table}
 
 \subsection{Statistiche di esecuzione} % 6.5.1
 
