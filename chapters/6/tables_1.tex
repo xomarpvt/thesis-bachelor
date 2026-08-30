@@ -37,27 +37,26 @@
 \end{tabularx}
 %</tab1>
 
+
+
 %<*tab2>
 \begin{tabularx}{\textwidth}{|l|l|X|}
     \hline
     \textbf{ID Elemento} & \textbf{Score} & \textbf{Descrizione} \\
     \hline
-    \emph{host\_info} & $[0-10]$ & Misura il grado di successo nel recupero di endpoint C2 (quindi compreso IP hostname porta eccetera) \\
+    \emph{host\_info} & $[0-10]$ & 	Misura il grado di successo nel recupero delle informazioni relative all'endpoint di C\&C contattato dal malware, quali indirizzo IP, hostname e porta. \\
     \hline
-    \emph{crypto\_obfuscation} & $[0-15]$ & Misura ... algoritmo di decifratura eventuale della tabella delle stringhe + tutti i parametri coinvolti + contenuto originale della tabella delle stringhe + il funzionamento dell'algoritmo di cifratura del traffico (entrambi se presenti) ((oppure se non presenti confermare la mancanza)) \\
+    \emph{crypto\_obfuscation} & $[0-15]$ & Misura il grado di recupero dei meccanismi di cifratura e offuscamento utilizzati dal malware, includendo sia il funzionamento della cifratura del traffico sia l'algoritmo di decifratura e il contenuto originale della tabella delle stringhe; in caso di assenza, valuta la corretta conferma della stessa. \\
     \hline
-    \emph{protocol\_parsing} & $[0-20]$ & Misura ... individuazione protocollo di comunicazione utilizzato + formato dei pacchetti e logica di parsing/framing. \\
+    \emph{protocol\_parsing} & $[0-20]$ & Misura il grado di identificazione e ricostruzione del protocollo di comunicazione utilizzato dal malware, considerando il formato dei pacchetti e la logica di parsing e framing. \\
     \hline
-    \emph{login\_heartbeat} & $[0-15]$ & Misura il grado di successo nel riconoscere /individuare la procedura di autenticazione, insieme ordine cosa mandato + ricostruire la logica di heartbeat, insieme a frequenza + messaggi (payload) usati per ciascuno dei due \\
+    \emph{login\_heartbeat} & $[0-15]$ & Misura il grado di successo nell'individuazione della procedura di autenticazione, inclusi l'ordine e il contenuto dei messaggi scambiati, e nella ricostruzione della logica di heartbeat, inclusi la frequenza e i payload utilizzati. \\
     \hline
-    \emph{payload\_capabilities} & $[0-20]$ & Misura ... attack method mapping individuazione e riconoscimento corretto delle procedure di attacco in base a funzione + payload di attacco \\
+    \emph{payload\_capabilities} & $[0-20]$ & Misura il grado di individuazione e corretta associazione delle procedure di attacco alle rispettive funzionalità e ai payload utilizzati dal malware. \\
     \hline
-    \emph{cc\_lifecycle} & $[0-20]$ & Misura ... ciclo di vita? (presenza o assenza di:) acknowledgment dei messaggi C2 ricevuti, trasmissione di feedback al c2, gestione di failure connection, riconnessione, quit shutudown stop kill single instance. \\
-    % no status reporting, execution acknowledgment, or feedback transmitted back to the C2. quit shutdown
-    % Connection failure handling, Reconnect on connect failure. stop kill + single instance port
+    \emph{cc\_lifecycle} & $[0-20]$ & Misura il grado di ricostruzione del ciclo di vita della comunicazione C\&C, con riferimento alla gestione degli acknowledgment dei messaggi ricevuti, alla trasmissione di feedback al C\&C, alla gestione dei fallimenti di connessione, ai meccanismi di riconnessione e alle procedure di arresto del malware. \\
     \hline
-    \emph{consistency\_reliability} & $[0-10]$ & Misura contraddizioni nella documentazione realizzata con informazioni più volte che si contraddicono, anche se da una parte (la principale) sono corrette. \\
-    % Cross-document consistency issues:
+    \emph{consistency\_reliability} & $[0-10]$ & Misura il grado di coerenza delle informazioni riportate nei \textsc{SRE Report}, penalizzando la presenza di informazioni contraddittorie o incoerenti, anche quando le stesse risultano corrette in altre parti della documentazione. \\
     \midrule
     \emph{Totale} & $[0-100]$ & \\
     \bottomrule

@@ -12,32 +12,40 @@
 
 Le prestazioni non sono oggetto della valutazione.
 
-\section{Ambiente sperimentale} % 6.2
 
-\subsection{LLM} % 6.2.1
+L'impiego di due modelli con proprietà differenti permette quindi di valutare il comportamento del sistema in presenza di modelli eterogenei, analizzando l'influenza delle loro caratteristiche sui risultati ottenuti.
+
+\section{Configurazione sperimentale} % 6.2
+
+\subsection{Ambiente di esecuzione} % 6.2.1
+
+Tutti gli esperimenti sono stati condotti utilizzando un computer personale dotato di hardware convenzionale. Il software è stato quindi eseguito sul sistema locale, mentre l'inferenza dei modelli linguistici è stata demandata, tramite API, a un'infrastruttura esterna, come già anticipato nella sezione relativa all'implementazione.
+
+\subsection{LLM} % 6.2.2
+
+Per la sperimentazione sono stati selezionati due LLM, eseguiti tramite vLLM sul \emph{GPU cluster} dell'Università degli Studi di Udine. La scelta dei modelli è stata effettuata soprattutto tenendo conto delle risorse computazionali a disposizione, considerando al contempo le differenti dimensioni, caratteristiche architetturali e prestazioni riportate nei principali benchmark pubblici di valutazione dei modelli considerati.
+
+Di seguito vengono presentati i due modelli selezionati.
 
 \begin{description}
-    \item[Qwen 3.6 27B] \hspace{1em}
-    
-    \begin{itemize}
-        \item Architettura Dense e parametri
-        \item Contesto
-        \item Hardware (1*A100)
-        \item vLLM Recipe (quantizzazione)
-        \item Usage Parameters (0.8)
-    \end{itemize}
+    \item[Qwen 3.6 27B \cite{alibaba2026qwen3.6-27b}.] Sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con 27 miliardi di parametri. Presenta una finestra di contesto nativa di 262.144 token (256K), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
 
-    \item[DeepSeek-V4-Flash-Preview] \hspace{1em}
-    
-    \begin{itemize}
-        \item Architettura MoE e parametri
-        \item Contesto
-        \item Hardware (4*H100)
-        \item vLLM Recipe (quantizzazione)
-        \item Usage Parameters (1.0 thinking, 0.8)
-    \end{itemize}
-
+    \item[DeepSeek V4-Flash Preview \cite{deepseekai2026deepseekv4}.] Sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali 13 miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
 \end{description}
+
+Indicazioni dettagliate relative alle risorse hardware, alle configurazioni di deployment per vLLM e ai sampling parameters utilizzati sono riportate nell'appendice.
+
+\begin{itemize}
+    \item Hardware (1*A100) / (4*H100)
+    \item vLLM Recipe (quantizzazione)
+    \item Usage Parameters (0.8) / (1.0 thinking, 0.8)
+\end{itemize}
+
+\subsection{Protocollo sperimentale} % 6.2.3
+
+Per ciascun campione di malware considerato è stata effettuata una singola esecuzione, secondo il medesimo protocollo sperimentale. La completa autonomia del sistema durante l'esecuzione consente infatti di applicare tale protocollo a tutti i campioni considerati, garantendo uniformità nelle modalità di analisi.
+
+L'analisi è stata avviata manualmente, fornendo in ingresso il relativo \textsc{Binary File} e la \textsc{Knowledge Base}, mantenuta statica e invariata per tutti gli esperimenti. Il sistema, progettato per operare in modo autonomo, viene quindi lasciato eseguire tutte le operazioni previste dai processi di analisi e generazione, senza che siano richiesti o previsti ulteriori interventi da parte dell'utente fino al completamento del processo. Al termine dell'esecuzione, tra gli output prodotti dal sistema sono presenti il \textsc{SRE Report} e il \textsc{Python Module}, che potranno essere successivamente consultati e utilizzati ai fini di eseguire la valutazione dei risultati previste.
 
 \section{Definizione delle metriche di valutazione} % 6.3
 
@@ -48,7 +56,7 @@ L'obiettivo è caratterizzare la complessità dei campioni.
 Scoring convention: **higher = harder to analyze**;
 range parameters in [min-max], others boolean. Max possible total = **165**.
 
-Sono tutti boolani, quindi o punteggio 0 o punteggio massimo, ad eccezione di 1, 2, 3, 4; per i quali si usa un valore graded all'interno del range 0 max
+Sono tutti booleani, quindi o punteggio 0 o punteggio massimo, ad eccezione di 1, 2, 3, 4; per i quali si usa un valore graded all'interno del range 0 max
 
 I punteggi vanno da 0, cioè non c'è questa difficoltà al massimo indicato per ciascuna categoria.
 
@@ -70,11 +78,17 @@ il secondo riguarda la percentuale di funzioni tra quelle rinominate a cui è st
 
 per chiarezza, inoltre, si può definire una score composita che combina X e Y. visto che già accennato i diminishing returns di X, si applica una trasformazione (?) normalizzazione (?) logaritmica. Questa è la score finale (anche questa è una percentuale):
 
-\(Renaming Score = \frac{f(X) * Y}{100}\)
+\begin{equation}
+    Renaming Score = \frac{f(X) * Y}{100}
+    \label{eq:eq_1}
+\end{equation}
 
 Questa è formula, log, dove $k>0$ controlla il grado di (diminishing returns ?)
 
-\(f(X) = \log (1+k*X/100) / log(1+k)\)
+\begin{equation}
+    f(X) = \log (1+k*X/100) / log(1+k)
+    \label{eq:eq_2}
+\end{equation}
 
 La formula da un reward a copertura e correttezza, tenendo conto con smaller gains to increases in coverage.
 
@@ -99,10 +113,10 @@ qui sono molto importanti i voti parziali. bisogna considerare che il LLM può f
     \label{tab:artefatti}
 \end{table}
 
-
 \subsection{Qualità del codice generato} % 6.3.4
 
-Metriche che valutano funzionalità, correttezza e conformità:
+Metriche che valutano funzionalità, correttezza e conformità.
+Non ci si concentra sugli aspetti di stile.
 
 \begin{table}[t]
     \centering
@@ -111,26 +125,76 @@ Metriche che valutano funzionalità, correttezza e conformità:
     \label{tab:codice}
 \end{table}
 
-
 \section{Campagna sperimentale} % 6.4
 
-\subsection{Dataset} % 6.4.2
+Ci si concentra su Mirai.
 
-Catturati praticamente dalla honeypot università di udine e presi da MalwareBazaar database. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
+La persistenza della genealogia Mirai è confermata da fonti indipendenti:
+- nel 2025 Mirai continues to dominate the IoT malware landscape by a wide margin, maintaining its position as the most prevalent threat (40). This year, Mozi edges out Gafgyt with a slight lead, taking the second spot (entrambe 17). Together, these three families account for the majority of observed activity, showing little change in the broader trend of a few dominant malware strains leading the space. totale più di 2/3
+- Nel Q2 2026 Mirai e le sue varianti hanno continuato a dominare il panorama delle minacce IoT osservate dagli honeypot Kaspersky. Parallelamente è aumentata l'attività di Prometei, una "prominent" botnet. %https://securelist.com/malware-report-q2-2026-pc-iot-statistics/120960
 
-% \subsubsection{Famiglia Gafgyt}
+% \subsection{Gafgyt Botnet}
+\subsection{La botnet Mirai} % 6.4.2
 
-\subsection{Famiglia Mirai} % 6.4.1
+Mirai è una famiglia di malware worm-like che infetta (tempo verbale) dispositivi IoT e li arruolava/includeva in  una botnet DDoS. 
+
+% While not directly related to our study, the Mirai family represents an evolution of BASHLITE (otherwise known as LizardStresser, Torlus, Gafgyt), a DDoS malware family that infected Linux devices by brute forcing default credentials [86]. BASHLITE relied on six generic usernames and 14 generic passwords, while the released Mirai code used a dictionary of 62 username/password pairs that largely subsumed BASHLITE’s set and added credentials specific to consumer routers and IoT devices. In contrast to BASHLITE, Mirai additionally employed a fast, stateless scanning module that allowed it to more efficiently identify vulnerable devices.
+Diffusa a partire dal 2016, 
+L'architettura è decentralizzata e prevede 3 componenti nell'infrastruttura tra bot e botmaster.
+
+La propagazione di Mirai (infezione) avviene attraverso un rapido meccanismo di scanning che invia in modo asincrono e stateless TCP SYN a indirizzi IPv4 pseudocasuali, sulla porta TCP Telnet 23 e 2323. Quando Mirai identifica potenziale vittima c'è il tentativo di login brute-force, cercando di stabilire connessione con 10 coppie username password scelte da un pool di 62 credenziali.
+
+Dopo il login ha successo, Mirai invia l'IP vittima e el credenziali a un report server (attiva loader). Quindi un programma \emph{loader} infetta questi dispositivi vulnerabili eseguendo login, determinando architettura/ambiente e scaricando/eseguendo il malware specifico. Dopo infezione, il downloaded binario viene eliminato (non c'è persistenza di reboot), nome di processo offuscato e killing di processi concorrenti sulle porte 22/23 o associati a competing infections (altre varianti mirai).
+
+A questo punto il bot stava in listening di comandi di attacco dal server C\&C e simultaneamente scansionava nuove vittime. Attacchi DDoS
+
+\cite{antonakakis2017mirai}
+
+un evento importante è stato il rilascio del codice sorgente (01-10-2016), che ha portato alla proliferazione di varianti con (competing operators?).
+
+Dopo il rilascio pubblico, aggiunta rapida di nuove feature, che possono variare da miglioramento alle capacità di infezione (più credenziali, uso DNS e protezione dalle infezioni competitive) a binari "hardened" con l'obiettivo di rallentare reverse engineering (packing).
+
+% Mirai is still used today, but since its source code was leaked, the greatest security threats have come from its emerging variants
+%  Famiglie preesistenti come Gafgyt e BASHLITE hanno incorportato interi moduli di Mirai. Consolidazione ceppo come genealogia dominante di malware iot per il decennio successivo.
+
+In particolare: % cite a threat modeling framework for IoT Based botnet attacks
+
+\begin{description}
+    \item[\textbf{Hajime} \normalfont(2016).] Utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento dinamico di funzionalità e moduli e adotta una comunicazione peer-to-peer (P2P), basata su BitTorrent.
+\end{description}
+
+\begin{itemize}
+    \item IoT reaper (2018): sfrutta vulnerabilità note dei serivizi HTTP per dispositivi IoT. Usa il linguaggio Lua. A differenza della connessione persistente di Mirai con i server C\&C, effettua richieste HTTP non cifrate periodiche.
+    \item Satori (2017): per la diffusione non fa scanning, ma sfrutta vulnerabilità universal plug-and-play UPnP presenti in router Huawei e dispositivi basati su Realtek SDK. più a sua volta un'altra variante, Coin Robber con il furto di criptovalute tramite vulnerabilità di Claymore Miner.
+    \item Mozi (2019): combina le vulnerabilità di Gafgyt Mirai IoT Reaper e altre botnet. basato su distributed hash table (DHT) protocol, usato per info nodi su piattaforme P2p come torrent, senza richiedere più server.  nascondeva payload malevoli in grandi quantità di traffico DHT, rendendo detection più difficile. poi eseguiva un servizio HTTP su una porta locale, che poi veniva utilizzata per vari scopi (download malicious payload).
+    % \item Pink (2021): è stata riconosciuta come la prima botnet IoT che presenta una topologia ibrida, combinando un server C\&C centralizzato con un'architettura di rete decentralizzata. I principali bersagli sono i router con fibra ottica e oltre che per gli attacchi DDoS è stata protagonista di attacchi di inserimento di annunci all'interno di siti web HTTP. (non è variante Mirai).
+\end{itemize}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=.25]{img/mirai.png}
+    \caption[Mirai operation]{Mirai operation \cite{antonakakis2017mirai}}
+    \label{fig:mirai}
+\end{figure}
+
+\subsection{Dataset} % 6.4.1
+% \subsubsection{Provenienza}
+
+Catturati praticamente dalla honeypot del Laboratorio di Cybersecurity dell'Università degli studi di udine e presi da MalwareBazaar database. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
+
+i primi tre catturati
+
+architetture diverse
+sia stripping che non
+sufficientemente vari tra loro
 
 \subsubsection{Snippet MD K.B. / Yara}
 
-% \subsubsection{Provenienza}
 
-% \subsubsection{(?) Criteri di selezione}
 
 \subsection{Descrizione dei campioni} % 6.4.3
 
-% \subsubsection{Hash, architettura, dimensione, famiglia}
+Hash, architettura, dimensione. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
 
 \begin{table}[t]
     \centering
