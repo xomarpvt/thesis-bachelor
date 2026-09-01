@@ -46,8 +46,6 @@
 \usepackage{xcolor}
 %% graphics: resizing di figure e/o contenuto.
 \usepackage{graphicx}
-%% cleveref: gestisce in modo intelligente riferimenti a figure e tabelle.
-\usepackage[italian]{cleveref}
 %% enumitem: permette di personalizzare gli elenchi.
 \usepackage{enumitem}
 %% lipsum: aggiunge testo riempitivo.
@@ -56,10 +54,14 @@
 \usepackage{subfiles}
 %% amssymb: estende l'insieme dei simboli matematici disponibili.
 \usepackage{amssymb}
+%% amsmath: gestisce funzionalità avanzate per le formule matematiche.
+\usepackage{amsmath}
 %% tabularx: serve per creare tabelle a larghezza totale specificata.
 \usepackage{tabularx}
 %% makecell: serve per gestire la formattazione dentro le celle delle tabelle.
 \usepackage{makecell}
+%% cleveref: gestisce in modo intelligente riferimenti a figure e tabelle.
+\usepackage[italian]{cleveref}
 
 %test
 \usepackage{csvsimple}
@@ -157,9 +159,7 @@
 
 %\part{Appendici}
 
-\chapter{Titolo della prima appendice}
-
-\lipsum[1]
+\subfile{chapters/A.tex}
 
 %% Parte conclusiva del documento; tipicamente per riassunto, bibliografia e/o indice analitico.
 \backmatter

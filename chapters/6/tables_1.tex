@@ -31,9 +31,10 @@
     \emph{has\_response} & $\{0,10\}$ & Indica che il malware risponde ai comandi ricevuti dal server C\&C. \\
     \hline
     \emph{heartbeat} & $[0-10]$ & Quantifica la complessità del meccanismo di heartbeat utilizzato dal malware, che può variare da una semplice comunicazione periodica a meccanismi più complessi basati su challenge-response. \\
-    \midrule
-    \emph{Totale} & $[0-165]$ & \\
-    \bottomrule
+    \hline
+    % \midrule
+    % \emph{Totale} & $[0-165]$ & \\
+    % \bottomrule
 \end{tabularx}
 %</tab1>
 
@@ -57,9 +58,10 @@
     \emph{cc\_lifecycle} & $[0-20]$ & Misura il grado di ricostruzione del ciclo di vita della comunicazione C\&C, con riferimento alla gestione degli acknowledgment dei messaggi ricevuti, alla trasmissione di feedback al C\&C, alla gestione dei fallimenti di connessione, ai meccanismi di riconnessione e alle procedure di arresto del malware. \\
     \hline
     \emph{consistency\_reliability} & $[0-10]$ & Misura il grado di coerenza delle informazioni riportate nei \textsc{SRE Report}, penalizzando la presenza di informazioni contraddittorie o incoerenti, anche quando le stesse risultano corrette in altre parti della documentazione. \\
-    \midrule
-    \emph{Totale} & $[0-100]$ & \\
-    \bottomrule
+    \hline
+    % \midrule
+    % \emph{Totale} & $[0-100]$ & \\
+    % \bottomrule
 \end{tabularx}
 %</tab2>
 

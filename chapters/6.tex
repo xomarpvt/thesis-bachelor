@@ -1,19 +1,29 @@
-\chapter{Validazione e test} % 6
+\chapter{\system: valutazione} % 6
 
-\section{Obiettivi della validazione} % 6.1
+Questo capitolo presenta obietti e strategia usati per i test. Poi si introduce ambiente sperimentale e campioni scelti. Quindi si definiscono metriche di valutazione dei test e si presentano i risultati ottenuti.
 
-\subsection{Strategia di validazione} % 6.1.1
+\section{Obiettivi e criteri} % 6.1
+% \subsection{Strategia di validazione} % 6.1.1
 
-\begin{itemize}
-    \item Classifier $\to$ valutazione poco importante (solo superamento)
-    \item Estrazione informazioni $\to$ valutazione importante e specifica
-    \item Qualità del codice $\to$ valutazione generale
-\end{itemize}
+Lo scopo generale della valutazione è quello di determinare il grado di maturità raggiunto dal sistema,  così da valutarne l'effettiva applicabilità nel contesto reale per cui è stato progettato e stabilire se il suo impiego possa risultare concretamente vantaggioso. La valutazione del sistema \system condotta in questa tesi si concentrerà su due obiettivi principali.
 
-Le prestazioni non sono oggetto della valutazione.
+Il primo obiettivo, di carattere preliminare e meno rilevante, consiste nel verificare la correttezza funzionale del sistema, accertandosi che i tre moduli principali (\textsc{Classifier}, \textsc{SRE Agent} e \textsc{CodeAgent}) producano il comportamento atteso nello scenario operativo. In particolare, saranno verificati il corretto funzionamento della pipeline, il suo grado di autonomia e la produzione degli output previsti.
 
+Il secondo obiettivo, di maggiore rilevanza e sul quale si concentrerà maggiormente la sperimentazione, consiste nel valutare la correttezza dei due output più importanti, ovvero i \textsc{SRE Report} e il \textsc{Capture Module}, rispetto ai requisiti definiti.
 
-L'impiego di due modelli con proprietà differenti permette quindi di valutare il comportamento del sistema in presenza di modelli eterogenei, analizzando l'influenza delle loro caratteristiche sui risultati ottenuti.
+A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni malevoli, selezionando quelli maggiormente rappresentativi dello scenario operativo di riferimento. I campioni dovranno essere sufficientemente significativi e presentare un'adeguata varietà, considerando, ad esempio, architetture differenti e campioni sottoposti o meno al processo di stripping. Per poter interpretare efficacemente e confrontare i risultati della successiva analisi, sarà inoltre necessario definire una metodologia di classificazione che consenta di valutare oggettivamente il grado di difficoltà dei campioni.
+
+In più, dovranno anche essere utilizzati almeno due LLM diversi, così da dimostrare l'indipendenza del sistema da uno specifico modello e, soprattutto, analizzare l'influenza delle loro caratteristiche differenti sui risultati ottenuti. Infine, le prestazioni in termini di risorse computazionali e tempi di esecuzione non costituiscono una dimensione rilevante per questa valutazione, poiché il sistema non è progettato per un utilizzo ad alta frequenza né per operare in presenza di limiti stringenti sulle risorse disponibili.
+
+La strategia di testing proposta prevede una valutazione end-to-end progressiva, condotta al termine di ciascun modulo della pipeline. Ad eccezione del \textsc{Classifier}, la cui valutazione risulta immediata una volta scelti i campioni, per gli altri due moduli è necessario effettuare un confronto con una \emph{ground truth}. Quest'ultima è costituita dalla documentazione relativa al funzionamento e al comportamento dei malware analizzati, insieme ai moduli di cattura effettivamente funzionanti, ed è stata definita con il supporto di un esperto di SRE specializzato nell'analisi di malware.
+
+La valutazione del \textsc{Classifier} considera due aspetti distinti: il riconoscimento della natura malevola del campione e l'individuazione della famiglia di malware. % basandosi sulla corrispondenza più probabile.
+
+La valutazione dello \textsc{SRE Agent}, il componente centrale della pipeline, si concentra sulla correttezza e sulla completezza delle informazioni riportate nei \textsc{SRE Report}. In particolare, l'analisi tiene conto sia della presenza delle informazioni attese sia della loro accuratezza, penalizzando l'omissione di elementi rilevanti. In più, per i binari stripped, è necessario valutare quantitativamente e qualitativamente l'attività di rinomina.
+
+Infine, la valutazione del \textsc{Code Agent} riguarda l'implementazione prodotta nel \textsc{Capture Module}, verificandone la correttezza funzionale e la sua coerenza con le informazioni raccolte nello \textsc{SRE Report} e con le specifiche fornite attraverso i prompt, i \textsc{Code Templates} e il \textsc{MessageSchema}. % (Comportamento atteso) Gli aspetti puramente stilistici assumono un ruolo secondario.
+
+Come già evidenziato per la difficoltà dei campioni, anche la valutazione delle informazioni estratte, della rinomina delle funzioni e del codice generato richiede la definizione di criteri il più possibile oggettivi e riproducibili. A tal fine, per ciascuno di questi aspetti dovranno essere individuati opportuni criteri di valutazione. 
 
 \section{Configurazione sperimentale} % 6.2
 
@@ -51,14 +61,14 @@ L'analisi è stata avviata manualmente, fornendo in ingresso il relativo \textsc
 
 \subsection{Complessità del campione} % 6.3.1
 
-L'obiettivo è caratterizzare la complessità dei campioni.
+La complessità dei campioni viene caratterizzata sulla base degli elementi che possono rendere più difficoltosa l'estrazione delle informazioni da parte del \textsc{SRE Agent}. A tal fine, vengono considerate diverse caratteristiche del campione, a ciascuna delle quali è associato un punteggio proporzionale al contributo apportato alla complessità complessiva.
 
-Scoring convention: **higher = harder to analyze**;
-range parameters in [min-max], others boolean. Max possible total = **165**.
+I criteri individuati sono riportati in \Cref{tab:complessita}, insieme a una descrizione del loro ruolo e del relativo significato. Il punteggio complessivo è ottenuto come somma dei singoli punteggi e, per convenzione, un valore più elevato corrisponde a un campione più complesso da analizzare. Ad eccezione del primo criterio, che tiene conto del risultato della compilazione prodotto dal framework SRE adottato, tutti gli altri descrivono direttamente caratteristiche e proprietà del malware o del binario analizzato.
 
-Sono tutti booleani, quindi o punteggio 0 o punteggio massimo, ad eccezione di 1, 2, 3, 4; per i quali si usa un valore graded all'interno del range 0 max
+Le singole metriche possono assumere valori secondo due modalità. Alcune sono di tipo binario e prevedono esclusivamente l'assegnazione del punteggio minimo o massimo, come nel caso del fingerprinting del sistema compromesso. Altre, invece, possono assumere un valore qualsiasi all'interno dell'intervallo definito, in funzione del livello di complessità osservato nel campione, come per il protocollo di C\&C adottato. In tutti i casi, il punteggio minimo è pari a $0$, mentre il valore massimo dipende dalla specifica caratteristica considerata. La somma dei valori massimi determina un punteggio teorico complessivo pari a $165$, corrispondente al livello massimo di complessità considerato dalla scala proposta.
 
-I punteggi vanno da 0, cioè non c'è questa difficoltà al massimo indicato per ciascuna categoria.
+\renewcommand{\topfraction}{0.8}
+\renewcommand{\textfraction}{0.2}
 
 \renewcommand{\tabularxcolumn}[1]{m{#1}}
 \begin{table}[t]
@@ -70,41 +80,52 @@ I punteggi vanno da 0, cioè non c'è questa difficoltà al massimo indicato per
 
 \subsection{Efficacia dell'attività di rinomina} % 6.3.2
 
-Per questo aspetto i parametri principali da valutare sono due.
-
-il primo è quello che riguarda la percentuale di funzione rinominate sul totale (da qui in poi identificato con $Renamed \%$). Considerando però come è stata impostata la rinomina (partendo dal main) e che i campioni hanno 100+ funzioni, non sarà possibile aspettarsi score tanto vicino al 100 per cento, visto che le funzioni sono tante. quelle principali sono coinvolte, quelle minori no. -> spiegare diminishing returns
-
-il secondo riguarda la percentuale di funzioni tra quelle rinominate a cui è stato assegnato un nome corretto (da qui in poi identificato con $Correct \%$).
-
-per chiarezza, inoltre, si può definire una score composita che combina X e Y. visto che già accennato i diminishing returns di X, si applica una trasformazione (?) normalizzazione (?) logaritmica. Questa è la score finale (anche questa è una percentuale):
+Per questo aspetto, i parametri principali da valutare sono due. Il primo riguarda il numero di funzioni rinominate rispetto al totale delle funzioni presenti nel binario. Tale valore, espresso come percentuale e indicato nel seguito con ${RC}_{\%}$, viene definito \emph{Renaming Coverage}:
 
 \begin{equation}
-    Renaming Score = \frac{f(X) * Y}{100}
-    \label{eq:eq_1}
+    {RC}_{\%} = \frac{N_{fun. \text{ renamed}}}{N_{fun. \text{ total}}} \cdot 100
+    \label{eq:renaming_coverage}
 \end{equation}
 
-Questa è formula, log, dove $k>0$ controlla il grado di (diminishing returns ?)
+Considerando la strategia adottata dal \textsc{SRE Agent} per la fase di rinomina, che procede ricorsivamente a partire dal \texttt{main}, e il numero generalmente elevato di funzioni presenti nei campioni, è difficile aspettarsi valori di $C_{\%}$ prossimi al $100\%$. La strategia tende infatti a coinvolgere principalmente le funzioni più rilevanti per l'analisi, mentre le funzioni di importanza minore vengono progressivamente escluse. Ne deriva un effetto di \emph{diminishing returns}, per cui l'incremento del numero di funzioni rinominate produce un beneficio progressivamente minore.
+
+Il secondo parametro considera quindi la qualità dei nomi assegnati e corrisponde alla percentuale di funzioni rinominate alle quali è stato associato un nome semanticamente corretto sulla base del comportamento osservato. Tale valore, indicato nel seguito con ${RA}_{\%}$, viene definito \emph{Renaming Accuracy}:
 
 \begin{equation}
-    f(X) = \log (1+k*X/100) / log(1+k)
-    \label{eq:eq_2}
+    {RA}_{\%} = \frac{N_{fun. \text{ correct}}}{N_{fun. \text{ renamed}}} \cdot 100
+    \label{eq:naming_accuray}
 \end{equation}
 
-La formula da un reward a copertura e correttezza, tenendo conto con smaller gains to increases in coverage.
+Risulta quindi logico proporre un punteggio composito che unisce i due parametri. Per tenere conto dell'effetto di rendimenti decrescenti associato a $C_{\%}$, viene applicata una trasformazione logaritmica, ottenendo lo score finale, che mira a premiare una combinazione elevata di copertura e correttezza semantica. Questo valore viene indicato con $S_{\%}$ e viene definito \emph{Renaming Score}:
 
-\iffalse
-We define a composite score combining renaming coverage and renaming correctness. Since increasing coverage is expected to yield diminishing returns, we apply a normalized logarithmic transformation:
-f(R)=log⁡(1+kR)log⁡(1+k)
-where R is the fraction of renamed functions and k>0 controls the degree of diminishing returns. The final score is defined as:
-Score=f(R)*C
-where C is the fraction of renamed functions that were renamed correctly. This formulation rewards both broad coverage and high correctness, while assigning progressively smaller gains to increases in coverage.
-\fi
+\begin{equation}
+    {RS}_{\%} = \frac{g({RC}_{\%}) * {RA}_{\%}}{100}
+    \label{eq:renaming_score}
+\end{equation}
+
+dove la funzione $g(x)$ è definita come:
+
+\begin{equation}
+    g(x) = \frac{\log (1+k \cdot \frac{x}{100})}{\log(1+k)}
+    \label{eq:logarithmic_transformation}
+\end{equation}
+
+e $k>0$ controlla il grado di rendimenti decrescenti introdotto dalla funzione. La funzione è normalizzata in modo tale che $g(0)=0$ e $g(100)=1$, mantenendo quindi invariati gli estremi dell'intervallo considerato.
 
 \subsection{Accuratezza del recupero degli artefatti} % 6.3.3
 
-recupero artefatti e logica del modulo.
+In modo analogo alla valutazione della complessità del campione, è necessario definire i criteri che consentano di misurare l'efficacia dell'attività di analisi svolta dal \textsc{SRE Agent}, il cui risultato è rappresentato dalla redazione dello \textsc{SRE Report}. La valutazione considera la capacità dell'agente di recuperare gli artefatti rilevanti e di ricostruire il comportamento e la logica di funzionamento del malware. Viene inoltre valutata la capacità di riconoscere l'assenza degli elementi non presenti nel campione e di evitare l'introduzione di ipotesi non supportate, con una penalizzazione per le informazioni rilevanti non identificate.
 
-qui sono molto importanti i voti parziali. bisogna considerare che il LLM può fare un errore all'ultimo, ma l'umano potrebbe essere avvicinato alla risposta, semplificando in ogni caso il suo lavoro. (entro un certo limite di misleading)
+Gli artefatti e le informazioni oggetto della valutazione sono riportati nella \Cref{tab:artefatti}, insieme a una descrizione di ciò che comprende ciascuna voce e delle informazioni attese. Il punteggio complessivo è ottenuto come somma dei singoli punteggi e, per convenzione, un valore più elevato corrisponde a un'analisi più efficace. Le metriche considerate fanno direttamente riferimento agli elementi recuperati durante l'analisi, ad eccezione dell'ultima, che invece si concentra maggiormente sull'organizzazione e sulla coerenza delle informazioni riportate nei documenti finali, penalizzando eventuali contraddizioni o incoerenze.
+
+A ciascuna metrica può essere assegnato un punteggio compreso tra un valore minimo, sempre pari a $0$, e un valore massimo, variabile in funzione dell'importanza dell'elemento considerato. L'utilizzo di punteggi parziali consente di rappresentare anche ricostruzioni incomplete ma in parte corrette. In questo modo, un errore nella conclusione finale non annulla necessariamente il valore delle informazioni correttamente recuperate, purché queste siano sufficientemente accurate da supportare la successiva verifica del reverse engineer e non risultino fuorvianti. La somma dei valori massimi determina un punteggio teorico complessivo pari a $100$, corrispondente a un'analisi completa e corretta.
+
+In modo simile alla complessità del campione, si vuole misurare l'attività di analisi del LLM che si conclude con redazione \textsc{SRE Report}. Si vuole misurare quanto sono stati recuperati gli artefatti, il comportamento del malware la sua logica. nel caso un elemento non sia presente deve affermare la sua assenza. penalità per cose mancate
+
+I diversi ??? individuati sono riportati in \Cref{tab:artefatti}, insieme a una descrizione di in che cosa consiste il recupero e di cosa ci si aspetta. Il punteggio complessivo è ottenuto come somma dei singoli punteggi e un valore più alto corrisponde a una analisi più efficace. fanno tutti direttamente riferimento a roba recuperata, ad eccezione dell'ultimo , che invece si concentra maggiormente sull'organizzazione delle informazioni finali, valutando possibili contraddizione e incoerenze nelle informazioni riportate, riducendo la qualità dell'output.
+
+qui a ogni metrica si può assegnare un valore all'interno del range minimo, che è sempre $0$ e massimo, che invece è variabile. qui sono molto importanti i voti parziali, così da poter giudicare le ricostruzioni parziali. bisogna considerare che il LLM può fare un errore all'ultimo, ma l'umano potrebbe essere avvicinato alla risposta, semplificando in ogni caso il suo lavoro. rimanendo comunque entro un certo limite di non fare misleading. La somma dei valori massimi determina un punteggio teorico complessivo
+pari a $100$ che è un'analisi perfetta e completa.
 
 \begin{table}[t]
     \centering
@@ -124,6 +145,8 @@ Non ci si concentra sugli aspetti di stile.
     \caption{Metriche Codice}
     \label{tab:codice}
 \end{table}
+
+% Infine, la valutazione del \textsc{Code Agent} riguarda l'implementazione prodotta nel \textsc{Capture Module}, verificandone la correttezza funzionale e la sua coerenza con le informazioni raccolte nello \textsc{SRE Report} e con le specifiche fornite attraverso i prompt, i \textsc{Code Templates} e il \textsc{MessageSchema}. % (Comportamento atteso) Gli aspetti puramente stilistici assumono un ruolo secondario.
 
 \section{Campagna sperimentale} % 6.4
 
@@ -182,16 +205,6 @@ In particolare: % cite a threat modeling framework for IoT Based botnet attacks
 
 Catturati praticamente dalla honeypot del Laboratorio di Cybersecurity dell'Università degli studi di udine e presi da MalwareBazaar database. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
 
-i primi tre catturati
-
-architetture diverse
-sia stripping che non
-sufficientemente vari tra loro
-
-\subsubsection{Snippet MD K.B. / Yara}
-
-
-
 \subsection{Descrizione dei campioni} % 6.4.3
 
 Hash, architettura, dimensione. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
@@ -222,9 +235,7 @@ Hash, architettura, dimensione. Adesso sono tutti disponibili lì, dove possono 
     \label{tab:campioni}
 \end{table}
 
-% \subsubsection{Descrizioni testuali (\textit{Elia/YAML})}
-
-\subsubsection{Difficoltà}
+\subsection{Difficoltà}
 
 \section{Risultati sperimentali}  % 6.5
 
@@ -250,6 +261,10 @@ Hash, architettura, dimensione. Adesso sono tutti disponibili lì, dove possono 
 \section{Discussione dei risultati} % 6.6
 
 \iffalse
+\subsubsection{YARA / Snippet MD K.B.}
+
+\subsubsection{Descrizioni testuali (\textit{YAML})}
+
 \subsection{Casi di successo} % 6.6.1
 
 \subsection{Casi di insuccesso} % 6.6.2
