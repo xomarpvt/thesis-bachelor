@@ -120,13 +120,6 @@ Gli artefatti e le informazioni oggetto della valutazione sono riportati nella \
 
 A ciascuna metrica può essere assegnato un punteggio compreso tra un valore minimo, sempre pari a $0$, e un valore massimo, variabile in funzione dell'importanza dell'elemento considerato. L'utilizzo di punteggi parziali consente di rappresentare anche ricostruzioni incomplete ma in parte corrette. In questo modo, un errore nella conclusione finale non annulla necessariamente il valore delle informazioni correttamente recuperate, purché queste siano sufficientemente accurate da supportare la successiva verifica del reverse engineer e non risultino fuorvianti. La somma dei valori massimi determina un punteggio teorico complessivo pari a $100$, corrispondente a un'analisi completa e corretta.
 
-In modo simile alla complessità del campione, si vuole misurare l'attività di analisi del LLM che si conclude con redazione \textsc{SRE Report}. Si vuole misurare quanto sono stati recuperati gli artefatti, il comportamento del malware la sua logica. nel caso un elemento non sia presente deve affermare la sua assenza. penalità per cose mancate
-
-I diversi ??? individuati sono riportati in \Cref{tab:artefatti}, insieme a una descrizione di in che cosa consiste il recupero e di cosa ci si aspetta. Il punteggio complessivo è ottenuto come somma dei singoli punteggi e un valore più alto corrisponde a una analisi più efficace. fanno tutti direttamente riferimento a roba recuperata, ad eccezione dell'ultimo , che invece si concentra maggiormente sull'organizzazione delle informazioni finali, valutando possibili contraddizione e incoerenze nelle informazioni riportate, riducendo la qualità dell'output.
-
-qui a ogni metrica si può assegnare un valore all'interno del range minimo, che è sempre $0$ e massimo, che invece è variabile. qui sono molto importanti i voti parziali, così da poter giudicare le ricostruzioni parziali. bisogna considerare che il LLM può fare un errore all'ultimo, ma l'umano potrebbe essere avvicinato alla risposta, semplificando in ogni caso il suo lavoro. rimanendo comunque entro un certo limite di non fare misleading. La somma dei valori massimi determina un punteggio teorico complessivo
-pari a $100$ che è un'analisi perfetta e completa.
-
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/6/tables_1.tex]{tab2}
@@ -136,8 +129,11 @@ pari a $100$ che è un'analisi perfetta e completa.
 
 \subsection{Qualità del codice generato} % 6.3.4
 
-Metriche che valutano funzionalità, correttezza e conformità.
-Non ci si concentra sugli aspetti di stile.
+La valutazione considera l'implementazione del \textsc{Capture Module} prodotta dal \textsc{Code Agent}, concentrandosi sulla funzionalità, sulla correttezza e sulla conformità alle specifiche; mentre non vengono inclusi aspetti relativi allo stile e alla qualità formale del codice. Vengono considerati inizialmente aspetti di più immediata valutazione, quali la correttezza sintattica, l'aderenza ai \textsc{Code Templates} forniti (\textsc{BotNet}, \textsc{BotNetInterface} e \textsc{MessageParser}) e la conformità della struttura dei messaggi al \textsc{MessageSchema} previsto per ciascuna classificazione.
+
+Questi primi tre aspetti sono seguiti da due valutazioni di maggiore rilevanza, in quanto maggiormente indicative dell'effettiva funzionalità pratica del modulo e alle quali viene quindi assegnato un peso maggiore. La prima riguarda la conformità al protocollo descritto nello \textsc{SRE Report}, verificando la corretta estrazione delle informazioni e la loro implementazione secondo le istruzioni fornite. La seconda valuta invece la \emph{human independence}, intesa come il grado di autonomia del modulo rispetto agli interventi del reverse engineer, con un punteggio inversamente proporzionale alla quantità di modifiche necessarie per renderlo funzionante.
+
+Le metriche considerate sono riportate in \Cref{tab:codice}, insieme alla relativa descrizione. Le prime tre assumono esclusivamente i valori $0$ o il massimo previsto, mentre le ultime due ammettono valori intermedi per rappresentare più gradualmente conformità e autonomia. Il punteggio complessivo è dato dalla somma dei singoli valori, con un massimo teorico di $100$, corrispondente a un'implementazione funzionante e conforme alla struttura e al comportamento attesi.
 
 \begin{table}[t]
     \centering
@@ -146,52 +142,37 @@ Non ci si concentra sugli aspetti di stile.
     \label{tab:codice}
 \end{table}
 
-% Infine, la valutazione del \textsc{Code Agent} riguarda l'implementazione prodotta nel \textsc{Capture Module}, verificandone la correttezza funzionale e la sua coerenza con le informazioni raccolte nello \textsc{SRE Report} e con le specifiche fornite attraverso i prompt, i \textsc{Code Templates} e il \textsc{MessageSchema}. % (Comportamento atteso) Gli aspetti puramente stilistici assumono un ruolo secondario.
-
 \section{Campagna sperimentale} % 6.4
 
-Ci si concentra su Mirai.
+Per la campagna sperimentale condotta nell'ambito di questa tesi, si è deciso di concentrare l'analisi su una famiglia di botnet in particolare, la famiglia Mirai, selezionando cinque campioni che rispettano i principi precedentemente definiti.
 
-La persistenza della genealogia Mirai è confermata da fonti indipendenti:
-- nel 2025 Mirai continues to dominate the IoT malware landscape by a wide margin, maintaining its position as the most prevalent threat (40). This year, Mozi edges out Gafgyt with a slight lead, taking the second spot (entrambe 17). Together, these three families account for the majority of observed activity, showing little change in the broader trend of a few dominant malware strains leading the space. totale più di 2/3
-- Nel Q2 2026 Mirai e le sue varianti hanno continuato a dominare il panorama delle minacce IoT osservate dagli honeypot Kaspersky. Parallelamente è aumentata l'attività di Prometei, una "prominent" botnet. %https://securelist.com/malware-report-q2-2026-pc-iot-statistics/120960
+La famiglia Mirai si è diffusa a partire dall'agosto 2016 \cite{antonakakis2017mirai} e rappresenta un'evoluzione della preesistente botnet BASHLITE, conosciuta anche come Gafgyt, una famiglia di malware DDoS che infettava dispositivi Linux attraverso il brute force di credenziali predefinite.
 
-% \subsection{Gafgyt Botnet}
-\subsection{La botnet Mirai} % 6.4.2
+A distanza di circa dieci anni dalla sua comparsa, i malware derivati da Mirai continuano a dominare il panorama del malware IoT, come evidenziato da due fonti indipendenti. Il report 2025 di Zscaler ThreatLabz indica Mirai come la minaccia prevalente, con una quota del 40\%, seguita da Mozi e Gafgyt, rispettivamente al secondo e al terzo posto, entrambe con una quota inferiore al 20\%. Complessivamente, queste tre famiglie rappresentano la maggior parte dell'attività osservata, superando i due terzi del totale. Dati simili, basati sulle osservazioni raccolte tramite gli honeypot proprietari di Kaspersky, sono confermati anche dal report \textit{IT Threat Evolution} relativo al Q2 2026, che evidenzia parallelamente la crescita dell'attività di un'altra botnet rinomata, Prometei.
 
-Mirai è una famiglia di malware worm-like che infetta (tempo verbale) dispositivi IoT e li arruolava/includeva in  una botnet DDoS. 
+% Zscaler ThreatLabz 2025 Mobile, IoT \& OT Threat Report
+% https://securelist.com/malware-report-q2-2026-pc-iot-statistics/120960
 
-% While not directly related to our study, the Mirai family represents an evolution of BASHLITE (otherwise known as LizardStresser, Torlus, Gafgyt), a DDoS malware family that infected Linux devices by brute forcing default credentials [86]. BASHLITE relied on six generic usernames and 14 generic passwords, while the released Mirai code used a dictionary of 62 username/password pairs that largely subsumed BASHLITE’s set and added credentials specific to consumer routers and IoT devices. In contrast to BASHLITE, Mirai additionally employed a fast, stateless scanning module that allowed it to more efficiently identify vulnerable devices.
-Diffusa a partire dal 2016, 
-L'architettura è decentralizzata e prevede 3 componenti nell'infrastruttura tra bot e botmaster.
+% \subsection{La botnet Gafgyt}
+\subsection{La botnet Mirai} % 6.4.1 \cite{antonakakis2017mirai}
 
-La propagazione di Mirai (infezione) avviene attraverso un rapido meccanismo di scanning che invia in modo asincrono e stateless TCP SYN a indirizzi IPv4 pseudocasuali, sulla porta TCP Telnet 23 e 2323. Quando Mirai identifica potenziale vittima c'è il tentativo di login brute-force, cercando di stabilire connessione con 10 coppie username password scelte da un pool di 62 credenziali.
+Mirai è una famiglia di malware di tipo \emph{worm-like} che si diffonde attraverso l'infezione di dispositivi IoT, arruolandoli successivamente all'interno di una botnet utilizzata per condurre attacchi DDoS. La sua architettura è decentralizzata e prevede tre componenti principali, ossia il C\&C, il \emph{report server} e il \emph{loader}, che costituiscono l'infrastruttura interposta tra i bot e il botmaster.
 
-Dopo il login ha successo, Mirai invia l'IP vittima e el credenziali a un report server (attiva loader). Quindi un programma \emph{loader} infetta questi dispositivi vulnerabili eseguendo login, determinando architettura/ambiente e scaricando/eseguendo il malware specifico. Dopo infezione, il downloaded binario viene eliminato (non c'è persistenza di reboot), nome di processo offuscato e killing di processi concorrenti sulle porte 22/23 o associati a competing infections (altre varianti mirai).
+La propagazione di Mirai avviene attraverso un rapido meccanismo di scanning che invia in modo asincrono e \emph{stateless} pacchetti TCP SYN verso indirizzi IPv4 pseudocasuali, sulle porte TCP $23$ e $2323$, utilizzate dal protocollo Telnet. Quando viene identificata una potenziale vittima, Mirai tenta di stabilire una connessione mediante un attacco di tipo brute force, provando diverse coppie di username e password selezionate da un pool di 62 credenziali. Rispetto a BASHLITE, il set di credenziali viene ampliato con combinazioni specifiche per router consumer e dispositivi IoT.
 
-A questo punto il bot stava in listening di comandi di attacco dal server C\&C e simultaneamente scansionava nuove vittime. Attacchi DDoS
+Una volta completato con successo il login, Mirai invia al report server l'indirizzo IP della vittima e le relative credenziali. Questo evento attiva il loader, che procede all'infezione del dispositivo vulnerabile eseguendo il login, identificando l'architettura e l'ambiente di esecuzione e scaricando il binario specifico per il sistema. Al termine dell'infezione, il binario scaricato viene eliminato e il malware procede all'offuscamento del nome del processo e all'interruzione dei processi concorrenti o associati a infezioni concorrenti, comprese altre varianti di Mirai. A questo punto, il bot effettua la scansione di nuove potenziali vittime e, simultaneamente, rimane in ascolto dei comandi provenienti dal C\&C, che possono essere utilizzati per condurre attacchi DDoS. % senza implementare meccanismi di persistenza. i processi concorrenti utilizzano le porte 22 e 23
 
-\cite{antonakakis2017mirai}
+Un evento rilevante nella storia di Mirai è stato il rilascio pubblico del codice sorgente nell'ottobre 2016, che ha favorito la proliferazione di nuove varianti e la rapida introduzione di nuove funzionalità. Queste spaziano dal miglioramento delle capacità di infezione, attraverso l'ampliamento delle credenziali utilizzate e il potenziamento dei meccanismi di protezione dalle infezioni concorrenti, fino all'impiego di binari progettati per complicare l'attività di SRE, ad esempio mediante tecniche di packing.
 
-un evento importante è stato il rilascio del codice sorgente (01-10-2016), che ha portato alla proliferazione di varianti con (competing operators?).
-
-Dopo il rilascio pubblico, aggiunta rapida di nuove feature, che possono variare da miglioramento alle capacità di infezione (più credenziali, uso DNS e protezione dalle infezioni competitive) a binari "hardened" con l'obiettivo di rallentare reverse engineering (packing).
-
-% Mirai is still used today, but since its source code was leaked, the greatest security threats have come from its emerging variants
-%  Famiglie preesistenti come Gafgyt e BASHLITE hanno incorportato interi moduli di Mirai. Consolidazione ceppo come genealogia dominante di malware iot per il decennio successivo.
-
-In particolare: % cite a threat modeling framework for IoT Based botnet attacks
+Sebbene Mirai continui a essere utilizzata, oggi il principale rischio è rappresentato dalle varianti emergenti. Queste possono derivare sia da famiglie di malware preesistenti, come Gafgyt, che hanno incorporato moduli o caratteristiche di Mirai, sia dallo sviluppo di nuove famiglie basate sul codice sorgente. Tra le principali varianti successive rientrano: % \cite{A threat modeling framework for IoT Based botnet attacks}
 
 \begin{description}
-    \item[\textbf{Hajime} \normalfont(2016).] Utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento dinamico di funzionalità e moduli e adotta una comunicazione peer-to-peer (P2P), basata su BitTorrent.
-\end{description}
-
-\begin{itemize}
-    \item IoT reaper (2018): sfrutta vulnerabilità note dei serivizi HTTP per dispositivi IoT. Usa il linguaggio Lua. A differenza della connessione persistente di Mirai con i server C\&C, effettua richieste HTTP non cifrate periodiche.
-    \item Satori (2017): per la diffusione non fa scanning, ma sfrutta vulnerabilità universal plug-and-play UPnP presenti in router Huawei e dispositivi basati su Realtek SDK. più a sua volta un'altra variante, Coin Robber con il furto di criptovalute tramite vulnerabilità di Claymore Miner.
-    \item Mozi (2019): combina le vulnerabilità di Gafgyt Mirai IoT Reaper e altre botnet. basato su distributed hash table (DHT) protocol, usato per info nodi su piattaforme P2p come torrent, senza richiedere più server.  nascondeva payload malevoli in grandi quantità di traffico DHT, rendendo detection più difficile. poi eseguiva un servizio HTTP su una porta locale, che poi veniva utilizzata per vari scopi (download malicious payload).
+    \item[\textbf{Hajime} \normalfont(2016).] Utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento dinamico di funzionalità e moduli e adotta una comunicazione peer-to-peer, basata su BitTorrent.
+    \item[\textbf{Satori} \normalfont(2017).] Per la sua diffusione sfrutta vulnerabilità del protocollo \emph{Universal Plug and Play} (UPnP) presenti in router Huawei e dispositivi basati sul Realtek SDK, senza ricorrere allo scanning. Da Satori è derivata a sua volta \emph{Coin Robber}, che sfrutta vulnerabilità di Claymore Miner per il furto di criptovalute.
+    \item[\textbf{IoT Reaper} \normalfont(2018).] Sfrutta vulnerabilità note nei servizi HTTP di dispositivi IoT e, a differenza della connessione persistente di Mirai con il C\&C, effettua periodicamente richieste HTTP non cifrate. % utilizza il linguaggio Lua
+    \item[\textbf{Mozi} \normalfont(2019).] Combina caratteristiche di Gafgyt, Mirai e IoT Reaper e adotta un'architettura peer-to-peer, gestita tramite un protocollo basato su Distributed Hash Table (DHT), che viene utilizzato per la comunicazione tra i nodi e per veicolare payload malevoli, rendendo più difficile il loro rilevamento.
     % \item Pink (2021): è stata riconosciuta come la prima botnet IoT che presenta una topologia ibrida, combinando un server C\&C centralizzato con un'architettura di rete decentralizzata. I principali bersagli sono i router con fibra ottica e oltre che per gli attacchi DDoS è stata protagonista di attacchi di inserimento di annunci all'interno di siti web HTTP. (non è variante Mirai).
-\end{itemize}
+\end{description}
 
 \begin{figure}[t]
     \centering
@@ -200,65 +181,94 @@ In particolare: % cite a threat modeling framework for IoT Based botnet attacks
     \label{fig:mirai}
 \end{figure}
 
-\subsection{Dataset} % 6.4.1
+\subsection{Dataset campioni} % 6.4.2
 % \subsubsection{Provenienza}
+% \subsection{Descrizione testuale}
 
-Catturati praticamente dalla honeypot del Laboratorio di Cybersecurity dell'Università degli studi di udine e presi da MalwareBazaar database. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
-
-\subsection{Descrizione dei campioni} % 6.4.3
-
-Hash, architettura, dimensione. Adesso sono tutti disponibili lì, dove possono essere recuperati a partire dall'hash.
+Nella tabella \Cref{tab:campioni} sono riportate le principali informazioni relative ai campioni selezionati, tra cui un nome univoco, utilizzato per identificarli, e l'hash SHA-256 del file binario. Come anticipato, tutti appartengono alla famiglia Mirai, sono in formato ELF e risultano \emph{statically linked}; i primi due sono non-stripped, mentre gli ultimi tre sono stripped.
 
 \begin{table}[t]
     \centering
-    \begin{tabular}{|c|c|p{3.2cm}|c|c|c|c|}
-        \hline
-        \textbf{ID} & \textbf{Nome}                & \textbf{SHA256}
-        & \textbf{Dimensione}  & \textbf{Architettura} & \textbf{Formato} & \textbf{Stripped}     \\ \hline
-
-        01          & \textsc{ghost}               & \makecell{0446b258525e6b35\\28dcf0d9da15387f\\32f8de9e54492697\\9e9095462415e84e}
-        & $197.64$ KB          & MIPS (32-bit)         & ELF              & $\times$              \\ \hline % 202,380 bytes + statically linked
-
-        02          & \textsc{marvisxoxo}          & \makecell{c5e55543cfd8f453\\4986b4fde98d96d7\\a8b38dc3afdd80da\\5b622d955cebfb32}
-        & $163.12$ KB          & ARM (32-bit)          & ELF              & $\times$              \\ \hline % 167,032 bytes + statically linked
-
-        03          & \textsc{deepsorrow}          & \makecell{f6d0e5142fd0d1a0\\f07e916c9c7432ff\\cbacc2a6d4eb0594\\f1524cb7661477ce}
-        & $127.10$ KB          & x86 (32-bit)          & ELF              & $\checkmark$          \\ \hline % 130,152 bytes + statically linked
-
-        04          & \textsc{hopto}               & \makecell{021e1c202a1d8def\\d3752ab749e50dac\\53645e40fa09d50a\\ea9fa8004f48ba27}
-        & $114.98$ KB          & x86 (64-bit)          & ELF              & $\checkmark$          \\ \hline % 117,744 bytes + statically linked
-
-        05          & \textsc{onboardboat}         & \makecell{9299d85a2b47b198\\d6381f4cc3afd296\\f271c1f0c303c8ae\\144a667bcf58e4c1}
-        & $65.35$ KB           & ARM (32-bit)          & ELF              & $\checkmark$          \\ \hline % 66,920 bytes + statically linked
-    \end{tabular}
+    \ExecuteMetaData[chapters/6/tables_2.tex]{tab4}
     \caption{Campioni}
     \label{tab:campioni}
 \end{table}
 
-\subsection{Difficoltà}
+Per quanto riguarda la provenienza, i primi tre campioni sono stati catturati tramite l'honeypot del Laboratorio di Cybersecurity dell'Università degli Studi di Udine, mentre gli ultimi due sono stati reperiti dal database MalwareBazaar. Attualmente, tutti i campioni sono disponibili su MalwareBazaar e possono essere recuperati direttamente utilizzando il relativo hash. %\cite{https://bazaar.abuse.ch/browse/}
+
+\subsection{Difficoltà campioni} % 6.4.3
+
+Secondo i parametri di tabella \Cref{tab:complessita}, nella tabella \Cref{tab:complessita_2} si riporta difficoltà dei campioni.
+
+Viene riportato il totale (sul massimo di $165$) e poi si fa la normalizzazione percentuale.
+
+Il punteggio conferma una difficoltà piuttosto eterogenea tra i campioni. hopto risulta il più difficile da analizzare (62\%), seguito da deepsorrow (56\%) e marvisxoxo (50\%). onboardboat presenta una difficoltà intermedia (43\%), mentre ghost è nettamente il più semplice (23\%).
+
+Interessante anche il contributo delle singole difficoltà aggiunte (e punteggi complessivi costruiti più da una parte o un'altra). ce ne sono alcune più frequenti, come cifratura stringhe, offuscamento C2 parsing non standard (tutte in 4/5), mentre altre tecniche come response, connessione cifrata meno frequenti.
+
+In particolare, marvisxoxo spicca per l'uso combinato della maggior parte di cose rispetto agli altri eccetto registrazione attacchi e risposta. infatti senza considerare stripping supera deepsorrow e pareggia la difficoltà di hopto (questi due sono boosted dalla registrazione dinamica attacchi, il resto mediamente in favore di marvisxoxo) 
+
+\begin{table}[t]
+    \centering
+    \ExecuteMetaData[chapters/6/tables_2.tex]{tab5}
+    \caption{Difficoltà}
+    \label{tab:complessita_2}
+\end{table}
 
 \section{Risultati sperimentali}  % 6.5
 
-\begin{table}
-\centering
-\ExecuteMetaData[chapters/6/tables_2.tex]{tab1}
-\caption{Renaming performance}
-\label{tab:renaming-performance}
-\end{table}
-
 \subsection{Statistiche di esecuzione} % 6.5.1
 
-\subsubsection{Token}
+Da qui in poi 
+\(Qwen 3.6 27B \Leftrightarrow Q3627\)
+\(DeepSeek V4-Flash Preview \Leftrightarrow DS4FP\)
 
-% \subsubsection{(?) Tempi}
+Token: i parziali (ma totali, comprendenti input (prompt + tools), output, reasoning, cache?)
+Tempi: si riporta solo il totale. per la generazione del codice è sempre attorno al minuto (tra 50 e 70 secondi) meno precisa dei token. difficile da valutare singolarmente, complessivamente meno soggetta a spikes
+
+\begin{table}[t]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \ExecuteMetaData[chapters/6/tables_2.tex]{tab6}
+    %
+    }
+    \caption{Statistiche}
+    \label{tab:stats}
+\end{table}
 
 \subsection{Metriche} % 6.5.2
+
+\begin{table}[t]
+    \centering
+    \ExecuteMetaData[chapters/6/tables_2.tex]{tab7}
+    \caption{Classifying performance}
+    \label{tab:res1}
+\end{table}
+
+\begin{table}[t]
+    \centering
+    \ExecuteMetaData[chapters/6/tables_2.tex]{tab8}
+    \caption{Renaming performance}
+    \label{tab:res2}
+\end{table}
 
 \subsubsection{Tabelle}
 
 \subsubsection{Grafici}
 
 \section{Discussione dei risultati} % 6.6
+
+Renaming e codice poco da dire.
+
+Scatter plot
+confronto llm
+
+Si osserva una debole tendenza negativa, ma la forte variabilità dei risultati indica che la difficoltà complessiva non determina direttamente il successo dell'analisi.
+
+% Success=f(campione, difficoltà, LLM, esecuzione)
+
+Il grafico mostra una debole tendenza negativa tra la difficoltà del campione e il successo dell'analisi effettuata dal LLM. Tuttavia, la significativa dispersione dei risultati indica che la difficoltà, considerata singolarmente, non è sufficiente a spiegare la performance del modello. La percentuale di successo sembra infatti essere determinata dall'interazione tra le caratteristiche specifiche del campione e la variabilità intrinseca delle singole esecuzioni del LLM. Di conseguenza, anche campioni caratterizzati da livelli di difficoltà comparabili possono produrre risultati di analisi sensibilmente differenti.Il Difficulty Score deve pertanto essere interpretato come una misura della complessità del campione e non come un predittore deterministico del successo del LLM.
+
 
 \iffalse
 \subsubsection{YARA / Snippet MD K.B.}

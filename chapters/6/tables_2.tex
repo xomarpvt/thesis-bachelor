@@ -1,19 +1,119 @@
 
-%<*tab1>
+%<*tab4>
+\begin{tabular}{|c|c|p{3.2cm}|c|c|c|c|}
+    \hline
+    \textbf{ID} & \textbf{Nome}                & \textbf{SHA256}
+    & \textbf{Dimensione}  & \textbf{Architettura} & \textbf{Formato} & \textbf{Stripped}     \\ \hline
+
+    01          & \textsc{ghost}               & \makecell{0446b258525e6b35\\28dcf0d9da15387f\\32f8de9e54492697\\9e9095462415e84e}
+    & $197.64$ KB          & MIPS (32-bit)         & ELF              & $\times$              \\ \hline % 202,380 bytes + statically linked
+
+    02          & \textsc{marvisxoxo}          & \makecell{c5e55543cfd8f453\\4986b4fde98d96d7\\a8b38dc3afdd80da\\5b622d955cebfb32}
+    & $163.12$ KB          & ARM (32-bit)          & ELF              & $\times$              \\ \hline % 167,032 bytes + statically linked
+
+    03          & \textsc{deepsorrow}          & \makecell{f6d0e5142fd0d1a0\\f07e916c9c7432ff\\cbacc2a6d4eb0594\\f1524cb7661477ce}
+    & $127.10$ KB          & x86 (32-bit)          & ELF              & $\checkmark$          \\ \hline % 130,152 bytes + statically linked
+
+    04          & \textsc{hopto}               & \makecell{021e1c202a1d8def\\d3752ab749e50dac\\53645e40fa09d50a\\ea9fa8004f48ba27}
+    & $114.98$ KB          & x86 (64-bit)          & ELF              & $\checkmark$          \\ \hline % 117,744 bytes + statically linked
+
+    05          & \textsc{onboardboat}         & \makecell{9299d85a2b47b198\\d6381f4cc3afd296\\f271c1f0c303c8ae\\144a667bcf58e4c1}
+    & $65.35$ KB           & ARM (32-bit)          & ELF              & $\checkmark$          \\ \hline % 66,920 bytes + statically linked
+\end{tabular}
+%</tab4>
+
+%<*tab5>
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{lccccc}
+    \toprule
+    \textbf{Parametro} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
+    \midrule
+    \emph{ghidra\_dbf}        & $2$  & $6$  & $13$ & $14$ & $13$ \\
+    \emph{statically\_linked} & $10$ & $10$ & $10$ & $10$ & $10$ \\
+    \emph{stripped}           & $0$  & $0$  & $20$ & $20$ & $20$ \\
+    \emph{obfuscated\_c2}     & $0$  & $8$  & $3$  & $7$  & $2$  \\
+    \emph{dns\_other\_c2}     & $0$  & $5$  & $0$  & $5$  & $0$  \\
+    \emph{enc\_str }          & $0$  & $8$  & $2$  & $2$  & $2$  \\
+    \emph{protocol}           & $4$  & $13$ & $12$ & $12$ & $12$ \\
+    \emph{passwd}             & $5$  & $5$  & $0$  & $0$  & $0$  \\
+    \emph{fingerprint}        & $5$  & $5$  & $0$  & $0$  & $0$  \\
+    \emph{enc\_conn}          & $0$  & $10$ & $0$  & $0$  & $0$  \\
+    \emph{dyn\_att}           & $0$  & $0$  & $20$ & $20$ & $0$  \\
+    \emph{non\_std\_parsing}  & $0$  & $10$ & $10$ & $10$ & $10$ \\
+    \emph{has\_response}      & $10$ & $0$  & $0$  & $0$  & $0$  \\
+    \emph{heartbeat}          & $2$  & $2$  & $2$  & $2$  & $2$  \\
+    \midrule
+    \textbf{Totale}           & $38$   & $82$   & $92$   & $102$ & $71$ \\
+    \textbf{Normalizzato}     & $23\%$ & $50\%$ & $56\%$ & $62\%$ & $43\%$ \\
+    \bottomrule
+\end{tabular}
+%</tab5>
+
+%<*tab6>
+\setlength{\tabcolsep}{5pt}
+\setlength{\extrarowheight}{5pt}
+\begin{tabular}{llcccccccccc}
+    \toprule
+    % \textbf{Statistica} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
+    \multicolumn{2}{l}{\textbf{Statistica}} & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}}
+    & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{hopto}} \\
+    \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
+    \multicolumn{2}{l}{\emph{LLM}}
+    & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
+    \midrule
+    \multirow{4}{*}{\makecell{Tokens\\$[tk]$}}
+    & \emph{Renaming}
+    & $123 \text{ k}$ & $123 \text{ k}$
+    & $123 \text{ k}$ & $123 \text{ k}$
+    & $123 \text{ k}$ & $123 \text{ k}$
+    & $123 \text{ k}$ & $123 \text{ k}$
+    & $123 \text{ k}$ & $123 \text{ k}$ \\
+    & \emph{SRE} & A & B & C & D \\
+    & \emph{Code} & A & B & C & D \\
+    \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
+    & \emph{Total} & A & B & C & D \\
+    \midrule
+    \makecell{Time\\$[min]$}
+    & \emph{Total}
+    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
+    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
+    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
+    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
+    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$ \\
+    \bottomrule
+\end{tabular}
+%</tab6>
+
+%<*tab7>
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{10pt}
+\setlength{\extrarowheight}{10pt}
+\begin{tabular}{lccccc}
+    \toprule
+    \textbf{Controllo} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
+    \midrule
+    \makecell[l]{\emph{Conferma}\\\emph{Malevolo}}       & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    \makecell[l]{\emph{Riconoscimento}\\\emph{Famiglia}} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    \bottomrule
+\end{tabular}
+%</tab7>
+
+%<*tab8>
 \begin{tabular}{llrrr}
 \toprule
  &  & Renamed \% & Correct \% & Renaming Score \\
 Malware & LLM &  &  &  \\
 \midrule
-\multirow[t]{2}{*}{deepsorrow} & Q36-27B & 37.6 & 87.0 & 55.8 \\
+\multirow[t]{2}{*}{deepsorrow} & Q3627 & 37.6 & 87.0 & 55.8 \\
  & DS4FP & 38.2 & 79.7 & 51.6 \\
 \cline{1-5}
-\multirow[t]{2}{*}{hopto} & Q36-27B & 55.4 & 73.7 & 57.3 \\
+\multirow[t]{2}{*}{hopto} & Q3627 & 55.4 & 73.7 & 57.3 \\
  & DS4FP & 53.8 & 79.1 & 60.6 \\
 \cline{1-5}
-\multirow[t]{2}{*}{onboardboat} & Q36-27B & 68.4 & 89.9 & 76.8 \\
+\multirow[t]{2}{*}{onboardboat} & Q3627 & 68.4 & 89.9 & 76.8 \\
  & DS4FP & 57.1 & 91.5 & 72.1 \\
 \cline{1-5}
 \bottomrule
 \end{tabular}
-%</tab1>
+%</tab8>

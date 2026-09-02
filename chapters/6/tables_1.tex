@@ -67,19 +67,19 @@
 
 
 %<*tab3>
-\begin{tabularx}{\textwidth}{|l|X|}
+\begin{tabularx}{\textwidth}{|l|l|X|}
     \hline
-    \textbf{Metrica} & \textbf{Descrizione} \\
+    \textbf{Metrica} & \textbf{Score} & \textbf{Descrizione} \\
     \hline
-    \emph{syntax\_correctness} & Verifica che il codice generato sia sintatticamente valido e che non presenti errori di compilazione o di importazione tali da impedirne il caricamento nell'ambiente di esecuzione previsto. \\
+    \emph{syntax\_correctness} & $\{0,10\}$ & Verifica che il codice generato sia sintatticamente valido e che non presenti errori di compilazione o di importazione tali da impedirne il caricamento nell'ambiente di esecuzione previsto. \\
     \hline
-    \emph{protocol\_conformance} & Misura il grado con cui i moduli \texttt{BotNet} e \texttt{MessageParser} riproducono correttamente il comportamento del protocollo descritto nel \textsc{SRE Report}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
+    \emph{architectural\_adherence} & $\{0,15\}$ & Verifica che il modulo \texttt{BotNet} sia conforme al contratto definito dall'interfaccia \texttt{BotNetInterface}, accertando che implementi i metodi richiesti (\texttt{connect} e \texttt{sniff}), e che utilizzi il metodo \texttt{parse\_message} del modulo \texttt{MessageParser} per il parsing dei messaggi. \\
     \hline
-    \emph{human\_independence} & Misura la capacità del modulo generato di raggiungere autonomamente il comportamento atteso, senza richiedere modifiche o correzioni manuali da parte dell'umano. \\
+    \emph{schema\_validation} & $\{0,15\}$ & Misura la conformità dei dati prodotti dal modulo, rappresentati come dizionari Python, al JSON Schema \texttt{MessageSchema}, verificando il rispetto della struttura prevista, dei campi obbligatori e opzionali, dei relativi tipi e degli ulteriori vincoli specificati. \\
     \hline
-    \emph{architectural\_adherence} & Verifica che il modulo \texttt{BotNet} sia conforme al contratto definito dall'interfaccia \texttt{BotNetInterface}, accertando che implementi i metodi richiesti (\texttt{connect} e \texttt{sniff}), e che utilizzi il metodo \texttt{parse\_message} del modulo \texttt{MessageParser} per il parsing dei messaggi. \\
+    \emph{protocol\_conformance} & $[0-20]$ & Misura il grado con cui i moduli \texttt{BotNet} e \texttt{MessageParser} riproducono correttamente il comportamento del protocollo descritto nel \textsc{SRE Report}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
     \hline
-    \emph{schema\_validation} & Misura la conformità dei dati prodotti dal modulo, rappresentati come dizionari Python, al JSON Schema \texttt{MessageSchema}, verificando il rispetto della struttura prevista, dei campi obbligatori e opzionali, dei relativi tipi e degli ulteriori vincoli specificati. \\
+    \emph{human\_independence} & $[0-40]$ & Misura la capacità del modulo generato di raggiungere autonomamente il comportamento atteso, senza richiedere modifiche o correzioni manuali da parte dell'umano. \\
     \hline
 \end{tabularx}
 %</tab3>
