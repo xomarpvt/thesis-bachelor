@@ -1,24 +1,29 @@
 
 %<*tab4>
-\begin{tabular}{|c|c|p{3.2cm}|c|c|c|c|}
-    \hline
-    \textbf{ID} & \textbf{Nome}                & \textbf{SHA256}
-    & \textbf{Dimensione}  & \textbf{Architettura} & \textbf{Formato} & \textbf{Stripped}     \\ \hline
-
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{lc>{\tiny}ccccc}
+    \toprule
+    \textbf{ID} & \textbf{Nome}                & \normalsize \textbf{SHA256}
+    & \textbf{Dimensione}  & \textbf{Architettura} & \textbf{Formato} & \textbf{Stripped}     \\
+    \midrule
+    \addlinespace
     01          & \textsc{ghost}               & \makecell{0446b258525e6b35\\28dcf0d9da15387f\\32f8de9e54492697\\9e9095462415e84e}
-    & $197.64$ KB          & MIPS (32-bit)         & ELF              & $\times$              \\ \hline % 202,380 bytes + statically linked
-
+    & $197.64$ KB          & MIPS (32-bit)         & ELF              & $\times$              \\ % 202,380 bytes + statically linked
+    \addlinespace
     02          & \textsc{marvisxoxo}          & \makecell{c5e55543cfd8f453\\4986b4fde98d96d7\\a8b38dc3afdd80da\\5b622d955cebfb32}
-    & $163.12$ KB          & ARM (32-bit)          & ELF              & $\times$              \\ \hline % 167,032 bytes + statically linked
-
+    & $163.12$ KB          & ARM (32-bit)          & ELF              & $\times$              \\ % 167,032 bytes + statically linked
+    \addlinespace
     03          & \textsc{deepsorrow}          & \makecell{f6d0e5142fd0d1a0\\f07e916c9c7432ff\\cbacc2a6d4eb0594\\f1524cb7661477ce}
-    & $127.10$ KB          & x86 (32-bit)          & ELF              & $\checkmark$          \\ \hline % 130,152 bytes + statically linked
-
+    & $127.10$ KB          & x86 (32-bit)          & ELF              & $\checkmark$          \\ % 130,152 bytes + statically linked
+    \addlinespace
     04          & \textsc{hopto}               & \makecell{021e1c202a1d8def\\d3752ab749e50dac\\53645e40fa09d50a\\ea9fa8004f48ba27}
-    & $114.98$ KB          & x86 (64-bit)          & ELF              & $\checkmark$          \\ \hline % 117,744 bytes + statically linked
-
+    & $114.98$ KB          & x86 (64-bit)          & ELF              & $\checkmark$          \\ % 117,744 bytes + statically linked
+    \addlinespace
     05          & \textsc{onboardboat}         & \makecell{9299d85a2b47b198\\d6381f4cc3afd296\\f271c1f0c303c8ae\\144a667bcf58e4c1}
-    & $65.35$ KB           & ARM (32-bit)          & ELF              & $\checkmark$          \\ \hline % 66,920 bytes + statically linked
+    & $65.35$ KB           & ARM (32-bit)          & ELF              & $\checkmark$          \\ % 66,920 bytes + statically linked
+    \addlinespace
+    \bottomrule
 \end{tabular}
 %</tab4>
 
@@ -57,38 +62,52 @@
     \toprule
     % \textbf{Statistica} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
     \multicolumn{2}{l}{\textbf{Statistica}} & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}}
-    & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{hopto}} \\
+    & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
     \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
     \multicolumn{2}{l}{\emph{LLM}}
     & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
     \midrule
     \multirow{4}{*}{\makecell{Tokens\\$[tk]$}}
     & \emph{Renaming}
-    & $123 \text{ k}$ & $123 \text{ k}$
-    & $123 \text{ k}$ & $123 \text{ k}$
-    & $123 \text{ k}$ & $123 \text{ k}$
-    & $123 \text{ k}$ & $123 \text{ k}$
-    & $123 \text{ k}$ & $123 \text{ k}$ \\
-    & \emph{SRE} & A & B & C & D \\
-    & \emph{Code} & A & B & C & D \\
+    & N/A & N/A
+    & N/A & N/A
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$ \\
+    & \emph{SRE}
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$ \\
+    & \emph{Code}
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$ \\
     \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
-    & \emph{Total} & A & B & C & D \\
+    & \emph{Totale}
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$
+    & $123 \text{ k}$ & $456 \text{ k}$ \\
     \midrule
-    \makecell{Time\\$[min]$}
-    & \emph{Total}
-    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
-    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
-    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
-    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$
-    & $\approx 1.0 \text{ m}$ & $\approx 1.0 \text{ m}$ \\
+    \makecell{Tempo\textsuperscript{*}\\$[min]$}
+    & \emph{Totale}
+    & $1.0 \text{ m}$ & $1.0 \text{ m}$
+    & $1.0 \text{ m}$ & $1.0 \text{ m}$
+    & $1.0 \text{ m}$ & $1.0 \text{ m}$
+    & $1.0 \text{ m}$ & $1.0 \text{ m}$
+    & $1.0 \text{ m}$ & $1.0 \text{ m}$ \\
     \bottomrule
 \end{tabular}
 %</tab6>
 
 %<*tab7>
-\renewcommand{\arraystretch}{1.25}
+\renewcommand{\arraystretch}{1.75}
 \setlength{\tabcolsep}{10pt}
-\setlength{\extrarowheight}{10pt}
 \begin{tabular}{lccccc}
     \toprule
     \textbf{Controllo} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
@@ -100,6 +119,27 @@
 %</tab7>
 
 %<*tab8>
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{lcccccc}
+    \toprule
+    Campione & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
+    LLM & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
+    \midrule
+    Funzioni Totali & 450 & 450 & 240 & 240 & 247 & 247 \\
+    Funzioni Rinominate & 169 & 172 & 133 & 129 & 169 & 141 \\
+    Funzioni Non Rinominate & 281 & 278 & 107 & 111 & 78 & 106 \\
+    Nomi Corretti & 147 & 137 & 98 & 102 & 152 & 129 \\
+    Nomi Errati & 22 & 35 & 35 & 27 & 17 & 12 \\
+    \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    RC\% & 37.6 & 38.2 & 55.4 & 53.8 & 68.4 & 57.1 \\
+    RA\% & 87.0 & 79.7 & 73.7 & 79.1 & 89.9 & 91.5 \\
+    RS\% & 55.8 & 51.6 & 57.3 & 60.6 & 76.9 & 72.1 \\
+    \bottomrule
+\end{tabular}
+%</tab8>
+
+%<*OLDtab8>
 \begin{tabular}{llrrr}
 \toprule
  &  & Renamed \% & Correct \% & Renaming Score \\
@@ -116,4 +156,43 @@ Malware & LLM &  &  &  \\
 \cline{1-5}
 \bottomrule
 \end{tabular}
-%</tab8>
+%</OLDtab8>
+
+
+%<*tab9>
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lcccccccccc}
+    \toprule
+    Campione & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}} & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
+    LLM & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
+    \midrule
+    host\_info & 10.0 & 10.0 & 7.0 & 8.0 & 10.0 & 10.0 & 8.0 & 10.0 & 10.0 & 10.0 \\
+    crypto\_obfuscation & 14.5 & 13.5 & 13.0 & 13.0 & 15.0 & 14.0 & 15.0 & 15.0 & 11.0 & 15.0 \\
+    protocol\_parsing & 19.0 & 19.0 & 18.0 & 14.0 & 20.0 & 20.0 & 20.0 & 20.0 & 12.5 & 20.0 \\
+    login\_heartbeat & 12.0 & 13.0 & 11.0 & 11.0 & 15.0 & 15.0 & 15.0 & 15.0 & 9.0 & 12.0 \\
+    payload\_capabilities & 17.0 & 19.0 & 18.0 & 16.0 & 6.0 & 6.0 & 14.0 & 9.0 & 6.0 & 20.0 \\
+    cc\_lifecycle & 7.0 & 7.0 & 8.0 & 4.0 & 9.0 & 9.0 & 10.0 & 10.0 & 7.0 & 10.0 \\
+    consistency\_reliability & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 \\
+    \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
+    Totale & 84.5 & 86.5 & 80.0 & 71.0 & 80.0 & 79.0 & 87.0 & 84.0 & 60.5 & 92.0 \\
+    \bottomrule
+\end{tabular}
+%</tab9>
+
+%<*tab10>
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lcccccccccc}
+    \toprule
+    Campione & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}} & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
+    LLM & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
+    \midrule
+    syntax\_correctness & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+    architectural\_adherence & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+    schema\_validation & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+    protocol\_conformance & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+    human\_independence & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+    \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
+    Totale & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 \\
+    \bottomrule
+\end{tabular}
+%</tab10>

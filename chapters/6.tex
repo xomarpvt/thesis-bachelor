@@ -99,7 +99,7 @@ Il secondo parametro considera quindi la qualità dei nomi assegnati e corrispon
 Risulta quindi logico proporre un punteggio composito che unisce i due parametri. Per tenere conto dell'effetto di rendimenti decrescenti associato a $C_{\%}$, viene applicata una trasformazione logaritmica, ottenendo lo score finale, che mira a premiare una combinazione elevata di copertura e correttezza semantica. Questo valore viene indicato con $S_{\%}$ e viene definito \emph{Renaming Score}:
 
 \begin{equation}
-    {RS}_{\%} = \frac{g({RC}_{\%}) * {RA}_{\%}}{100}
+    {RS}_{\%} = g({RC}_{\%}) \cdot {RA}_{\%} % \frac{}{100}
     \label{eq:renaming_score}
 \end{equation}
 
@@ -217,21 +217,23 @@ In particolare, marvisxoxo spicca per l'uso combinato della maggior parte di cos
 
 \section{Risultati sperimentali}  % 6.5
 
-\subsection{Statistiche di esecuzione} % 6.5.1
-
 Da qui in poi 
 \(Qwen 3.6 27B \Leftrightarrow Q3627\)
 \(DeepSeek V4-Flash Preview \Leftrightarrow DS4FP\)
 
-Token: i parziali (ma totali, comprendenti input (prompt + tools), output, reasoning, cache?)
+\subsection{Statistiche di esecuzione} % 6.5.1
+
+Token: i parziali (ma totali, comprendenti input (prompt + tools), output, reasoning, cache?). per renaming includono sia start che continue. per SRE includono i due cicli paralleli.
 Tempi: si riporta solo il totale. per la generazione del codice è sempre attorno al minuto (tra 50 e 70 secondi) meno precisa dei token. difficile da valutare singolarmente, complessivamente meno soggetta a spikes
 
 \begin{table}[t]
     \centering
     \resizebox{\textwidth}{!}{%
-    \ExecuteMetaData[chapters/6/tables_2.tex]{tab6}
+        \ExecuteMetaData[chapters/6/tables_2.tex]{tab6}
     %
-    }
+    } \\
+    \vspace{5pt}
+    {\scriptsize \textsuperscript{*} I tempi di esecuzione sono approssimati ($\approx$).} % \footnotesize
     \caption{Statistiche}
     \label{tab:stats}
 \end{table}
@@ -245,6 +247,8 @@ Tempi: si riporta solo il totale. per la generazione del codice è sempre attorn
     \label{tab:res1}
 \end{table}
 
+Per la cronaca, ghost ha 329 funzioni e marvisxoxo 368 entrambi non stripped quindi esclusi da questa valutazione.
+
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/6/tables_2.tex]{tab8}
@@ -252,13 +256,68 @@ Tempi: si riporta solo il totale. per la generazione del codice è sempre attorn
     \label{tab:res2}
 \end{table}
 
-\subsubsection{Tabelle}
+\begin{table}[t]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \ExecuteMetaData[chapters/6/tables_2.tex]{tab9}
+    %
+    }
+    \caption{Reversing performance}
+    \label{tab:res3}
+\end{table}
 
-\subsubsection{Grafici}
+
+\begin{table}[t]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \ExecuteMetaData[chapters/6/tables_2.tex]{tab10}
+    %
+    }
+    \caption{Coding performance}
+    \label{tab:res4}
+\end{table}
 
 \section{Discussione dei risultati} % 6.6
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=.625]{img/barplot.png}
+    \caption{Confronto renaming, reversing, coding}
+    \label{fig:bar_plot}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=.75]{img/scatterplot.png}
+    \caption{Dipendenza tra difficoltà e reversing}
+    \label{fig:scatter_plot}
+\end{figure}
+
+\iffalse
+
 Renaming e codice poco da dire.
+
+https://www.tbench.ai/?version=2.1 (operazione agente in ambito reale)
+https://hub.harborframework.com/datasets/terminal-bench/terminal-bench-2-1/latest
+https://hub.harborframework.com/tasks/terminal-bench/extract-elf/latest
+https://hub.harborframework.com/tasks/terminal-bench/path-tracing-reverse/latest
+https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/latest
+https://hub.harborframework.com/tasks/terminal-bench/feal-linear-cryptanalysis/latest
+
+https://artificialanalysis.ai/evaluations/omniscience
+
+\begin{tabular}{ccc}
+    Metrica & Qwen & DS4F \\
+    AA Index & 38 & 42 \\
+    AA Agentic & 28 & 34 \\
+    Terminal Bench (SRE, CS, Code) & 60.7 & 61.8 \\
+    AA Omniscience & -20 & -24 \\
+\end{tabular}
+
+L'Artificial Analysis Intelligence Index v4.1.1 aggrega nove valutazioni: GDPval-AA v2, τ³-Banking, Terminal-Bench v2.1, SciCode, Humanity's Last Exam, GPQA Diamond, CritPt, AA-Omniscience e AA-LCR. Le quattro macro-categorie — agents, coding, general capability e scientific reasoning — pesano ciascuna il 25%. 
+
+\fi
+
 
 Scatter plot
 confronto llm
