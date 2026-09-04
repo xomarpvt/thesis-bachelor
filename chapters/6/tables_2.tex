@@ -1,7 +1,7 @@
 
 %<*tab4>
 \renewcommand{\arraystretch}{1.25}
-\setlength{\tabcolsep}{10pt}
+\setlength{\tabcolsep}{8pt}
 \begin{tabular}{lc>{\tiny}ccccc}
     \toprule
     \textbf{ID} & \textbf{Nome}                & \normalsize \textbf{SHA256}
@@ -67,40 +67,59 @@
     \multicolumn{2}{l}{\emph{LLM}}
     & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
     \midrule
-    \multirow{4}{*}{\makecell{Tokens\\$[tk]$}}
+    \multirow{4}{*}{\makecell{Token\\$[{10}^3 \; tk]$}}
     & \emph{Renaming}
     & N/A & N/A
     & N/A & N/A
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$ \\
+    & $251 \text{ k}$ & $322 \text{ k}$
+    & $270 \text{ k}$ & $221 \text{ k}$
+    & $242 \text{ k}$ & $359 \text{ k}$ \\
     & \emph{SRE}
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$ \\
+    & $250 \text{ k}$ & $174 \text{ k}$
+    & $296 \text{ k}$ & $289 \text{ k}$
+    & $207 \text{ k}$ & $210 \text{ k}$
+    & $241 \text{ k}$ & $234 \text{ k}$
+    & $292 \text{ k}$ & $231 \text{ k}$ \\
     & \emph{Code}
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$ \\
+    & $27 \text{ k}$ & $22 \text{ k}$
+    & $39 \text{ k}$ & $27 \text{ k}$
+    & $52 \text{ k}$ & $27 \text{ k}$
+    & $46 \text{ k}$ & $29 \text{ k}$
+    & $34 \text{ k}$ & $24 \text{ k}$ \\
     \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
     & \emph{Totale}
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$
-    & $123 \text{ k}$ & $456 \text{ k}$ \\
+    & $277 \text{ k}$ & $196 \text{ k}$
+    & $335 \text{ k}$ & $315 \text{ k}$
+    & $510 \text{ k}$ & $559 \text{ k}$
+    & $557 \text{ k}$ & $485 \text{ k}$
+    & $568 \text{ k}$ & $613 \text{ k}$ \\
     \midrule
-    \makecell{Tempo\textsuperscript{*}\\$[min]$}
+    \multirow{4}{*}{\makecell{Tempo\\$[min:s]$}} % \textsuperscript{*}
+    & \emph{Renaming}
+    & N/A & N/A
+    & N/A & N/A
+    & $19:46$ & $09:06$
+    & $14:38$ & $09:30$
+    & $19:05$ & $09:53$ \\
+    & \emph{SRE}
+    & $13:10$ & $04:55$
+    & $31:23$ & $16:00$
+    & $14:37$ & $11:58$
+    & $15:46$ & $14:03$
+    & $26:22$ & $14:55$ \\
+    & \emph{Code}
+    & $01:06$ & $00:51$
+    & $04:27$ & $01:14$
+    & $06:35$ & $01:04$
+    & $05:05$ & $01:14$
+    & $03:19$ & $00:52$ \\
+    \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
     & \emph{Totale}
-    & $1.0 \text{ m}$ & $1.0 \text{ m}$
-    & $1.0 \text{ m}$ & $1.0 \text{ m}$
-    & $1.0 \text{ m}$ & $1.0 \text{ m}$
-    & $1.0 \text{ m}$ & $1.0 \text{ m}$
-    & $1.0 \text{ m}$ & $1.0 \text{ m}$ \\
+    & $14:16$ & $05:46$
+    & $35:50$ & $17:14$
+    & $40:58$ & $22:08$
+    & $35:29$ & $24:47$
+    & $48:46$ & $25:40$ \\
     \bottomrule
 \end{tabular}
 %</tab6>
@@ -113,7 +132,7 @@
     \textbf{Controllo} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
     \midrule
     \makecell[l]{\emph{Conferma}\\\emph{Malevolo}}       & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
-    \makecell[l]{\emph{Riconoscimento}\\\emph{Famiglia}} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    \makecell[l]{\emph{Riconoscimento}\\\emph{Famiglia Mirai}} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
     \bottomrule
 \end{tabular}
 %</tab7>
@@ -183,16 +202,22 @@ Malware & LLM &  &  &  \\
 \renewcommand{\arraystretch}{1.25}
 \begin{tabular}{lcccccccccc}
     \toprule
-    Campione & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}} & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
-    LLM & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
+    \textbf{Campione} & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}} & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
+    LLM & {\footnotesize Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} \\
     \midrule
-    syntax\_correctness & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
-    architectural\_adherence & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
-    schema\_validation & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
-    protocol\_conformance & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
-    human\_independence & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 \\
+    \emph{syntax\_correctness}
+    & 10.0 & 10.0 & 10.0 & 9.0  & 9.0  & 10.0 & 9.0  & 10.0 & 9.0  & 10.0 \\
+    \emph{architectural\_adherence}
+    & 15.0 & 15.0 & 14.0 & 12.0 & 13.0 & 14.0 & 13.0 & 15.0 & 13.0 & 15.0 \\
+    \emph{schema\_validation}
+    & 14.0 & 14.0 & 14.0 & 12.0 & 12.0 & 14.0 & 12.0 & 14.0 & 12.0 & 14.0 \\
+    \emph{protocol\_conformance}
+    & 19.0 & 19.0 & 17.0 & 15.0 & 13.0 & 19.0 & 14.0 & 18.0 & 9.0  & 17.0 \\
+    \emph{human\_independence}
+    & 36.0 & 35.0 & 19.0 & 13.0 & 10.0 & 23.0 & 11.0 & 30.0 & 11.0 & 27.0 \\
     \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
-    Totale & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 & 80.0 \\
+    \textbf{Totale}
+    & 94.0 & 93.0 & 74.0 & 61.0 & 57.0 & 80.0 & 59.0 & 87.0 & 54.0 & 83.0 \\
     \bottomrule
 \end{tabular}
 %</tab10>

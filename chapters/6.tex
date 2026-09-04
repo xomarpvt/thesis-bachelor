@@ -45,12 +45,6 @@ Di seguito vengono presentati i due modelli selezionati.
 
 Indicazioni dettagliate relative alle risorse hardware, alle configurazioni di deployment per vLLM e ai sampling parameters utilizzati sono riportate nell'appendice.
 
-\begin{itemize}
-    \item Hardware (1*A100) / (4*H100)
-    \item vLLM Recipe (quantizzazione)
-    \item Usage Parameters (0.8) / (1.0 thinking, 0.8)
-\end{itemize}
-
 \subsection{Protocollo sperimentale} % 6.2.3
 
 Per ciascun campione di malware considerato è stata effettuata una singola esecuzione, secondo il medesimo protocollo sperimentale. La completa autonomia del sistema durante l'esecuzione consente infatti di applicare tale protocollo a tutti i campioni considerati, garantendo uniformità nelle modalità di analisi.
@@ -198,47 +192,53 @@ Per quanto riguarda la provenienza, i primi tre campioni sono stati catturati tr
 
 \subsection{Difficoltà campioni} % 6.4.3
 
-Secondo i parametri di tabella \Cref{tab:complessita}, nella tabella \Cref{tab:complessita_2} si riporta difficoltà dei campioni.
+Sulla base dei parametri riportati nella tabella \Cref{tab:complessita}, la tabella \Cref{tab:complessita_campioni} riporta il livello di difficoltà associato a ciascuno dei campioni scelto. Il punteggio complessivo, espresso su un massimo teorico di $165$, viene successivamente normalizzato in termini percentuali.
 
-Viene riportato il totale (sul massimo di $165$) e poi si fa la normalizzazione percentuale.
+I risultati evidenziano una difficoltà piuttosto eterogenea tra i campioni: \textsc{hopto} risulta il più difficile da analizzare (62\%), seguito da \textsc{deepsorrow} (56\%) e \textsc{marvisxoxo} (50\%); \textsc{onboardboat} presenta una difficoltà intermedia (43\%), mentre \textsc{ghost} è nettamente il più semplice (23\%).
 
-Il punteggio conferma una difficoltà piuttosto eterogenea tra i campioni. hopto risulta il più difficile da analizzare (62\%), seguito da deepsorrow (56\%) e marvisxoxo (50\%). onboardboat presenta una difficoltà intermedia (43\%), mentre ghost è nettamente il più semplice (23\%).
+Risulta particolarmente interessante osservare il contributo delle singole difficoltà alla costruzione del punteggio complessivo. Alcune, come la cifratura della tabella delle stringhe (\emph{enc\_str}), l'offuscamento dell'endpoint di C\&C (\emph{obfuscated\_cc}) e il parsing non standard dei comandi (\emph{non\_std\_parsing}), risultano particolarmente frequenti e sono presenti in almeno quattro dei cinque campioni. Al contrario, la gestione delle response (\emph{has\_response}) e la cifratura della connessione (\emph{enc\_conn}) risultano meno frequenti, essendo presenti in un solo campione ciascuna.
 
-Interessante anche il contributo delle singole difficoltà aggiunte (e punteggi complessivi costruiti più da una parte o un'altra). ce ne sono alcune più frequenti, come cifratura stringhe, offuscamento C2 parsing non standard (tutte in 4/5), mentre altre tecniche come response, connessione cifrata meno frequenti.
-
-In particolare, marvisxoxo spicca per l'uso combinato della maggior parte di cose rispetto agli altri eccetto registrazione attacchi e risposta. infatti senza considerare stripping supera deepsorrow e pareggia la difficoltà di hopto (questi due sono boosted dalla registrazione dinamica attacchi, il resto mediamente in favore di marvisxoxo) 
+\textsc{marvisxoxo} si distingue per la combinazione della maggior parte delle difficoltà considerate, risultando privo soltanto della registrazione degli attacchi e di meccanismi di risposta, oltre a essere non-stripped. Considerando esclusivamente le difficoltà legate al comportamento e alle funzionalità del malware (cioè escludendo i parametri \emph{ghidra\_dbf}, \emph{statically\_linked} e \emph{stripped}), \textsc{marvisxoxo} presenta un punteggio superiore a quello di \textsc{deepsorrow} e \textsc{hopto}. L'elevata difficoltà attribuita a questi ultimi due campioni è dovuta principalmente alla presenza della registrazione dinamica degli attacchi, mentre, per ciascuna delle restanti caratteristiche, \textsc{marvisxoxo} presenta un livello di difficoltà maggiore o uguale.
 
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/6/tables_2.tex]{tab5}
     \caption{Difficoltà}
-    \label{tab:complessita_2}
+    \label{tab:complessita_campioni}
 \end{table}
 
 \section{Risultati sperimentali}  % 6.5
 
-Da qui in poi 
-\(Qwen 3.6 27B \Leftrightarrow Q3627\)
-\(DeepSeek V4-Flash Preview \Leftrightarrow DS4FP\)
+Di seguito sono presentati i principali risultati ottenuti dalla campagna sperimentale condotta, in accordo con il protocollo e le metriche precedentemente definiti.
+
+I risultati sono riportati mediante tabelle caratterizzate da una struttura comune. Le colonne sono organizzate secondo un indice gerarchico a due livelli, dove il primo identifica il campione considerato e il secondo specifica il modello LLM impiegato per l'esecuzione. Le righe riportano i parametri e le metriche di volta in volta considerati, con i relativi valori, mentre la parte finale della tabella è dedicata ai punteggi complessivi calcolati a partire da questi.
+
+Al fine di rendere più concisi i riferimenti agli LLM, si adotteranno le abbreviazioni \textsl{Q3627} per \emph{Qwen 3.6 27B} e \textsl{DS4FP} per \emph{DeepSeek V4-Flash Preview}.
 
 \subsection{Statistiche di esecuzione} % 6.5.1
 
-Token: i parziali (ma totali, comprendenti input (prompt + tools), output, reasoning, cache?). per renaming includono sia start che continue. per SRE includono i due cicli paralleli.
-Tempi: si riporta solo il totale. per la generazione del codice è sempre attorno al minuto (tra 50 e 70 secondi) meno precisa dei token. difficile da valutare singolarmente, complessivamente meno soggetta a spikes
+La \Cref{tab:stats} presenta alcune statistiche relative all'esecuzione della campagna sperimentale. Tali informazioni non rientrano nella valutazione, ma vengono incluse a scopo informativo.
+
+La metà superiore della tabella riporta il numero complessivo di token utilizzati dalle attività previste dalle \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e da quelle dello \textsc{Code Agent}, oltre al totale. Il conteggio è riferito all'intera esecuzione e non distingue tra token di input, che comprendono i prompt iniziali e le risposte dei tool, e token di output, che includono reasoning, risposte e tool calls.
+
+% La 1a riga ingloba \textsc{Start Mode} e \textsc{Continue Mode}. La 2a riga ingloba \textsc{Renaming Task} e \textsc{Reversing Task}. La 3a riga include \textsc{BotNet} module e \textsc{MessageParser} module.
+
+La metà inferiore mostra invece i tempi di esecuzione relativi alle medesime attività. Rispetto al numero di token, la misura dei tempi è maggiormente soggetta a variabilità e quindi meno precisa, pur fornendo una buona indicazione dell'impegno richiesto dalle diverse attività.
 
 \begin{table}[t]
     \centering
     \resizebox{\textwidth}{!}{%
         \ExecuteMetaData[chapters/6/tables_2.tex]{tab6}
     %
-    } \\
-    \vspace{5pt}
-    {\scriptsize \textsuperscript{*} I tempi di esecuzione sono approssimati ($\approx$).} % \footnotesize
+    }
+    % \\ \vspace{5pt} {\scriptsize \textsuperscript{*} I tempi di esecuzione sono approssimati ($\approx$).} % \footnotesize
     \caption{Statistiche}
     \label{tab:stats}
 \end{table}
 
-\subsection{Metriche} % 6.5.2
+\subsection{Raccolta dei risultati} % 6.5.2
+
+La \Cref{tab} riporta i risultati relativi alla verifica dell'individuazione della natura malevola dei campioni e del riconoscimento della corrispondente famiglia di botnet.
 
 \begin{table}[t]
     \centering
@@ -247,25 +247,33 @@ Tempi: si riporta solo il totale. per la generazione del codice è sempre attorn
     \label{tab:res1}
 \end{table}
 
-Per la cronaca, ghost ha 329 funzioni e marvisxoxo 368 entrambi non stripped quindi esclusi da questa valutazione.
+La \Cref{tab:res2} riporta i risultati relativi alla \textsc{Renaming Task} dello \textsc{SRE Agent}. Le prime righe riportano il numero totale di funzioni, di funzioni rinominate e di funzioni correttamente identificate. A partire da questi valori vengono quindi calcolati i tre punteggi definiti nella \Cref{tab:res2}, espressi in percentuale.
+
+La valutazione è stata naturalmente condotta esclusivamente sui campioni stripped, ossia \textsc{deepsorrow}, \textsc{hopto} e \textsc{onboardboat}, mentre i campioni non-stripped sono esclusi. Per completezza, \textsc{ghost} e \textsc{marvisxoxo} contengono rispettivamente 329 e 368 funzioni.
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/6/tables_2.tex]{tab8}
+    \resizebox{\textwidth}{!}{%
+        \ExecuteMetaData[chapters/6/tables_2.tex]{tab8}
+        %
+    }
     \caption{Renaming performance}
     \label{tab:res2}
 \end{table}
+
+La \Cref{tab:res3} riporta i risultati relativi alla \textsc{Reversing Task} dello \textsc{SRE Agent}. La valutazione è stata effettuata sulla base dei parametri definiti nella \Cref{tab:res3} e l'ultima riga mostra il punteggio complessivo, ottenuto come somma dei singoli valori e compreso all'interno dell'intervallo $[0,100]$.
 
 \begin{table}[t]
     \centering
     \resizebox{\textwidth}{!}{%
         \ExecuteMetaData[chapters/6/tables_2.tex]{tab9}
-    %
+        %
     }
     \caption{Reversing performance}
     \label{tab:res3}
 \end{table}
 
+La \Cref{tab:res3} riporta i risultati relativi alla produzione del \textsc{Capture Module} da parte del \textsc{SRE Agent}. La valutazione è stata effettuata sulla base dei parametri definiti nella \Cref{tab:res3} e l'ultima riga mostra il punteggio complessivo, ottenuto come somma dei singoli valori e compreso all'interno dell'intervallo $[0,100]$.
 
 \begin{table}[t]
     \centering
@@ -279,9 +287,63 @@ Per la cronaca, ghost ha 329 funzioni e marvisxoxo 368 entrambi non stripped qui
 
 \section{Discussione dei risultati} % 6.6
 
+La fase di identificazione preliminare si dimostra sufficientemente affidabile da non costituire un collo di bottiglia per le fasi successive della pipeline. Sarebbe però da metterla in difficoltà con casi limite, per magari scoprire falsi positivi negativi e riconoscimento più famiglie contemporaneamente (più casi/categoria, accuracy nella scelta).
+
+Adesso si introduce il bar plot.
+
+Discussione token tempi.
+
+Token Usati: più o meno simili tra i due, più DS4 nel renaming, pari su reversing, meno DS4 nel code.
+Tempi: vantaggio DS4 su qwen, circa metà tempo.
+
+La maggiore velocità osservata per DS4 è compatibile con le differenze architetturali tra i due modelli, in particolare con la metà dei parametri attivati rispetto a qwen (dense vs moe).\cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}
+
+utile è confronto tra i due llm: simili su renaming, leggermente maggiore DS4 reversing (grazie outlier), vantaggio DS4 su coding. le prestazioni simili confermano i benchmark pubblici, in particolare quelli specifici su attività coinvolte questo lavoro.
+
+\cite{artificial_analysis}
+\cite{merrill2026terminalbench}
+
+\begin{itemize}
+    \item Renaming:
+    
+    il renaming accuracy è buono (media 80-85), quello che tira giù la score (60-65) è la coverage che come media sta su (50-55).
+
+    quando il modello decide di rinominare qualcosa, spesso lo fa correttamente. Precisione qualitativa alta + copertura limitata = comportamento conservativo, anche con i due cicli e non uno. vantaggio: evita di introdurre nomi arbitrari o sbagliati; svantaggio: lascia una parte significativa del codice senza annotazione semantica. Diciamo che mancherebbe l'aggiunta di un indice di importanza, un peso per la rilevanza delle funzioni.
+    
+    \item Reversing: 
+    
+    media di circa 80 percento.
+    
+    correctness e completeness dei report è buona, ottima base per analista. c'è affidabilità del report come artefatto di analisi. quello che rompe è incoerenza e affidabilità dei report: ripetizioni e contraddizioni. fattore penalizzante per tutti
+
+    per gli altri punteggi invece penalizzazioni più sparse, quello che ha fatto perdere più punti degli altri è non identificazione payload capabilities
+
+    outlier \textsc{onboardboat} qwen rispetto a deepseek ma anche sulla media: strano perché buona prestazione renaming, la difficoltà era quella a metà (non ha elementi di spicco rispetto agli altri) e ha fatto peggio degli altri. sul discorso di difficoltà si torna dopo.
+
+    \item Coding: 
+    
+    medie tra 60-80
+
+    come da aspettative i primi tre parametri sono ok (questi boostano i punteggi, ma comunque obiettivo era avere almeno integrazione facile). effettivamente le penalizzazioni sono da human independence che raccoglie un po' gli errori complessivi di tutto. Si nota un po' la dipendenza da reversing score, normale perché influenza human independence, con magari anche implementazioni così/così
+
+    Il modello è tecnicamente capace di generare codice integrabile, ma difficile aspettarsi che funzioni senza almeno piccoli aggiustamenti.
+\end{itemize}
+
+la cosa più interessante è il rapporto tra difficoltà e reversing, l'attività principe del sistema.
+
+Si osserva una debole tendenza negativa, ma la forte variabilità dei risultati indica che la difficoltà complessiva non determina direttamente il successo dell'analisi.
+
+% Success=f(campione, difficoltà, LLM, esecuzione)
+
+Il grafico mostra una debole tendenza negativa tra la difficoltà del campione e il successo dell'analisi effettuata dal LLM. Tuttavia, la significativa dispersione dei risultati indica che la difficoltà, considerata singolarmente, non è sufficiente a spiegare la performance del modello. La percentuale di successo sembra infatti essere determinata dall'interazione tra le caratteristiche specifiche del campione e la variabilità intrinseca delle singole esecuzioni del LLM. Di conseguenza, anche campioni caratterizzati da livelli di difficoltà comparabili possono produrre risultati di analisi sensibilmente differenti.Il Difficulty Score deve pertanto essere interpretato come una misura della complessità del campione e non come un predittore deterministico del successo del LLM.
+
+Implicazioni per l'automazione della pipeline:
+
+in termini di autonomia complessiva, i risultati suggeriscono che l'impiego del modello come strumento human-in-the-loop è già concretamente praticabile (il gap da colmare per post revisione umana non è ampio), mentre l'autonomia completa richiederebbe un ulteriore miglioramento soprattutto in termini di affidabilità e gestione degli errori.
+
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.625]{img/barplot.png}
+    \includegraphics[scale=.60]{img/barplot.png}
     \caption{Confronto renaming, reversing, coding}
     \label{fig:bar_plot}
 \end{figure}
@@ -322,12 +384,8 @@ L'Artificial Analysis Intelligence Index v4.1.1 aggrega nove valutazioni: GDPval
 Scatter plot
 confronto llm
 
-Si osserva una debole tendenza negativa, ma la forte variabilità dei risultati indica che la difficoltà complessiva non determina direttamente il successo dell'analisi.
-
-% Success=f(campione, difficoltà, LLM, esecuzione)
-
-Il grafico mostra una debole tendenza negativa tra la difficoltà del campione e il successo dell'analisi effettuata dal LLM. Tuttavia, la significativa dispersione dei risultati indica che la difficoltà, considerata singolarmente, non è sufficiente a spiegare la performance del modello. La percentuale di successo sembra infatti essere determinata dall'interazione tra le caratteristiche specifiche del campione e la variabilità intrinseca delle singole esecuzioni del LLM. Di conseguenza, anche campioni caratterizzati da livelli di difficoltà comparabili possono produrre risultati di analisi sensibilmente differenti.Il Difficulty Score deve pertanto essere interpretato come una misura della complessità del campione e non come un predittore deterministico del successo del LLM.
-
+Limiti: dimensione del dataset; varietà delle famiglie; dipendenza dai campioni; benchmark non perfettamente comparabili; metriche aggregate; eventuale soggettività della valutazione; generalizzabilità; 
+Conclusioni: valutazioni più cristalline per risultati più precisi o più/meno/diversi parametri per altri aspetti, error analysis con omissioni, allucinazioni, interpretazioni/deduzione errata.
 
 \iffalse
 \subsubsection{YARA / Snippet MD K.B.}

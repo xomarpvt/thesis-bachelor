@@ -1,0 +1,116 @@
+\chapter{Prima appendice}
+
+
+\lipsum[1]
+
+\begin{itemize}
+    \item Hardware (1*A100) / (4*H100)
+    \item vLLM Recipe (quantizzazione)
+    \item Usage Parameters (0.8) / (1.0 thinking, 0.8)
+\end{itemize}
+
+% ============================================================
+% Trucco Avanzato per distinguere Chiavi e Valori in YAML
+% ============================================================
+\newcommand\YAMLkeystyle{\color{yamlkey}\bfseries}
+\newcommand\YAMLvaluestyle{\color{yamlvalue}\mdseries}
+\newcommand\YAMLcolonstyle{\color{yamlvalue}\mdseries}
+
+\makeatletter
+\newcommand\ProcessThreeDashes{\textcolor{yamlcomment}{---}}
+
+\lstdefinelanguage{yaml}{
+    sensitive=true,
+    morecomment=[l]{\#},
+    morestring=[b]",
+    morestring=[b]',
+    % Gestione dei due punti per separare chiave e valore
+    moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},
+    % Riconoscimento dei tre trattini di inizio YAML
+    literate={---}{{\ProcessThreeDashes}}3,
+    % Booleani e keyword principali
+    keywords={true, false, null, yes, no, on, off},
+    keywordstyle=\color{yamlkeyword}\bfseries
+}
+\makeatother
+
+% ============================================================
+% Palette Colori "Modern Clean" (stile VS Code / GitHub)
+% ============================================================
+\definecolor{yamlvalue}{HTML}{0550AE}       % Blu per le chiavi (prima dei due punti)
+\definecolor{yamlkey}{HTML}{24292F}     % Antracite scuro per i valori standard
+\definecolor{yamlkeyword}{HTML}{CF222E}   % Rosso/Amaranto per i booleani
+\definecolor{yamlcomment}{HTML}{57606A}   % Grigio per i commenti
+\definecolor{yamlnumber}{HTML}{8C95A0}    % Grigio chiaro per i numeri di riga
+\definecolor{yamlbackground}{HTML}{F6F8FA} % Sfondo grigio chiarissimo
+\definecolor{yamlline}{HTML}{D0D7DE}      % Bordo sottile ed elegante
+
+% ============================================================
+% Definizione dello Stile Finale
+% ============================================================
+\lstdefinestyle{yamlstyle}{
+    language=yaml,
+    % Di base tutto il testo adotta lo stile della CHIAVE, 
+    % poi i due punti lo cambieranno in VALUE
+    basicstyle=\small\ttfamily\YAMLkeystyle,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=true,
+    % Numeri di riga
+    numbers=left,
+    numberstyle=\tiny\ttfamily\color{yamlnumber},
+    stepnumber=1,
+    numbersep=12pt,
+    % Cornice ed estetica del blocco
+    backgroundcolor=\color{yamlbackground},
+    frame=single,
+    rulecolor=\color{yamlline},
+    framerule=0.8pt,
+    framesep=8pt,
+    xleftmargin=24pt,
+    xrightmargin=8pt,
+    upquote=true
+}
+
+% ============================================================
+% YAML listing (Uso)
+% ============================================================
+\lstinputlisting[
+    style=yamlstyle,
+    caption={Configurazione YAML di vLLM},
+    label={lst:vllm-yaml}
+]{appendices/vllm_recipe_q3627.yaml}
+
+\begin{figure}[t]
+    \centering
+    % --------------------------------------------------------
+    % Prima Minipage (Sinistra) - Larghezza: 48% della pagina
+    % --------------------------------------------------------
+    \begin{minipage}{0.45\textwidth}
+        \lstinputlisting[
+            style=yamlstyle,
+            basicstyle=\small\ttfamily\YAMLkeystyle, % Font leggermente più piccolo per farlo stare nello spazio
+            xleftmargin=12pt, % Margini ridotti per l'affiancamento
+            caption={Configurazione A},
+            label={lst:vllm-yaml-a}
+        ]{appendices/vllm_recipe_q3627.yaml}
+    \end{minipage}
+    \hspace{0.06\textwidth}% Crea lo spazio elastico orizzontale tra le due minipage
+    % --------------------------------------------------------
+    % Seconda Minipage (Destra) - Larghezza: 48% della pagina
+    % --------------------------------------------------------
+    \begin{minipage}{0.48\textwidth}
+        \lstinputlisting[
+            style=yamlstyle,
+            basicstyle=\small\ttfamily\YAMLkeystyle, % Font coerente con il primo
+            xleftmargin=12pt,
+            caption={Configurazione B},
+            label={lst:vllm-yaml-b}
+        ]{appendices/vllm_recipe_ds4fp.yaml}
+    \end{minipage}
+\end{figure}
+
+\chapter{Seconda appendice}
+\chapter{Terza appendice}
