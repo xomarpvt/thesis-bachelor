@@ -238,7 +238,7 @@ La metà inferiore mostra invece i tempi di esecuzione relativi alle medesime at
 
 \subsection{Raccolta dei risultati} % 6.5.2
 
-La \Cref{tab} riporta i risultati relativi alla verifica dell'individuazione della natura malevola dei campioni e del riconoscimento della corrispondente famiglia di botnet.
+La \Cref{tab:res1} riporta i risultati relativi alla verifica dell'individuazione della natura malevola dei campioni e del riconoscimento della corrispondente famiglia di botnet.
 
 \begin{table}[t]
     \centering
@@ -273,7 +273,7 @@ La \Cref{tab:res3} riporta i risultati relativi alla \textsc{Reversing Task} del
     \label{tab:res3}
 \end{table}
 
-La \Cref{tab:res3} riporta i risultati relativi alla produzione del \textsc{Capture Module} da parte del \textsc{SRE Agent}. La valutazione è stata effettuata sulla base dei parametri definiti nella \Cref{tab:res3} e l'ultima riga mostra il punteggio complessivo, ottenuto come somma dei singoli valori e compreso all'interno dell'intervallo $[0,100]$.
+La \Cref{tab:res4} riporta i risultati relativi alla produzione del \textsc{Capture Module} da parte del \textsc{SRE Agent}. La valutazione è stata effettuata sulla base dei parametri definiti nella \Cref{tab:res4} e l'ultima riga mostra il punteggio complessivo, ottenuto come somma dei singoli valori e compreso all'interno dell'intervallo $[0,100]$.
 
 \begin{table}[t]
     \centering
@@ -287,59 +287,23 @@ La \Cref{tab:res3} riporta i risultati relativi alla produzione del \textsc{Capt
 
 \section{Discussione dei risultati} % 6.6
 
-La fase di identificazione preliminare si dimostra sufficientemente affidabile da non costituire un collo di bottiglia per le fasi successive della pipeline. Sarebbe però da metterla in difficoltà con casi limite, per magari scoprire falsi positivi negativi e riconoscimento più famiglie contemporaneamente (più casi/categoria, accuracy nella scelta).
+La fase di identificazione preliminare si è dimostrata sufficientemente affidabile nei casi considerati, consentendo di proseguire con le fasi successive della pipeline senza incontrare errori di classificazione. Per ottenere una valutazione più completa e rappresentativa, sarebbe necessario considerare anche casi limite, utili a verificare la presenza di eventuali falsi positivi e falsi negativi e a valutare la capacità di distinguere correttamente tra più famiglie di botnet, in particolare nei casi in cui un campione presenti caratteristiche riconducibili a più di una famiglia. % mediante metriche di accuratezza
 
-Adesso si introduce il bar plot.
+Per fornire una visione sintetica e facilitare il confronto tra i diversi LLM e campioni, è stato quindi realizzato un grafico a barre, mostrato in \Cref{fig:bar_plot}, che mette a confronto i punteggi complessivi ottenuti nelle tre attività considerate: \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e produzione del \textsc{Capture Module} da parte del \textsc{Code Agent}.
 
-Discussione token tempi.
+Per quanto riguarda il consumo di token, i due LLM presentano valori generalmente simili, sebbene con alcune differenze tra le attività: DS4FP utilizza più token nella \textsc{Renaming Task}, valori simili a Q3627 nella \textsc{Reversing Task} e meno token nel \textsc{Code Agent}. Una differenza più marcata emerge nei tempi di esecuzione: DS4FP risulta costantemente più rapido di Q3627, con tempi globalmente pari a circa la metà. Tale risultato è compatibile con le differenze architetturali tra i due modelli, in particolare con l'architettura MoE di DS4FP, che attiva circa la metà dei parametri rispetto al LLM denso Q3627 \cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}.
 
-Token Usati: più o meno simili tra i due, più DS4 nel renaming, pari su reversing, meno DS4 nel code.
-Tempi: vantaggio DS4 su qwen, circa metà tempo.
+\iffalse
+https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index
+https://artificialanalysis.ai/evaluations/omniscience
+https://www.tbench.ai/?version=2.1
+https://hub.harborframework.com/datasets/terminal-bench/terminal-bench-2-1/latest
+https://hub.harborframework.com/tasks/terminal-bench/extract-elf/latest
+https://hub.harborframework.com/tasks/terminal-bench/path-tracing-reverse/latest
+https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/latest
+\fi
 
-La maggiore velocità osservata per DS4 è compatibile con le differenze architetturali tra i due modelli, in particolare con la metà dei parametri attivati rispetto a qwen (dense vs moe).\cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}
-
-utile è confronto tra i due llm: simili su renaming, leggermente maggiore DS4 reversing (grazie outlier), vantaggio DS4 su coding. le prestazioni simili confermano i benchmark pubblici, in particolare quelli specifici su attività coinvolte questo lavoro.
-
-\cite{artificial_analysis}
-\cite{merrill2026terminalbench}
-
-\begin{itemize}
-    \item Renaming:
-    
-    il renaming accuracy è buono (media 80-85), quello che tira giù la score (60-65) è la coverage che come media sta su (50-55).
-
-    quando il modello decide di rinominare qualcosa, spesso lo fa correttamente. Precisione qualitativa alta + copertura limitata = comportamento conservativo, anche con i due cicli e non uno. vantaggio: evita di introdurre nomi arbitrari o sbagliati; svantaggio: lascia una parte significativa del codice senza annotazione semantica. Diciamo che mancherebbe l'aggiunta di un indice di importanza, un peso per la rilevanza delle funzioni.
-    
-    \item Reversing: 
-    
-    media di circa 80 percento.
-    
-    correctness e completeness dei report è buona, ottima base per analista. c'è affidabilità del report come artefatto di analisi. quello che rompe è incoerenza e affidabilità dei report: ripetizioni e contraddizioni. fattore penalizzante per tutti
-
-    per gli altri punteggi invece penalizzazioni più sparse, quello che ha fatto perdere più punti degli altri è non identificazione payload capabilities
-
-    outlier \textsc{onboardboat} qwen rispetto a deepseek ma anche sulla media: strano perché buona prestazione renaming, la difficoltà era quella a metà (non ha elementi di spicco rispetto agli altri) e ha fatto peggio degli altri. sul discorso di difficoltà si torna dopo.
-
-    \item Coding: 
-    
-    medie tra 60-80
-
-    come da aspettative i primi tre parametri sono ok (questi boostano i punteggi, ma comunque obiettivo era avere almeno integrazione facile). effettivamente le penalizzazioni sono da human independence che raccoglie un po' gli errori complessivi di tutto. Si nota un po' la dipendenza da reversing score, normale perché influenza human independence, con magari anche implementazioni così/così
-
-    Il modello è tecnicamente capace di generare codice integrabile, ma difficile aspettarsi che funzioni senza almeno piccoli aggiustamenti.
-\end{itemize}
-
-la cosa più interessante è il rapporto tra difficoltà e reversing, l'attività principe del sistema.
-
-Si osserva una debole tendenza negativa, ma la forte variabilità dei risultati indica che la difficoltà complessiva non determina direttamente il successo dell'analisi.
-
-% Success=f(campione, difficoltà, LLM, esecuzione)
-
-Il grafico mostra una debole tendenza negativa tra la difficoltà del campione e il successo dell'analisi effettuata dal LLM. Tuttavia, la significativa dispersione dei risultati indica che la difficoltà, considerata singolarmente, non è sufficiente a spiegare la performance del modello. La percentuale di successo sembra infatti essere determinata dall'interazione tra le caratteristiche specifiche del campione e la variabilità intrinseca delle singole esecuzioni del LLM. Di conseguenza, anche campioni caratterizzati da livelli di difficoltà comparabili possono produrre risultati di analisi sensibilmente differenti.Il Difficulty Score deve pertanto essere interpretato come una misura della complessità del campione e non come un predittore deterministico del successo del LLM.
-
-Implicazioni per l'automazione della pipeline:
-
-in termini di autonomia complessiva, i risultati suggeriscono che l'impiego del modello come strumento human-in-the-loop è già concretamente praticabile (il gap da colmare per post revisione umana non è ampio), mentre l'autonomia completa richiederebbe un ulteriore miglioramento soprattutto in termini di affidabilità e gestione degli errori.
+La \Cref{fig:bar_plot} consente di effettuare un confronto prestazionale diretto tra i due LLM. Q3627 e DS4FP risultano complessivamente comparabili nelle \textsc{Renaming Task} e \textsc{Reversing Task}, mentre DS4FP evidenzia un vantaggio più marcato nella produzione del codice.
 
 \begin{figure}[t]
     \centering
@@ -348,6 +312,16 @@ in termini di autonomia complessiva, i risultati suggeriscono che l'impiego del 
     \label{fig:bar_plot}
 \end{figure}
 
+L'andamento osservato, pur essendo limitato al sistema considerato e al metodo di valutazione adottato, risulta coerente con quello evidenziato da alcuni benchmark pubblici. In particolare, l'Artificial Analysis Intelligence Index v4.2, che aggrega dieci valutazioni delle capacità dei LLM in ambito generale, scientifico, di coding e agentico, assegna a DS4FP un punteggio di $33$, superiore al $29$ ottenuto da Q3627 \cite{artificial_analysis}. Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627 \cite{merrill2026terminalbench}.
+
+Tornando alle singole attività, per la \textsc{Renaming Task} la \Cref{tab:res2} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\% e l'85\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\% e il 55\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\% e il 65\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni rimane senza nome, riducendo le informazioni semantiche disponibili. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \textsc{Renaming Task} tendenzialmente conservativo, nonostante l'impiego dei due cicli di rinomina. Tuttavia, un limite della valutazione è rappresentato dall'assenza di un indice di importanza delle singole funzioni, che permetta di considerare la loro diversa rilevanza all'interno del programma durante la valutazione della copertura.
+
+La \textsc{Reversing Task} ha ottenuto punteggi medi intorno all'80\%, confermando l'utilità dei report prodotti dal LLM come sintesi dell'attività di SRE e come output del sistema. Dalla revisione dei report emerge infatti un livello di completezza e correttezza sufficiente a renderli una valida base di partenza per il reverse engineer, che può utilizzarli per proseguire autonomamente il lavoro, correggendoli e integrandoli con la propria analisi. Tuttavia, il principale fattore penalizzante, comune a tutte le esecuzioni sui diversi campioni, è la scarsa consistenza dei \textsc{SRE Reports}, nei quali sono spesso presenti sovrapposizioni e alcune contraddizioni, riconducibili in gran parte alla natura parallela delle modalità \textsc{Transport Mode} e \textsc{Communication Mode}. Ciò evidenzia una variabilità non trascurabile tra esecuzioni agentiche indipendenti per le attività di SRE del sistema, dovuta ai diversi percorsi seguiti dagli agenti durante l'analisi dello stesso campione. Per l'appunto, nei \textsc{SRE Reports} questa variabilità emerge nella diversa presentazione di uno stesso risultato o, nei casi più critici, nella presenza di risultati discordanti. Le altre penalizzazioni del punteggio risultano invece abbastanza uniformemente distribuite tra i diversi parametri di valutazione della \Cref{tab:res3}; tra questi, il riconoscimento delle capacità del payload è l'attività di SRE che ha ottenuto i risultati meno favorevoli. Inoltre, è interessante notare il risultato della combinazione \textsc{onboardboat}-Q3627: a fronte del buon risultato ottenuto da DS4FP sullo stesso campione, Q3627 mostra una prestazione sensibilmente peggiore, nonostante una alta \emph{Renaming Score} e un livello di difficoltà del campione intermedio. Questo comportamento verrà ripreso durante la successiva analisi in relazione alla difficoltà dei campioni.
+
+% Questa è dovuta alle scelte effettuate nei diversi passaggi del processo, sulla base delle informazioni raccolte e delle conclusioni raggiunte, che possono condurre gli agenti a seguire percorsi differenti durante l'analisi di uno stesso campione.
+
+Per quanto riguarda la valutazione del \textsc{Capture Module}, i punteggi risultano complessivamente elevati, ma con una varianza maggiore rispetto alla \textsc{Reversing Task}. I parametri relativi agli aspetti sintattici, architetturali e di integrazione raggiungono i punteggi massimi, innalzando così il punteggio complessivo. Questo risultato è tuttavia coerente con uno degli obiettivi del sistema, che mira a favorire una semplice integrazione della pipeline in altri workflow. Come evidenziato nella \Cref{tab:res4}, è soprattutto \emph{human\_independence} a determinare le differenze osservate tra esecuzione di campioni, poiché risente più direttamente degli errori accumulati nelle diverse fasi della pipeline. Si osserva infatti una certa associazione con il punteggio ottenuto nella \textsc{Reversing Task}, tenendo conto dei diversi gradi di successo nella conseguente implementazione delle funzionalità del modulo.
+
 \begin{figure}[t]
     \centering
     \includegraphics[scale=.75]{img/scatterplot.png}
@@ -355,48 +329,11 @@ in termini di autonomia complessiva, i risultati suggeriscono che l'impiego del 
     \label{fig:scatter_plot}
 \end{figure}
 
-\iffalse
+Come anticipato, rimane da caratterizzare la relazione tra la difficoltà del campione e il punteggio ottenuto nella \textsc{Reversing Task}, ossia l'attività di sistema più rilevante, sia dal punto di vista computazionale sia per la sua incidenza sulla correttezza complessiva dell'analisi. A questo scopo, è stato realizzato un grafico a dispersione, riportato in \Cref{fig:scatter_plot}, che mette in relazione le due variabili per entrambi i LLM considerati e riporta la relativa linea di regressione. L'analisi mira a verificare l'ipotesi dell'esistenza di una correlazione negativa tra la difficoltà del campione e il successo nella \textsc{Reversing Task}. Assumendo che la difficoltà costituisca un fattore rilevante nel determinare le prestazioni, ci si attenderebbe infatti una riduzione del punteggio all'aumentare del \textsc{Difficulty Score}. Tale andamento, tuttavia, non emerge in modo evidente dai dati, che mostrano invece una dispersione considerevole e una correlazione lineare praticamente inesistente, con coefficiente di correlazione prossimo allo zero. Questo suggerisce che la difficoltà del campione, considerata isolatamente, non sia sufficiente a spiegare l'esito della \textsc{Reversing Task}. La percentuale di successo sembra infatti risentire anche dell'interazione tra le caratteristiche specifiche del campione e il LLM impiegato, oltre che della variabilità intrinseca delle singole esecuzioni del LLM, già osservata e discussa nelle analisi precedenti. Alla luce di queste osservazioni, il \emph{Difficulty Score} dovrebbe pertanto essere interpretato principalmente come una misura della complessità intrinseca del campione, piuttosto che come un predittore del successo dell'attività di SRE. In termini concettuali, una descrizione più completa della probabilità di successo potrebbe quindi essere ricondotta a una funzione che considera congiuntamente diversi fattori, secondo uno schema ad alto livello del tipo:
 
-Renaming e codice poco da dire.
+\begin{equation}
+    SRE \; Success = f(Campione, Difficulty \; Score, LLM, Esecuzione)
+    \label{eq:success_hypo}
+\end{equation}
 
-https://www.tbench.ai/?version=2.1 (operazione agente in ambito reale)
-https://hub.harborframework.com/datasets/terminal-bench/terminal-bench-2-1/latest
-https://hub.harborframework.com/tasks/terminal-bench/extract-elf/latest
-https://hub.harborframework.com/tasks/terminal-bench/path-tracing-reverse/latest
-https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/latest
-https://hub.harborframework.com/tasks/terminal-bench/feal-linear-cryptanalysis/latest
-
-https://artificialanalysis.ai/evaluations/omniscience
-
-\begin{tabular}{ccc}
-    Metrica & Qwen & DS4F \\
-    AA Index & 38 & 42 \\
-    AA Agentic & 28 & 34 \\
-    Terminal Bench (SRE, CS, Code) & 60.7 & 61.8 \\
-    AA Omniscience & -20 & -24 \\
-\end{tabular}
-
-L'Artificial Analysis Intelligence Index v4.1.1 aggrega nove valutazioni: GDPval-AA v2, τ³-Banking, Terminal-Bench v2.1, SciCode, Humanity's Last Exam, GPQA Diamond, CritPt, AA-Omniscience e AA-LCR. Le quattro macro-categorie — agents, coding, general capability e scientific reasoning — pesano ciascuna il 25%. 
-
-\fi
-
-
-Scatter plot
-confronto llm
-
-Limiti: dimensione del dataset; varietà delle famiglie; dipendenza dai campioni; benchmark non perfettamente comparabili; metriche aggregate; eventuale soggettività della valutazione; generalizzabilità; 
-Conclusioni: valutazioni più cristalline per risultati più precisi o più/meno/diversi parametri per altri aspetti, error analysis con omissioni, allucinazioni, interpretazioni/deduzione errata.
-
-\iffalse
-\subsubsection{YARA / Snippet MD K.B.}
-
-\subsubsection{Descrizioni testuali (\textit{YAML})}
-
-\subsection{Casi di successo} % 6.6.1
-
-\subsection{Casi di insuccesso} % 6.6.2
-
-\subsection{Confronto tra i LLM} % 6.6.3
-
-\subsection{Limitazioni dei LLM} % 6.6.4
-\fi
+Infine, è opportuno considerare le implicazioni che i risultati ottenuti hanno rispetto al livello di autonomia previsto per la pipeline di analisi. In particolare, è stato mostrato che il sistema è in grado di operare senza input umano diretto, svolgendo le attività di SRE, producendo i relativi report e proseguendo con la generazione del codice. Sebbene sia quindi tecnicamente in grado di produrre, in maniera consistente, \textsc{Capture Module} compatibili con le interfacce previste e integrabili in altri workflow, è ancora difficile e poco frequente ottenere un modulo immediatamente funzionante senza prevedere almeno un piccolo intervento iniziale di revisione o aggiustamento. I risultati suggeriscono però che l'impiego del sistema secondo un approccio \emph{human-in-the-loop} sia già concretamente praticabile, poiché il contributo richiesto all'operatore per portare a termine il processo appare contenuto. Il raggiungimento di una piena autonomia richiederebbe invece ulteriori miglioramenti, soprattutto in termini di affidabilità nell'estrazione delle informazioni e di robustezza e consistenza delle singole esecuzioni.

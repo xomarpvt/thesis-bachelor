@@ -1,13 +1,18 @@
 \chapter{Prima appendice}
 
-
 \lipsum[1]
+
+\begin{tabular}{cc}
+    
+\end{tabular}
 
 \begin{itemize}
     \item Hardware (1*A100) / (4*H100)
     \item vLLM Recipe (quantizzazione)
     \item Usage Parameters (0.8) / (1.0 thinking, 0.8)
 \end{itemize}
+
+\lipsum[1]
 
 % ============================================================
 % Trucco Avanzato per distinguere Chiavi e Valori in YAML
@@ -77,11 +82,13 @@
 % ============================================================
 % YAML listing (Uso)
 % ============================================================
+\iffalse
 \lstinputlisting[
     style=yamlstyle,
     caption={Configurazione YAML di vLLM},
     label={lst:vllm-yaml}
 ]{appendices/vllm_recipe_q3627.yaml}
+\fi
 
 \begin{figure}[t]
     \centering
@@ -113,4 +120,56 @@
 \end{figure}
 
 \chapter{Seconda appendice}
+
+\lipsum[1]
+
+% ============================================================
+% Palette Colori "Python Modern"
+% ============================================================
+\definecolor{pykeyword}{HTML}{CF222E}   % Rosso per keyword (def, class, import, return)
+\definecolor{pybuiltin}{HTML}{953097}   % Viola per funzioni built-in (print, len, range)
+\definecolor{pystring}{HTML}{0A3069}    % Blu scuro per le stringhe
+\definecolor{pycomment}{HTML}{57606A}   % Grigio per i commenti
+\definecolor{pynumber}{HTML}{005A9C}    % Blu brillante per i numeri
+\definecolor{pybg}{HTML}{F6F8FA}        % Sfondo grigio chiarissimo
+\definecolor{pyline}{HTML}{D0D7DE}      % Bordo sottile elegante
+
+% ============================================================
+% Definizione dello Stile Python
+% ============================================================
+\lstdefinestyle{pystyle}{
+    language=Python,
+    % basicstyle=\small\ttfamily\color{black},
+    basicstyle=\scriptsize\ttfamily\color{black},
+    keywordstyle=\color{pykeyword}\bfseries,
+    stringstyle=\color{pystring},
+    commentstyle=\color{pycomment}\itshape,
+    % Evidenziazione avanzata per numeri, built-in e decoratori
+    emph={print,len,range,str,int,float,dict,list,set,tuple,enumerate,zip},
+    emphstyle=\color{pybuiltin},
+    moredelim=**[is][\color{pynumber}]{£}{£}, % Per evidenziare i numeri se necessario
+    % Formattazione blocco e bordi
+    backgroundcolor=\color{pybg},
+    frame=single,
+    rulecolor=\color{pyline},
+    framerule=0.8pt,
+    framesep=8pt,
+    xleftmargin=24pt,
+    xrightmargin=8pt,
+    % Gestione spazi e righe
+    numbers=left,
+    numberstyle=\tiny\ttfamily\color{pycomment},
+    numbersep=12pt,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    upquote=true
+}
+
+\lstinputlisting[
+    style=pystyle,
+    caption={BotNet Template},
+    label={lst:py}
+]{appendices/botnet_template.py}
+
 \chapter{Terza appendice}
