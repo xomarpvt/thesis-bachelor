@@ -15,13 +15,13 @@ La scelta del linguaggio di implementazione è ricaduta su Python principalmente
 % https://www.python.org/downloads/release/python-3130/
 % https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-python.html
 
-\section{Orchestrazione / Esecuzione} % 5.2
+\section{Moduli principali} % 5.2
 
-Qui descritti importanti. poi per gli elementi specifici le sezioni successive. + anche i costrutti tra cui sono implementati.
+In questa sezione viene presentata, nell'ordine, l'implementazione dei tre moduli fondamentali del sistema: \textsc{Classifier}, \textsc{SRE Agent} e \textsc{Code Agent}. Le componenti specifiche impiegate da ciascun modulo sono approfondite nelle sezioni successive, a cui si rimanda di volta in volta nel corso della trattazione.
 
 \subsection{Classifier} % 5.2.1
 
-Inizialmente, vengono calcolati gli hash del file binario, tra cui il digest SHA-256, mediante la libreria \texttt{hashlib}\footnote{\url{https://docs.python.org/3/library/hashlib.html}}. L'hashing riveste un ruolo fondamentale nell'analisi del malware, poiché consente di identificare univocamente un campione tramite una \textit{fingerprint}. L'hash può quindi essere utilizzato come etichetta identificativa del file e, soprattutto, come riferimento per condividere e confrontare informazioni tra reverse engineer. Ad esempio, il digest calcolato può essere impiegato per verificare la presenza del campione all'interno di database di malware o di servizi online di \textit{threat intelligence} \cite{sikorski2012malware}.
+Inizialmente, il modulo calcola gli hash del file binario, tra cui il digest SHA-256, mediante la libreria \texttt{hashlib}\footnote{\url{https://docs.python.org/3/library/hashlib.html}}. L'hashing riveste un ruolo fondamentale nell'analisi del malware, poiché consente di identificare univocamente un campione tramite una \textit{fingerprint}. L'hash può quindi essere utilizzato come etichetta identificativa del file e, soprattutto, come riferimento per condividere e confrontare informazioni tra reverse engineer. Ad esempio, il digest calcolato può essere impiegato per verificare la presenza del campione all'interno di database di malware o di servizi online di \textit{threat intelligence} \cite{sikorski2012malware}.
 
 \subsubsection{Virus Total}
 
@@ -50,127 +50,52 @@ funzioni \texttt{compile} e \texttt{scan}.
 
 \subsection{SRE Agent} % 5.2.2
 
-La prima azione che si esegue è quella di importare il \textsc{Binary File} all'interno del \textsc{SRE Framework}. Questo può essere fatto mediante API del framework, lanciando quindi l'analisi automatica del file. Dopo questa è necessario analizzare il file, cosa che viene fatta automaticamente aprendo e lanciando l'analisi.
+La prima operazione eseguita dal modulo consiste nell'importazione del \textsc{Binary File} all'interno del progetto attivo nel \textsc{SRE Framework}. Contestualmente al caricamento, il framework esegue un'analisi automatica del file, al termine della quale è necessario determinare se il binario sia stripped o not-stripped. Sebbene tale informazione possa essere ricavata, in linea teorica, già in fase di classificazione, ad esempio sfruttando i dati restituiti da VirusTotal, nel sistema implementato essa viene ottenuta mediante una funzione dedicata. In base al \emph{magic number} dell'eseguibile, la funzione determina innanzitutto se il file appartenga al formato \emph{Executable and Linkable Format} (ELF) oppure \emph{Portable Executable} (PE) e successivamente stabilisce se il campione sia stripped o not-stripped in virtù della presenza nel binario della tabella dei simboli e delle informazioni di debug.
 
-è arrivato il momento di determinare se not-stripped o stripped. Questo si potrebbe teoricamente anche fare dal classifier, estraendo tale informazione dal magic del file. Però qui basta usare una funzione dedicata sempre passando per API framework: indicatore euristico.
+Qualora venga rilevato lo stripping, si prosegue con l'attività denominata \textsc{Renaming Task}, finalizzata ad assegnare dei nomi significativi alle funzioni del binario. Questa viene eseguita attraverso due iterazioni consecutive dell'\emph{agent loop}, nelle quali viene richiesto di partire dalla funzione principale (\texttt{main}) e di ricostruire ricorsivamente la logica del programma, assegnando alle funzioni nuovi nomi coerenti con il comportamento osservato. A questo scopo sono disponibili due modalità di esecuzione, \textsc{Start Mode} e \textsc{Continue Mode}: la prima consente di avviare l'analisi da zero, mentre la seconda permette di operare su un binario per il quale sono già presenti risultati di rinomina, con l'obiettivo di estenderli e, al contempo, verificarne la correttezza.
 
-% Tramite le API del framework SRE è possibile ottenere la lista delle funzioni. Nei file stripped, i nomi delle funzioni non contengono simboli significativi ma sono generalmente generati a partire dal loro indirizzo (es. FUN_00401230). La presenza prevalente di questi nomi può quindi essere utilizzata come indicatore per determinare se un file è stripped.
+Segue quindi la \textsc{Reversing Task}, che viene invece avviata direttamente nel caso di campioni not-stripped. Il suo obiettivo è quello di eseguire il reverse engineering del binario, per arrivare a estrarre gli artefatti rilevanti, caratterizzare il comportamento del campione e descrivere il funzionamento del protocollo di C\&C nei \textsc{SRE Reports}. Anche la \textsc{Reversing Task} è articolata in due iterazioni dell'\emph{agent loop} che seppur siano svolte in sequenza, sono indipendenti tra loro e, in linea teorica, parallelizzabili. La prima, denominata \textsc{Transport Mode}, si concentra sull'analisi del \emph{transport layer} del protocollo di C\&C, mentre la seconda, denominata \textsc{Communication Mode}, considera il \emph{communication layer}. Sebbene lo svolgimento di due analisi possa introdurre il rischio di una parziale sovrapposizione delle informazioni raccolte rispetto a un'analisi singola, tale approccio offre al LLM due occasioni per analizzare il campione, partendo da punti di vista diversi e concentrandosi comunque su aspetti distinti.
 
-Se il file stripped si parte con prima attività \textsc{RenamingTask}. Questa ha lo scopo di analizzare il binario e rinominare le funzioni. ricostruendo logica e basandosi oggettivamente sul comportamento osservato. L'attività viene svolta con due modalità \textsc{StartMode} e \textsc{ContinueMode}. La prima è pensata per partire da zero, la seconda invece opera su un binario a cui è stato già fatto un lavoro di rinomina, espandendo, ma anche revisionando.
+Sia per la \textsc{Renaming Task} che per la \textsc{Reversing Task}, all'avvio di ogni \emph{agent loop} vengono caricate le rispettive istruzioni dal \textsc{Prompt Archive} e la porzione della \textsc{Knowledge Base} rilevante per l'analisi, sulla base delle informazioni ricevute dal \textsc{Classifier}. Il funzionamento generale dell'\emph{agent loop} alla base del \textsc{SRE Agent} è descritto nella \Cref{sec:llm}, mentre le istruzioni specifiche e le modalità di caricamento della conoscenza aggiuntiva relative alle due attività sono riportate nella \Cref{sec:prompt}.
 
-Dal punto di vista di questa implementazione, sono fatte con due cicli agent consecutivi. La start viene fatta sempre e la continue una sola volta viene fatta quando non tutti i nomi sono stati recuperati da start. La descrizione delle istruzioni precise date e caricamento istruzioni k.b. sono riportate nella sezione finale.
+% Alternativamente \textsc{Continue Mode} potrebbe essere saltata quando \textsc{Start Mode} ha rinominato tutte le funzioni.
+% Al termine della \textsc{Renaming Task} il file sul \textsc{SRE Framework} viene salvato attraverso l'API.
 
-Quindi con una funzione API si salva il file .
+\subsubsection{Selezione dei tool di analisi}
 
-Adesso c'è la seconda attività \textsc{ReversingTask}. Quando not-stripped, fatta subito, altrimenti dopo \textsc{RenamingTask}. Questa ha lo scopo di analizzare file, estrarre artefatti e caratterizzare il comportamento nei \textsc{SRE Reports}, come da progettazione. Questo viene fatto con due modalità \textsc{TransportMode} e \textsc{CommunicationMode}. Queste in teoria potrebbero anche essere eseguite in parallelo, per semplicità sono lasciate in sequenza consecutive.
+Durante la costruzione del \textsc{SRE Agent}, una scelta rilevante riguarda la selezione dei tool, sia del \textsc{SRE Framework} sia dell'ambiente \textsc{Sandbox}, da mettere a disposizione del LLM. Per la \textsc{Renaming Task} sono sufficienti esclusivamente i tool del \textsc{SRE Framework}, mentre per la \textsc{Reversing Task} si aggiungono anche quelli della \textsc{Sandbox}.
 
-La prima si concentra su transport layer, la seconda su communication. anche se c'è rischio di overlapping (in teoria no, in pratica sì), da al LLM due occasioni di analizzare il campione, anche se due punti di vista diversi. Come prima, la descrizione delle istruzioni precise date e caricamento istruzioni k.b. sono riportate nella sezione finale.
+Per quanto riguarda la \textsc{Sandbox}, essendo un ambiente realizzato specificamente per il sistema, vengono resi disponibili all'agente tutti i tool presenti. Il loro scopo e le modalità di implementazione sono trattate nella \Cref{sec:sandbox}. Una selezione ad hoc è invece necessaria per i tool del \textsc{SRE Framework}, che mette a disposizione un insieme più ampio di funzionalità, come descritto nella \Cref{sec:ghidra}. Nell'implementazione proposta è stato quindi definito un sottoinsieme limitato e fisso di circa cinquanta tool, circoscritto alle operazioni necessarie per l'analisi statica del codice. Tale scelta non vincola in alcun modo l'architettura a questa configurazione, poiché la lista può essere successivamente estesa o modificata in funzione delle esigenze e del feedback raccolto.
 
-\subsubsection{Selezione Tools}
+La scelta di limitare i tool del \textsc{SRE Framework} risponde a diverse esigenze. Innanzitutto, consente di mantenere un approccio statico e controllato, evitando di esporre direttamente l'agente a funzionalità di analisi dinamica che potrebbero comportare l'esecuzione di codice malevolo e mantenendo un maggiore controllo sulle azioni che può intraprendere. Inoltre, si intende favorire la separazione e la complementarità tra i due ambienti, dedicando il \textsc{SRE Framework} all'estrazione di informazioni dal binario e utilizzando, quando necessario, gli strumenti della \textsc{Sandbox} per la loro interpretazione e verifica.
 
-Bisogna decidere ad alto livello quali tools mettere a disposizione del \textsc{LLM} per il \textsc{SRE Agent}.
+Infine, la scelta adottata è coerente con il principio \emph{Less-is-More} nell'utilizzo del \emph{tool calling} da parte dei LLM. Come discusso in \emph{Optimizing Function Calling for LLM Execution on Edge Devices}, ridurre il numero di tool pertinenti a un'attività può migliorare l'accuratezza delle chiamate, ridurre i tempi di esecuzione e contenere il consumo di risorse. Al contrario, un numero elevato di tool aumenta la complessità del contesto fornito al modello e il numero di alternative tra cui scegliere, con un impatto particolarmente rilevante nel caso di LLM di dimensioni ridotte. Una strategia alternativa, suggerita nel lavoro citato, consiste nella selezione dinamica dei tool, identificando e caricando solo quelli più rilevanti per l'attività. Tale approccio introduce tuttavia un ulteriore livello di complessità e pertanto non è stato adottato nell'implementazione iniziale.
 
-Per \textsc{Renaming Task} solo tool di \textsc{SRE Framework}. Invece per \textsc{Reversing Task} sia tool di \textsc{SRE Framework} che di \textsc{SRE Sandbox}.
-
-I tool di \textsc{Sandbox}, sono tutti quelli a disposizione e vengono riportati in seguito (perché li ho realizzati io e sono pochi, considerando che non si vuole dare accesso diretto a file e che non c'è accesso a Internet).
-
-I tool di \textsc{SRE Framework} invece devono essere scelti qui tra l'insieme più grande che si avrà a disposizione.
-
-Si sceglie sottoinsieme con seguenti caratteristiche: numero di tool limitato e fisso, che si limita solo a azioni di attività analisi statica del codice.
-
-Questa scelta implementativa è stato fatto per quattro ragioni principali:
-- sicurezza: escludere tool di analisi dinamica, evitando di esporre all'esecuzione reali di parti di codice malevole.
-- semplicità iniziale: riducendo inizialmente le variabili in gioco e più controllo sulle azioni (nulla vieta in futuro di variare la lista dei tool estendibile)
-- separazione delle responsabilità e complementarietà: Ghidra fonte autorevole della conoscenza sul binario; sandbox ambiente dove il LLM può creare procedure e ragionamenti personalizzati.
-- Principio less-is-more valido MCP e LLM: % Less is More: Optimizing Function Calling for LLM Execution on Edge Devices
-
-% Il paper dimostra che dare all'LLM solo i tool pertinenti al task permette di ottenere maggiore accuratezza, minore tempo di esecuzione e minore consumo energetico. Il motivo principale è che, riducendo il numero di tool, si riduce la complessità del contesto che il modello deve processare e il numero di possibili alternative tra cui scegliere. Questo problema è particolarmente rilevante per gli LLM più piccoli e quantizzati, tipici dei dispositivi edge. 
-% La loro idea è quindi introdurre una dynamic tool selection: invece di fornire all'LLM l'intero insieme di tool disponibili, il sistema identifica dinamicamente quelli più rilevanti per la richiesta e presenta al modello solo un sottoinsieme di tool pertinenti. 
-
-Per questa implementazione:
-% 50 tool sono un insieme controllato, selezionato e limitato rispetto all'intero catalogo disponibile
-%  privilegiato inizialmente un approccio statico e controllato, che consente di valutare le capacità di function calling del modello in condizioni riproducibili, mantenendo comunque il numero di tool entro un limite ragionevole.
-
-\subsubsection{K.B.}
-
-Per entrambi i task, \textsc{Renaming Task} e \textsc{Reversing Task} anticipato che viene coinvolta la K.B.
-
-si definisce cos'è per questa implementazione:
-
-una guida che aiuta agente AI a classificare e capire i campioni di malware appartenenti alla famiglia botnet individuata. deve aiutarlo
-mostra: classificazione veloce, topologia di processi, control flow del main, identificazione metodi di attacco, strutture dati importanti.
-
-con l'obiettivo di trasformare il zero-shot prompting in few-shot prompting.
-
-\subsection{Code Agent} % 5.2.3
-
-One could argue that since we have \textsc{SRE Reports}, sometimes it is not worth it to continue and generate the code (insufficient information, conflicting information, wrong family info, not attacks or command relevant to the use of code). however, SRE Reports gathering info is the main element in the pipeline both for time and LLM compute resources used.
-
-Generating the code will only account for circa 1/5 - 1/20x of the reversing/renaming activity. The human will be the one extracting the conclusions.
-
-Ci sono quindi BotNetModule e MessageParser module che vengono descritti ampiamente direttamente insieme ai loro template in sez 1 e le istruzioni in sez 2.
-
-Qui semplicemente si afferma che vengono generati con multi-turn prompting, prima BotNetModule e subito dopo MessageParser, in una unica conversazione.
-
-\iffalse 
-
-\begin{itemize}
-    \item Import in SRE Framework del file e analisi automatica (fun ghidra).
-    \item Determina con una funzione se il campione è stripped (fun ghidra).
-    \item Questo provoca l'eventuale context injection della knowledge base.
-    \item Se stripped si esegue il doppio ciclo di renaming start/stop.
-    \item Si salva il file (fun ghidra).
-    \item Si esegue il doppio ciclo di reversing producendo i due report.
-\end{itemize}
-
-Si interfaccia con SRE framework e sandbox.
+% \cite{lessismore} Less is More: Optimizing Function Calling for LLM Execution on Edge Devices
 
 \subsubsection{Knowledge Base}
 
-Zero-shot prompting to few-shot prompting.
+Per le attività di analisi del \textsc{SRE Agent}, come individuato nelle fasi di identificazione del problema e progettazione, è previsto il coinvolgimento della \textsc{Knowledge Base}. Nell'implementazione proposta, la \textsc{Knowledge Base} è creata e gestita da un reverse engineer, che può coincidere con l'utilizzatore del sistema, ed è organizzata per famiglie di botnet. Per ciascuna famiglia che si intende supportare è prevista una guida specifica, da affiancare alle istruzioni di base della relativa attività. La struttura testuale delle guide è libera e può essere organizzata, ad esempio, in sezioni dedicate a specifici aspetti del campione, quali l'identificazione e la classificazione iniziale, la topologia dei processi, il flusso di esecuzione, le comunicazioni e i comandi C\&C, i metodi di attacco e le strutture dati di particolare interesse.
 
-\subsubsection{Selezione Tools Analisi Statica} % 5.3.4
-
-Per questa implementazione è stato scelto solo un sottoinsieme di tool riguardanti analisi statica del codice.
-
-Per tre ragioni:
-- semplicità, cioè riduzione delle variabili in gioco e più controllo sulle azioni (eventualmente estendibile)
-- evitare di esporre all'esecuzione reale
-- the less mcp the better (LLM)
-
-I tool scelti rientrano nelle seguenti categorie:
-
-\subsubsection{Selezione Tools Analisi Dinamica}
-
-Niente accesso al file e niente accesso a internet.
+L'obiettivo di una \textsc{Knowledge Base} strutturata in questo modo è fornire al \textsc{SRE Agent} conoscenza specifica per estendere l'approccio di \emph{zero-shot prompting}, assunto come base per le attività \textsc{Renaming Task} e \textsc{Reversing Task} e utilizzato in assenza della \textsc{Knowledge Base}, verso un approccio di \emph{few-shot prompting}. In questo modo, le informazioni aggiuntive messe a disposizione dell'agente permettono di supportare l'analisi e migliorarne l'accuratezza. Dal punto di vista del sistema, la \textsc{Knowledge Base} è considerata una risorsa statica durante l'esecuzione, resa opzionalmente disponibile al sistema e utilizzata come conoscenza aggiuntiva, senza essere modificata dall'agente. Il contenuto della \textsc{Knowledge Base} può tuttavia essere aggiornato esternamente dal reverse engineer, consentendone il progressivo arricchimento sulla base delle nuove informazioni emerse sia dall'utilizzo del sistema stesso sia dai risultati delle analisi condotte.
+Per le attività di analisi del \textsc{SRE Agent}, come individuato nelle fasi di identificazione del problema e progettazione, viene previsto il coinvolgimento della \textsc{Knowledge Base}.
 
 \subsection{Code Agent} % 5.2.3
 
+Al termine dell'analisi condotta dal \textsc{SRE Agent}, il principale output prodotto è costituito dai \textsc{SRE Reports}. Teoricamente, sulla base delle informazioni in essi contenute, sarebbe possibile determinare se sussistano condizioni sufficienti per procedere alla generazione del \textsc{Capture Module} da parte del \textsc{Code Agent} o se convenga interrompere anticipatamente l'analisi, ad esempio in presenza di numerose informazioni mancanti o contraddittorie oppure di un campione di scarsa rilevanza. Nonostante ciò, in questa implementazione si è scelto di procedere sempre con tale fase, principalmente per il suo costo marginale rispetto a quello complessivo della pipeline, determinato in larga parte dall'esecuzione del \textsc{SRE Agent}, lasciando all'analista umano eventuali valutazioni di questo tipo.
 
-% Visto che i SRE report sono la parte dispendiosa, anche generare il codice non è dispendioso, quindi si può procedere anche se non è interessante.
-\fi
+Come descritto successivamente nella \Cref{sec:code}, il \textsc{Capture Module} finale è composto da due moduli distinti, \textsc{BotNet} e \textsc{MessageParser}, ai quali sono assegnate responsabilità differenti. La generazione effettiva del codice viene affidata al \textsc{LLM} e viene coordinata dal \textsc{Code Agent} attraverso un'unica conversazione basata sul \emph{multi-turn prompting}, all'interno della quale viene prima generato il modulo \textsc{BotNet} e successivamente il modulo \textsc{MessageParser}, fornendo di volta in volta gli artefatti di input rilevanti. La \Cref{sec:schema} presenta lo schema di riferimento per il parsing dei messaggi; i \textsc{Code Templates} impiegati nella generazione sono invece descritti nella \Cref{sec:code}, mentre le istruzioni aggiuntive fornite al \textsc{Code Agent} sono riportate nella \Cref{sec:prompt}.
 
-\section{SRE Framework} % 5.3
+\section{SRE Framework} \label{sec:ghidra} % 5.3
 
-Il framework di SRE adottato è Ghidra, sviluppato e mantenuto dal Research Directorate della National Security Agency (NSA) e distribuito come progetto open source secondo la Apache License 2.0.
+Il framework di SRE adottato è Ghidra, sviluppato e mantenuto dal Research Directorate della National Security Agency (NSA) e distribuito come progetto open source secondo la Apache License 2.0. L'ambiente Ghidra, offre una suite ricca di strumenti e funzionalità per l'analisi binaria del codice compilato, tra cui disassembly, decompiling, graphing, debugging e scripting. Il framework supporta inoltre un'ampia varietà di \textit{instruction set} relativi a differenti architetture di processore e numerosi formati eseguibili.
 
 % Platform independent
+% Cite NSA \footnote{\url{https://github.com/nationalsecurityagency/ghidra}}
 
-L'ambiente Ghidra, offre una suite ricca di strumenti e funzionalità per l'analisi binaria del codice compilato, tra cui disassembly, decompiling, graphing, debugging e scripting. Il framework supporta inoltre un'ampia varietà di \textit{instruction set} relativi a differenti architetture di processore e numerosi formati eseguibili. Le attività di analisi possono essere svolte sia in modalità interattiva, attraverso una \textit{Graphical User Interface} (GUI), sia in modalità automatizzata, rendendo Ghidra adatto all'integrazione all'interno di processi di analisi più complessi \cite{nance2026ghidrabook}.
+Le attività di analisi possono essere svolte sia in modalità interattiva, attraverso una \emph{Graphical User Interface} (GUI), sia in modalità automatizzata, detta \emph{headless}, rendendo Ghidra adatto all'impiego all'interno di processi di analisi più complessi \cite{nance2026ghidrabook}. Nell'implementazione proposta viene adottata quest'ultima modalità, mentre, come possibile evoluzione, Ghidra potrebbe essere eseguito all'interno di un container Docker, mantenendo invariata la modalità di interazione con la pipeline di analisi.
 
-% Cite NSA
-
-% Per questa implementazione inizialmente usato Ghidra in modalità headless, senza GUI, che già di suo permette sufficientemente di integrare nella pipeline. Un passo successivo, ma equivalente sarebbe quello di eseguire Ghidra all'interno di un container Docker.
-
-\subsection{Ghidra} % 5.3.1
-
-\begin{itemize}
-    \item Headless (no GUI)
-    \item Docker Image
-    \item \footnote{\url{https://github.com/nationalsecurityagency/ghidra}}
-\end{itemize}
-
-\subsection{MCP Plugin} % 5.3.2 (ghidra-mcp)
+\subsection{MCP Plugin} % 5.3.1 (ghidra-mcp)
 
 Per integrare le funzionalità di analisi offerte da Ghidra con il \textsc{SRE Agent} in conformità con il protocollo MCP è stato utilizzato il software open source \texttt{ghidra-mcp}, disponibile sull'omonimo repository GitHub \footnote{\url{https://github.com/bethington/ghidra-mcp}} e distribuito secondo la licenza Apache License 2.0.
 
@@ -182,7 +107,7 @@ L'insieme delle funzionalità messe a disposizione è particolarmente ampio e co
 
 % Analysis control
 
-\subsection{Ghidra MCP Server} % 5.3.3 (bridge)
+\subsection{Ghidra MCP Server} % 5.3.2 (bridge)
 
 Il server MCP del software \texttt{ghidra-mcp} è implementato mediante il modulo \texttt{bridge\_mcp\_ghidra}, sviluppato in Python utilizzando la libreria FastMCP \footnote{\url{https://gofastmcp.com/}}. Il modulo costituisce il livello intermedio tra i client MCP e l'estensione di Ghidra e supporta sia il trasporto \textit{stdio}, sia il trasporto \textit{Streamable HTTP}.
 
@@ -190,7 +115,7 @@ Una caratteristica interessante del modulo è l'organizzazione dei tool in grupp
 
 % \texttt{search_tools}, \texttt{list_tool_groups}, \texttt{load_tool_group}, \texttt{unload_tool_group} e \texttt{check_tools}
 
-\section{Ambiente Sandbox} % 5.4
+\section{Ambiente Sandbox} \label{sec:sandbox} % 5.4
 
 La sandbox di SRE viene realizzata mediante un ambiente di esecuzione containerizzato, utilizzando Docker per la creazione, la configurazione e la gestione dei container.
 
@@ -242,7 +167,7 @@ Nel complesso, queste componenti costituiscono un livello di astrazione comune p
 
 % previsto per il \textsc{SRE Agent}.
 
-\section{LLM} % 5.6
+\section{LLM} \label{sec:llm} % 5.6
 
 \subsection{Server} % 5.6.1
 
@@ -275,7 +200,7 @@ La prima è orientata alla conservazione completa dell'esecuzione e produce un o
 
 La seconda modalità è invece orientata alla consultazione da parte dell'utente e presenta una sintesi leggibile dell'esecuzione. In particolare, vengono riportati il prompt iniziale e, per ciascun passo, alcune statistiche relative all'elaborazione (numero di token e tempo di esecuzione parziali), insieme al ragionamento, alle tool call e alle risposte prodotte dal LLM. I risultati restituiti dai tool non vengono inclusi in questa visualizzazione, in modo da mantenere il focus sulla Chain of Thought sviluppata dal LLM.
 
-\section{MessageSchema} % 5.7
+\section{MessageSchema} \label{sec:schema} % 5.7
 
 Come individuato già a partire dalla fase di analisi dei requisiti, è necessario definire uno schema comune per i messaggi restituiti dal \texttt{Python Module}. A questo scopo è stato adottato \textit{JSON Schema}, particolarmente adatto a descrivere e verificare strutture dati rappresentate in formato JSON.
 
@@ -324,7 +249,7 @@ Il modulo \texttt{IPLookup} implementa una classe progettata per interrogare dat
 
 % Da un punto di vista legale, i database di IPinfo sono generalmente rilasciati sotto licenza Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0), mentre i database GeoLite2 di MaxMind richiedono l'accettazione di un loro specifico End User License Agreement (EULA) gratuito per l'uso (che include CC BY-SA 4.0). 
 
-\section{Code Templates} % 5.8
+\section{Code Templates} \label{sec:code} % 5.8
 
 % \subsection{Aggiornamento BotNetInterface} % 5.8.0
 
@@ -365,7 +290,7 @@ Il modulo implementa inoltre una logica di fallback nel caso in cui il parsing s
 
 Anche per il \textsc{MessageParser Module} valgono gli stessi principi già adottati per il \textsc{BotNet Module} in merito alle descrizioni tramite docstring e alle modalità di implementazione.
 
-\section{Prompt Archive} % 5.9 (Prompt Engineering)
+\section{Prompt Archive} \label{sec:prompt} % 5.9 (Prompt Engineering)
 
 In questa sezione vengono presentati i prompt utilizzati nei due componenti principali del sistema, ossia il \textsc{SRE Agent}, per le attività di \textit{Renaming} e \textit{Reversing}, e il \textsc{Code Agent}. Per ciascuna di queste attività vengono dapprima descritti il \textit{System Prompt} e successivamente gli \textit{User Prompt} specifici. I prompt completi sono riportati nelle appendici.
 

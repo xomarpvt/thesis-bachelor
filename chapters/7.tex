@@ -1,5 +1,50 @@
 \chapter{Conclusioni} % 7
 
+struttura
+
+\begin{itemize}
+    \item Sintesi del lavoro svolto 
+    
+    \begin{itemize}
+        \item La tesi ha affrontato il problema creazione in modo automatico dei moduli per cattura dei comandi di c\&c delle botnet.
+        \item studiato il processo umano esistente; identificato quali attività lo compongono; formalizzato il problema;
+        \item stabilito cosa deve fare il sistema, i suoi confini, cosa invece non deve fare assegnato responsabilità alle componenti.
+        \item partendo dall'attività umana che veniva svolta, questa è stata analizzata e si è formalizzato il problema, definendo i confini funzionalità e le responsabilità del sistema \system
+        \item il sistema è stato progettato e implementato, separando le responsabilità individuate nei tre moduli principali \textsc{Classifier}, \textsc{SRE Agent} e \textsc{Code Agent}, questi ultimi due realizzati sfruttando potenzialità agentiche di LLM
+        \item c'è stata scelta dei tool e struttura knowledge base
+        \item a fianco di questo sono stati definiti artefatti input e output accessori e previsti. 
+        \item c'è stata l'integrazione con un framework di SRE e una sandbox tramite il protocollo MCP.
+        \item c'è stato lo sviluppo di template per il codice
+        \item una delle attività principali di implementazione è stata quella di prompt engineering, perché riguarda i due agenti e serve per allineare alla task voluta.
+        \item Quindi è stato definiti gli obiettivi della valutazione, creando un protocollo sperimentale ed eseguita su una famiglia di botnet IoT specifica, Mirai, con 5 campioni presi specificamente rappresentativi per questa sperimentazione.
+        \item è stato definito un criterio quantitativo/qualitativo per valutare le diverse componenti e quindi l'approccio complessivo.
+        \item Per ciascuno sono stati discussi ampiamente i risultati ottenuti e tratte le conclusioni riguardo l'utilizzo di LLM in questa task, riguardo l'applicabilità in contesto reale e l'ipotizzata autonomia.
+    \end{itemize}
+
+    i risultati ottenuti già discussi nel capitolo di sperimentazione
+
+    \item Limiti del lavoro e lavoro che rimane da fare
+    
+    limiti:
+    \begin{itemize}
+        \item dimensione ridotta del dataset di campioni.
+        \item (poco) più varietà possibile con più campioni, ma quella c'è già
+        \item eventuali soggettività/sviste nella valutazione
+        \item classifier:
+        \item limite del benchmark di rinomina: dare un peso all'importanza delle funzioni rinominate e non. non tutte le funzioni hanno lo stesso peso. discorso simile, ma leggermente meno ma applicabile anche semanticamente ai nomi, con corretto, circa corretto oppure penalizzazione per nome misleading (peggio che non fare niente).
+        \item reversing: 
+        \item dipendenza dall'esecuzione LLM. per il singolo campione sarebbero necessarie addirittura ripetute  
+        \item (non un limite) ma entro la fine di conclusione di questo lavoro sono usciti LLM migliori di quelli usati, tra cui le versioni successive dei due utilizzati nella fase sperimentale, rispettivamente con Q3827 e DS4F, che hanno addirittura stessa architettura e solo miglioramenti di training/dati/ottimizzazioni.
+    \end{itemize}
+
+    lavoro da fare:
+    \begin{itemize}
+        \item selezione tool ghidra
+    \end{itemize}
+
+    \item Sviluppi futuri
+\end{itemize}
+
 \lipsum[1-5]
 
 \section{Sviluppi Futuri}
@@ -15,8 +60,6 @@ Aggiunta di un grader loop. % https://www.langchain.com/blog/the-art-of-loop-eng
 Le sfide e le direzioni future dell'analisi statica del codice agentica sono queste. % \cite{RadeySalem2026CaFD}.
 
 % https://arxiv.org/html/2509.09677v3
-
-
 
 
 Limiti: dimensione del dataset; varietà delle famiglie; dipendenza dai campioni; benchmark non perfettamente comparabili; metriche aggregate; eventuale soggettività della valutazione; generalizzabilità; 
