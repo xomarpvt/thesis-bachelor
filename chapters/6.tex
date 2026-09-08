@@ -1,4 +1,4 @@
-\chapter{\system: valutazione} % 6
+\chapter{\system: valutazione} \label{chap:valutazione} % 6
 
 Questo capitolo presenta obietti e strategia usati per i test. Poi si introduce ambiente sperimentale e campioni scelti. Quindi si definiscono metriche di valutazione dei test e si presentano i risultati ottenuti.
 
@@ -293,7 +293,16 @@ La fase di identificazione preliminare si è dimostrata sufficientemente affidab
 
 Per fornire una visione sintetica e facilitare il confronto tra i diversi LLM e campioni, è stato quindi realizzato un grafico a barre, mostrato in \Cref{fig:bar_plot}, che mette a confronto i punteggi complessivi ottenuti nelle tre attività considerate: \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e produzione del \textsc{Capture Module} da parte del \textsc{Code Agent}.
 
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=.60]{img/barplot.png}
+    \caption{Confronto renaming, reversing, coding}
+    \label{fig:bar_plot}
+\end{figure}
+
 Per quanto riguarda il consumo di token, i due LLM presentano valori generalmente simili, sebbene con alcune differenze tra le attività: DS4FP utilizza più token nella \textsc{Renaming Task}, valori simili a Q3627 nella \textsc{Reversing Task} e meno token nel \textsc{Code Agent}. Una differenza più marcata emerge nei tempi di esecuzione: DS4FP risulta costantemente più rapido di Q3627, con tempi globalmente pari a circa la metà. Tale risultato è compatibile con le differenze architetturali tra i due modelli, in particolare con l'architettura MoE di DS4FP, che attiva circa la metà dei parametri rispetto al LLM denso Q3627 \cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}.
+
+La \Cref{fig:bar_plot} consente di effettuare un confronto prestazionale diretto tra i due LLM. Q3627 e DS4FP risultano complessivamente comparabili nelle \textsc{Renaming Task} e \textsc{Reversing Task}, mentre DS4FP evidenzia un vantaggio più marcato nella produzione del codice.
 
 \iffalse
 https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index
@@ -305,16 +314,7 @@ https://hub.harborframework.com/tasks/terminal-bench/path-tracing-reverse/latest
 https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/latest
 \fi
 
-La \Cref{fig:bar_plot} consente di effettuare un confronto prestazionale diretto tra i due LLM. Q3627 e DS4FP risultano complessivamente comparabili nelle \textsc{Renaming Task} e \textsc{Reversing Task}, mentre DS4FP evidenzia un vantaggio più marcato nella produzione del codice.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[scale=.60]{img/barplot.png}
-    \caption{Confronto renaming, reversing, coding}
-    \label{fig:bar_plot}
-\end{figure}
-
-L'andamento osservato, pur essendo limitato al sistema considerato e al metodo di valutazione adottato, risulta coerente con quello evidenziato da alcuni benchmark pubblici. In particolare, l'Artificial Analysis Intelligence Index v4.2, che aggrega dieci valutazioni delle capacità dei LLM in ambito generale, scientifico, di coding e agentico, assegna a DS4FP un punteggio di $33$, superiore al $29$ ottenuto da Q3627 \cite{artificial_analysis}. Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627 \cite{merrill2026terminalbench}.
+L'andamento osservato, pur essendo limitato al sistema considerato e al metodo di valutazione adottato, risulta coerente con quello evidenziato da alcuni benchmark pubblici. In particolare, l'Artificial Analysis Intelligence Index v4.2, che aggrega dieci valutazioni delle capacità dei LLM in ambito generale, scientifico, di coding e agentico, assegna a DS4FP un punteggio di $33$, superiore al $29$ ottenuto da Q3627 \cite{artificial_analysis}. Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1 \cite{merrill2026terminalbench}, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627.
 
 Tornando alle singole attività, per la \textsc{Renaming Task} la \Cref{tab:res2} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\% e l'85\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\% e il 55\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\% e il 65\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni rimane senza nome, riducendo le informazioni semantiche disponibili. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \textsc{Renaming Task} tendenzialmente conservativo, nonostante l'impiego dei due cicli di rinomina.
 

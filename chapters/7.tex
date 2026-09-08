@@ -1,69 +1,119 @@
 \chapter{Conclusioni} % 7
 
-struttura
+\section{Sintesi del lavoro}
 
-\begin{itemize}
-    \item Sintesi del lavoro svolto 
-    
-    \begin{itemize}
-        \item La tesi ha affrontato il problema creazione in modo automatico dei moduli per cattura dei comandi di c\&c delle botnet.
-        \item studiato il processo umano esistente; identificato quali attività lo compongono; formalizzato il problema;
-        \item stabilito cosa deve fare il sistema, i suoi confini, cosa invece non deve fare assegnato responsabilità alle componenti.
-        \item partendo dall'attività umana che veniva svolta, questa è stata analizzata e si è formalizzato il problema, definendo i confini funzionalità e le responsabilità del sistema \system
-        \item il sistema è stato progettato e implementato, separando le responsabilità individuate nei tre moduli principali \textsc{Classifier}, \textsc{SRE Agent} e \textsc{Code Agent}, questi ultimi due realizzati sfruttando potenzialità agentiche di LLM
-        \item c'è stata scelta dei tool e struttura knowledge base
-        \item a fianco di questo sono stati definiti artefatti input e output accessori e previsti. 
-        \item c'è stata l'integrazione con un framework di SRE e una sandbox tramite il protocollo MCP.
-        \item c'è stato lo sviluppo di template per il codice
-        \item una delle attività principali di implementazione è stata quella di prompt engineering, perché riguarda i due agenti e serve per allineare alla task voluta.
-        \item Quindi è stato definiti gli obiettivi della valutazione, creando un protocollo sperimentale ed eseguita su una famiglia di botnet IoT specifica, Mirai, con 5 campioni presi specificamente rappresentativi per questa sperimentazione.
-        \item è stato definito un criterio quantitativo/qualitativo per valutare le diverse componenti e quindi l'approccio complessivo.
-        \item Per ciascuno sono stati discussi ampiamente i risultati ottenuti e tratte le conclusioni riguardo l'utilizzo di LLM in questa task, riguardo l'applicabilità in contesto reale e l'ipotizzata autonomia.
-    \end{itemize}
+La continua evoluzione delle botnet, di quelle IoT dispositivi, nel panorama della cybersecurity non rappresenta solo un problema rilevante, ma una sfida dinamica che richiede soluzioni adattive. Allo stesso tempo l'avvento dei Larga Language Model e la loro espansione ancora più rapida offre strumenti nuovi per l'analisi.
 
-    i risultati ottenuti già discussi nel capitolo di sperimentazione
+Questo lavoro di tesi ha dimostrato come l'integrazione di LLM possa avvenire in ambienti real time su task specifica ...? con risultati di autonomia ... In particolare si è partiti studiando il problema alla base del lavoro, analizzando il processo umano esistente per la creazione in modo automatico di moduli per cattura dei comandi di C\&C delle botnet IoT (chiamati \textsc{Capture Module}). L'obiettivo primario era automatizzare questo lavoro e per fare questo si è proposto il sistema \system, partendo da definizione del sistema, suoi confini e responsaiblità.
 
-    \item Limiti del lavoro e lavoro che rimane da fare
-    
-    limiti:
-    \begin{itemize}
-        \item dimensione ridotta del dataset di campioni.
-        \item (poco) più varietà possibile con più campioni, ma quella c'è già
-        \item eventuali soggettività/sviste nella valutazione
-        \item classifier:
-        \item limite del benchmark di rinomina: dare un peso all'importanza delle funzioni rinominate e non. non tutte le funzioni hanno lo stesso peso. discorso simile, ma leggermente meno ma applicabile anche semanticamente ai nomi, con corretto, circa corretto oppure penalizzazione per nome misleading (peggio che non fare niente).
-        \item reversing: 
-        \item dipendenza dall'esecuzione LLM. per il singolo campione sarebbero necessarie addirittura ripetute  
-        \item (non un limite) ma entro la fine di conclusione di questo lavoro sono usciti LLM migliori di quelli usati, tra cui le versioni successive dei due utilizzati nella fase sperimentale, rispettivamente con Q3827 e DS4F, che hanno addirittura stessa architettura e solo miglioramenti di training/dati/ottimizzazioni.
-    \end{itemize}
+Quindi si è passati alla progettazione, individuando i suoi componenti e principali artefatti input /output separando le funzionalità del sistema nei tre moduli principali \textsc{Classifier}, \textsc{SRE Agent} e \textsc{Code Agent}. All'interno di questi utili due sono state sfruttate a pieno le potenzialità agentiche offerte dai LLM.
 
-    lavoro da fare:
-    \begin{itemize}
-        \item selezione tool ghidra
-    \end{itemize}
+Poi si è passati alla sua implementazione di \system, dove le sfide principali affrontate sono state individuare e fornire tramite MCP agli agenti i tool per le loro analisi, lo sviluppo di schema e template per garantire integrazione di \textsc{Capture Module} in altre pipeline, ma soprattutto attività di prompt engineering per garantire l'\emph{alignment} del LLM alle task da svolgere.
 
-    \item Sviluppi futuri
-\end{itemize}
+Importante è attività sperimentale, per cui definito obiettivo e protocollo adeguato per valutare il sistema e le sue componenti. Risultati ottenuti già discussi al termine del \Cref{chap:valutazione}. (in breve) quello che è emerso è che il sistema fa quello per cui è stato progettato, con percentuali di successo alte e variabili. Il sistema sicuramente è un vantaggio rispetto al lavoro solo manuale fatto prima, ma come sottolineato in capitolo precedente piccole mancanze qua e la alla fine si sommano rendendo l'applicazione più realistica del sistema quella di un'autonomia supervisionata (revisione finale).
 
-\lipsum[1-5]
+\section{Limiti e attività rimanenti}
 
-\section{Sviluppi Futuri}
+Oltre al questo intervento umano (solo alla fine) per avere risultati ottimali, il lavoro svolto presenta ovviamente dei limiti.
 
-\lipsum[6-8]
+Ce ne sono alcuni (meno) derivati da scelte dal punto di vista implementativo, è stato notato che tutto sistema dipende da fortuna di esecuzione LLM, non c'è nulla per mitigare questo. % limite di riproducibilità e affidabilità
+
+in più rilevate ripetizioni/contraddizioni nei SRE Reports. per finire, la versione di knowledge base scelta ha lo svantaggio di essere fissa e gestita unicamente dall'umano per la sua evoluzione.
+
+Le limitazioni principali sono però di testing, sia per metodi che per sperimentazioni svolto.
+
+% spostare in capitolo 6, lasciando solo il cenno a granularità e opacità.
+
+per i metodi: nella rinomina tutte le funzioni non si da un peso all'importanza delle funzioni rinominate e non, così come non viene valutato in modo diverso nome semanticamente corretto, parzialmente giusto oppure errato e misleading. la valutazione di \textsc{Reversing Task} beneficerebbe di valutazioni più con parametri più fini e non cattura direttamente errori, omissioni, allucinazioni, interpretazioni/deduzioni errate e i loro effetti. discorso simile pr il coding dove per concentrarsi su integrazione /interfaccia gli altri parametri, in particolare quello che misura intervento umano richiesto sono opachi.
+
+limiti delle sperimentazioni: il dataset di campioni scelto ha una dimensione ridotta, con varietà sì, ma limitata ai campioni presenti e appartenenti a una sola famiglia. quindi attenzione alla generalizzabilità dei risultati. in più bisogna considerare soggettività e sviste nella valutazione.
+
+Per il lavoro che manca principalmente test su diverse famiglie di botnet con molti più campioni. questo è il fattore che serve principalmente per ampliare e rendere più preciso il feedback per delineare i possibili sviluppi futuri.
+
+In più non è stato caratterizzato l'impatto della presenza della knowledge base sui test, manca capire quanto e se si perde se per i campioni avuti non ci fosse stata. Allo stesso modo bisogna esplorare maggiormente la selezione dei tool di SRE Framework, valutando l'impatto sull'analisi.
+Curioso infine notare che entro la conclusione di questo lavoro sono uscite versioni aggiornate e migliori proprio dei due LLM usati e basate sulla stessa architettura solamente con miglioramenti di training/dati/ottimizzazioni. Questo evidenzia anche grandi aree di miglioramento. 
+
+\section{Sviluppi futuri}
+
+A proposito di sviluppi futuri, ipotizzando pensando di espandere questo lavoro, il sistema \system potrà svilupparsi in tre direzioni di sviluppo, di natura abbastanza diversa ma non mutuamente esclusive.
+
+Una prima è legata a integrare direttamente nella pipeline di analisi anche l'analisi dinamica, aumentando capacità e strumenti messi a disposizione in ambiente \textsc{Sandbox}, espandendo a dinamica anche il \textsc{SRE Framework}, ma non necessariamente questi visto che la versatilità di protocollo MCP permette di integrare altri strumenti, da una ricerca web generalista a MCP server di security analysis and threat intelligence.
+
+Una seconda è legata alla limitazione della knowledge base precedente. Attualmente è funzionante ma basica. una ipotesi interessante da perseguire, che era stata pensata inizialmente per questo lavoro, è quella di comporla da artefatti di analisi di campioni rilevanti, invece di essere semplice guida. In questo modo la si rende dinamica: per ogni famiglia di malware si parte con un paio di artefatti fissi, a cui alla fine di ogni analisi il LLM/agenti possono aggiungere l'artefatto corrispondente al campione in corso. Questo fa evolvere la KB, mantenendo base fissa e adeguandosi a campioni veri. Progettare questo si aggiunge complessità al sistema e porta a una sfida implementativa da due punti di vista: recupero delle informazioni, perché a \textsc{SRE Agent} bisogna anticipare una fase di recupero di informazioni legate al campione corrente (non si può pensare di aggiungere tutto) e degradazione della conoscenza con il tempo perché è di un LLM.
+
+La terza e più sostanziosa riguarda variazioni l'architettura complessiva del sistema, andando a giocare sulla modifica o l'aggiunta di agenti. Risponde a questo: con l'architettura attuale, ottenere una maggiore autonomia oltre il livello osservato appare difficile senza modifiche strutturali al sistema.
+% per raggiungere un livello di autonomia significativamente superiore è probabilmente necessario ripensare alcune responsabilità e i meccanismi di controllo della pipeline
+Questa modifica può essere più contenuta, ad esempio come anticipare \textsc{Renaming Task} e \textsc{Reversing Task} con un'analisi preliminare che si concentra sul caratterizzare a alto livello il malware, poi proseguire con quelli solo nel caso interessante oppure, come suggerito durante la valutazione del \textsc{Code Agent} la generazione del codice potrebbe essere resa opzionale, decidendo se vale la pena o no. Questi approcci di decisionalità oppure altri di sintesi unione informazioni può essere aggiunto on demand dove si vuole.
+
+Poi opportunità importante consiste nell'aggiungere all'interno di \textsc{SRE Agent} un \emph{verification loop}, che controlla l'output e manda indietro al SRE Agent del feedback, con riprovando la task da capo col feedback. Può essere fatto indistintamente o condizionatamente. In generale queste sono modifiche che aggiungono latenza e costo per run, ma per un caso come questo dove la qualità è più importanti di tali fattori ne vale la pena. % https://www.langchain.com/blog/the-art-of-loop-engineering
+
+Infine, modifica molto sostanziale sarebbe ripensare il sistema di \system come un agente orchestratore che gestisce autonomamente la pipeline di analisi, trasformando i vecchi \textsc{Classifier} \textsc{SRE Agent} e \textsc{Code Agent} in suoi sub agente, che può spawning, controllare e interagire. pattern Orchestrator - Workers o Supervisor - Subagents, con il rischio di state drift (loop infiniti) e perdita di determinismo.
+
 
 \iffalse
 
-Ampliare il filtro con un agent che prende la decisione binaria se proseguire con l'analisi oppure no. eventualmente anche tra i due agent.
+\begin{itemize}
+    \item Sintesi del lavoro svolto: 
+    \item La tesi ha affrontato il problema creazione in modo automatico dei moduli per cattura dei comandi di c\&c delle botnet.
+    \item studiato il processo umano esistente; identificato quali attività lo compongono; formalizzato il problema;
+    \item stabilito cosa deve fare il sistema, i suoi confini, cosa invece non deve fare assegnato responsabilità alle componenti.
+    \item partendo dall'attività umana che veniva svolta, questa è stata analizzata e si è formalizzato il problema, definendo i confini funzionalità e le responsabilità del sistema \system
+    \item il sistema è stato progettato e implementato, separando le responsabilità individuate nei tre moduli principali \textsc{Classifier}, \textsc{SRE Agent} e \textsc{Code Agent}, questi ultimi due realizzati sfruttando potenzialità agentiche di LLM
+    \item c'è stata scelta dei tool e struttura knowledge base
+    \item a fianco di questo sono stati definiti artefatti input e output accessori e previsti. 
+    \item c'è stata l'integrazione con un framework di SRE e una sandbox tramite il protocollo MCP.
+    \item c'è stato lo sviluppo di template per il codice
+    \item una delle attività principali di implementazione è stata quella di prompt engineering, perché riguarda i due agenti e serve per allineare alla task voluta.
+    \item Quindi è stato definiti gli obiettivi della valutazione, creando un protocollo sperimentale ed eseguita su una famiglia di botnet IoT specifica, Mirai, con 5 campioni presi specificamente rappresentativi per questa sperimentazione.
+    \item è stato definito un criterio quantitativo/qualitativo per valutare le diverse componenti e quindi l'approccio complessivo.
+    \item Per ciascuno sono stati discussi ampiamente i risultati ottenuti nel capitolo di sperimentazione e tratte le conclusioni riguardo l'utilizzo di LLM in questa task, riguardo l'applicabilità in contesto reale e l'ipotizzata autonomia.
+\end{itemize}
 
-Aggiunta di un grader loop. % https://www.langchain.com/blog/the-art-of-loop-engineering
+\begin{itemize}
+    \item Limiti del lavoro:
+    \item dimensione ridotta del dataset di campioni.
+    \item (poco) più varietà possibile con più campioni, ma quella c'è già
+    \item eventuali soggettività/sviste nella valutazione
+    \item classifier: manca una valutazione multi famiglia per yara e limite per virus total
+    \item limite del benchmark di rinomina: dare un peso all'importanza delle funzioni rinominate e non. non tutte le funzioni hanno lo stesso peso. discorso simile, ma leggermente meno ma applicabile anche semanticamente ai nomi, con corretto, circa corretto oppure penalizzazione per nome misleading (peggio che non fare niente).
+    \item reversing: valutazioni più cristalline per risultati più precisi o più/meno/diversi parametri per altri aspetti, error analysis con omissioni, allucinazioni, interpretazioni/deduzione errata.
+    \item codice: il grading è stato fatto con integrazione in buona parte, rimanendo opachi per intervento umano
+    \item dipendenza dall'esecuzione LLM. per il singolo campione sarebbero necessarie addirittura ripetute  
+    \item interventi umani.
+    \item limite implementazione con sovrapposizioni.
+    \item la knowledge base è fissa e non evolve, se servisse quello serve l'umano.
+    \item (non un limite) ma entro la fine di conclusione di questo lavoro sono usciti LLM migliori di quelli usati, tra cui le versioni successive dei due utilizzati nella fase sperimentale, rispettivamente con Q3827 e DS4F, che hanno addirittura stessa architettura e solo miglioramenti di training/dati/ottimizzazioni.
+\end{itemize}
 
-Le sfide e le direzioni future dell'analisi statica del codice agentica sono queste. % \cite{RadeySalem2026CaFD}.
+\begin{itemize}
+    \item lavoro che rimane da fare:
+    \item non è stato studiato l'impatto di knowledge base sui test
+    \item bisogna esplorare maggiormente la selezione dei tool di SRE Framework, valutando l'impatto sull'analisi.
+    \item test su diverse famiglie di botnet con molti più campioni. questo è il fattore che serve principalmente per ampliare e rendere più preciso il feedback per delineare i possibili sviluppi futuri.
+\end{itemize}
 
-% https://arxiv.org/html/2509.09677v3
+Sviluppi futuri: in tre aree. architettura agentica, knowledge base e integrazione analisi dinamica
 
+\begin{itemize}
+    \item Gli sviluppi futuri, sulla base di ulteriore feedback raccolto si concentrano su variazioni più o meno ampie all'architettura, concentrandosi principalmente sulla modifica/aggiunta di agenti.
+    \item Questo può essere una modifica grande: ad esempio un agente orchestratore che gestisce lui la pipeline di analisi, trasformando \textsc{SRE Agent} e \textsc{Code Agent} in suoi sub agente, con cui può interagire 
+    \item Possono anche esserci cose più semplici, come anticipare \textsc{Renaming Task} e \textsc{Reversing Task} con un'analisi preliminare che si concentra sul caratterizzare a alto livello il malware, poi proseguire con quelli.
+    \item Come suggerito ad durante la valutazione del \textsc{Code Agent} la generazione del codice potrebbe essere resa opzionale, decidendo se vale la pena o no. Questo approccio di decisionalità può essere però applicato anche il altri punti della pipeline, magari prima di \textsc{SRE Agent}.
+    \item A livello agentico opportunità importante consiste nell'aggiungere dopo SRE Agent un verification loop, che controlla l'output e manda indietro al SRE Agent del feedback, con riprovando la task da capo col feedback. Può essere fatto indistintamente o condizionatamente.
+    \item Sicuramente tutte queste sono modifiche che aggiungono latenza e costo per run, ma per un caso come questo dove la qualità è più importanti di tali fattori ne vale la pena.
+    \item tenere una certa memoria tra gli agenti
+\end{itemize}
 
-Limiti: dimensione del dataset; varietà delle famiglie; dipendenza dai campioni; benchmark non perfettamente comparabili; metriche aggregate; eventuale soggettività della valutazione; generalizzabilità; 
-Conclusioni: valutazioni più cristalline per risultati più precisi o più/meno/diversi parametri per altri aspetti, error analysis con omissioni, allucinazioni, interpretazioni/deduzione errata.
-Sviluppi: feedback loop.
+\begin{itemize}
+    \item Knowledge base, come implementata è funzionante ma basica.
+    \item una ipotesi interessante da perseguire, che era stata pensata inizialmente per questo lavoro, è quella di comporla da artefatti di analisi di campioni rilevanti, invece di essere semplice guida. In questo modo
+    \item la si rende dinamica: per ogni famiglia di malware si parte con un paio di artefatti fissi, a cui alla fine di ogni analisi il LLM/agenti possono aggiungere l'artefatto corrispondente al campione in corso. Questo fa evolvere la KB, mantenendo base fissa e adeguandosi a campioni veri.
+    \item Progettare questo si aggiunge complessità al sistema e porta a una sfida implementativa da due punti di vista: recupero delle informazioni, perché a \textsc{SRE Agent} bisogna anticipare una fase di recupero di informazioni legate al campione corrente (non si può pensare di aggiungere tutto) e degradazione con il tempo perché è di un LLM.
+\end{itemize}
+
+\begin{itemize}
+    \item Aumento di capacità di sandbox
+    \item Espansione appunto di Ghidra anche a dinamica
+\end{itemize}
 
 \fi
