@@ -1,11 +1,11 @@
-\chapter{\system: valutazione} \label{chap:valutazione} % 6
+\chapter{\system{}: valutazione} \label{chap:valutazione} % 6
 
-Questo capitolo presenta obietti e strategia usati per i test. Poi si introduce ambiente sperimentale e campioni scelti. Quindi si definiscono metriche di valutazione dei test e si presentano i risultati ottenuti.
+Questo capitolo delinea gli obiettivi e la strategia adottata per valutare il sistema. Successivamente, vengono descritti l'ambiente sperimentale, i campioni selezionati per i test e le metriche utilizzate per la valutazione. Infine vengono presentati i risultati ottenuti e si discutono i principali risultati emersi.
 
 \section{Obiettivi e criteri} % 6.1
 % \subsection{Strategia di validazione} % 6.1.1
 
-Lo scopo generale della valutazione è quello di determinare il grado di maturità raggiunto dal sistema,  così da valutarne l'effettiva applicabilità nel contesto reale per cui è stato progettato e stabilire se il suo impiego possa risultare concretamente vantaggioso. La valutazione del sistema \system condotta in questa tesi si concentrerà su due obiettivi principali.
+Lo scopo generale della valutazione è quello di determinare il grado di maturità raggiunto dal sistema,  così da valutarne l'effettiva applicabilità nel contesto reale per cui è stato progettato e stabilire se il suo impiego possa risultare concretamente vantaggioso. La valutazione del sistema \system{} condotta in questa tesi si concentrerà su due obiettivi principali.
 
 Il primo obiettivo, di carattere preliminare e meno rilevante, consiste nel verificare la correttezza funzionale del sistema, accertandosi che i tre moduli principali (\textsc{Classifier}, \textsc{SRE Agent} e \textsc{CodeAgent}) producano il comportamento atteso nello scenario operativo. In particolare, saranno verificati il corretto funzionamento della pipeline, il suo grado di autonomia e la produzione degli output previsti.
 
@@ -74,7 +74,7 @@ Le singole metriche possono assumere valori secondo due modalità. Alcune sono d
     \label{tab:complessita}
 \end{table}
 
-\subsection{Efficacia dell'attività di rinomina} % 6.3.2
+\subsection{Efficacia della \textsc{Renaming Task}} % 6.3.2
 
 Per questo aspetto, i parametri principali da valutare sono due. Il primo riguarda il numero di funzioni rinominate rispetto al totale delle funzioni presenti nel binario. Tale valore, espresso come percentuale e indicato nel seguito con ${RC}_{\%}$, viene definito \emph{Renaming Coverage}:
 
@@ -108,7 +108,7 @@ dove la funzione $g(x)$ è definita come:
 
 e $k>0$ controlla il grado di rendimenti decrescenti introdotto dalla funzione. La funzione è normalizzata in modo tale che $g(0)=0$ e $g(100)=1$, mantenendo quindi invariati gli estremi dell'intervallo considerato.
 
-\subsection{Accuratezza del recupero degli artefatti} % 6.3.3
+\subsection{Accuratezza della \textsc{Reversing Task}} % 6.3.3
 
 In modo analogo alla valutazione della complessità del campione, è necessario definire i criteri che consentano di misurare l'efficacia dell'attività di analisi svolta dal \textsc{SRE Agent}, il cui risultato è rappresentato dalla redazione dello \textsc{SRE Report}. La valutazione considera la capacità dell'agente di recuperare gli artefatti rilevanti e di ricostruire il comportamento e la logica di funzionamento del malware. Viene inoltre valutata la capacità di riconoscere l'assenza degli elementi non presenti nel campione e di evitare l'introduzione di ipotesi non supportate, con una penalizzazione per le informazioni rilevanti non identificate.
 
@@ -119,7 +119,7 @@ A ciascuna metrica può essere assegnato un punteggio compreso tra un valore min
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/6/tables_1.tex]{tab2}
-    \caption{Artefatti}
+    \caption{Criteri di valutazione della \textsc{Reversing Task}}
     \label{tab:artefatti}
 \end{table}
 
@@ -134,7 +134,7 @@ Le metriche considerate sono riportate in \Cref{tab:codice}, insieme alla relati
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/6/tables_1.tex]{tab3}
-    \caption{Metriche Codice}
+    \caption{Criteri di valutazione del \textsc{Capture Module}}
     \label{tab:codice}
 \end{table}
 
@@ -163,10 +163,10 @@ Un evento rilevante nella storia di Mirai è stato il rilascio pubblico del codi
 Sebbene Mirai continui a essere utilizzata, oggi il principale rischio è rappresentato dalle varianti emergenti. Queste possono derivare sia da famiglie di malware preesistenti, come Gafgyt, che hanno incorporato moduli o caratteristiche di Mirai, sia dallo sviluppo di nuove famiglie basate sul codice sorgente. Tra le principali varianti successive rientrano: % \cite{A threat modeling framework for IoT Based botnet attacks}
 
 \begin{description}
-    \item[\textbf{Hajime} \normalfont(2016).] Utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento dinamico di funzionalità e moduli e adotta una comunicazione peer-to-peer, basata su BitTorrent.
+    \item[\textbf{Hajime} \normalfont(2016).] Utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento di funzionalità e adotta una comunicazione peer-to-peer, basata su BitTorrent.
     \item[\textbf{Satori} \normalfont(2017).] Per la sua diffusione sfrutta vulnerabilità del protocollo \emph{Universal Plug and Play} (UPnP) presenti in router Huawei e dispositivi basati sul Realtek SDK, senza ricorrere allo scanning. Da Satori è derivata a sua volta \emph{Coin Robber}, che sfrutta vulnerabilità di Claymore Miner per il furto di criptovalute.
     \item[\textbf{IoT Reaper} \normalfont(2018).] Sfrutta vulnerabilità note nei servizi HTTP di dispositivi IoT e, a differenza della connessione persistente di Mirai con il C\&C, effettua periodicamente richieste HTTP non cifrate. % utilizza il linguaggio Lua
-    \item[\textbf{Mozi} \normalfont(2019).] Combina caratteristiche di Gafgyt, Mirai e IoT Reaper e adotta un'architettura peer-to-peer, gestita tramite un protocollo basato su Distributed Hash Table (DHT), che viene utilizzato per la comunicazione tra i nodi e per veicolare payload malevoli, rendendo più difficile il loro rilevamento.
+    \item[\textbf{Mozi} \normalfont(2019).] Combina caratteristiche di Gafgyt, Mirai e IoT Reaper, adottando a un'architettura peer-to-peer, gestita con un protocollo basato su Distributed Hash Table (DHT), che viene utilizzato per la comunicazione tra i nodi e per veicolare payload malevoli, rendendo più difficile il loro rilevamento.
     % \item Pink (2021): è stata riconosciuta come la prima botnet IoT che presenta una topologia ibrida, combinando un server C\&C centralizzato con un'architettura di rete decentralizzata. I principali bersagli sono i router con fibra ottica e oltre che per gli attacchi DDoS è stata protagonista di attacchi di inserimento di annunci all'interno di siti web HTTP. (non è variante Mirai).
 \end{description}
 
@@ -204,7 +204,10 @@ Risulta particolarmente interessante osservare il contributo delle singole diffi
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/6/tables_2.tex]{tab5}
+    \resizebox{\textwidth}{!}{%
+        \ExecuteMetaData[chapters/6/tables_2.tex]{tab5}
+    %
+    }
     \caption{Difficoltà}
     \label{tab:complessita_campioni}
 \end{table}
@@ -244,7 +247,10 @@ La \Cref{tab:res1} riporta i risultati relativi alla verifica dell'individuazion
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/6/tables_2.tex]{tab7}
+    \resizebox{\textwidth}{!}{%
+        \ExecuteMetaData[chapters/6/tables_2.tex]{tab7}
+    %
+    }
     \caption{Classifying performance}
     \label{tab:res1}
 \end{table}
