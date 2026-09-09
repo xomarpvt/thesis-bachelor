@@ -2,9 +2,31 @@
 
 \lipsum[1]
 
-\begin{tabular}{cc}
-    
-\end{tabular}
+\begin{table}[t]
+    \centering
+    \renewcommand{\arraystretch}{1.4}
+    \setlength{\tabcolsep}{10pt}
+    % \textwidth imposta la tabella alla larghezza massima del testo della pagina
+    \begin{tabularx}{0.9\textwidth}{lc YY}
+        \toprule
+        \textbf{LLM} & & \textbf{Qwen 3.6 27B} & \textbf{DeepSeek V4-Flash Preview} \\
+        \midrule
+        \multirow{2}{*}{\emph{temperature}} & \footnotesize\textsc{SRE Agent} & $0.80$ & $0.80 \hspace{1em} (1.00 \text{ thinking})$ \\
+        & \footnotesize\textsc{Code Agent}  & $0.60$ & $0.60 \hspace{1em} (1.00 \text{ thinking})$ \\
+        \multirow{2}{*}{\emph{top\_p}} & \footnotesize\textsc{SRE Agent} & $0.95$ & $0.95 \hspace{1em} (1.00 \text{ thinking})$ \\
+        & \footnotesize\textsc{Code Agent}  & $0.90$ & $0.90 \hspace{1em} (1.00 \text{ thinking})$ \\
+        \emph{} & \\
+        \emph{presence\_penalty} & & \multicolumn{2}{c}{$0.0$} \\
+        \emph{frequency\_penalty} & & \multicolumn{2}{c}{$0.0$} \\
+        \emph{repetition\_penalty} & & \multicolumn{2}{c}{$1.0$} \\
+        \cmidrule(lr){1-2} \cmidrule(lr){3-4}
+        \emph{thinking} & & \multicolumn{2}{c}{$True$} \\
+        \emph{reasoning\_effort} & & $high$ & $max$ \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Sampling Parameters}
+    \label{tab:sampling_parameters}
+\end{table}
 
 \begin{itemize}
     \item Hardware (1*A100) / (4*H100)
