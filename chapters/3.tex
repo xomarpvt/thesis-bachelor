@@ -2,6 +2,119 @@
 
 Questo capitolo ha l'obiettivo di introdurre il problema affrontato nella tesi. Dopo una prima definizione generale, verranno analizzati in dettaglio gli input e gli output attesi dal sistema, evidenziandone le principali caratteristiche. Successivamente, saranno identificati i requisiti e i vincoli progettuali che guideranno lo sviluppo della soluzione. Il capitolo si concluderà con una rappresentazione sintetica del sistema con un diagramma di contesto.
 
+\section{Analisi manuale delle botnet} % 3.1
+
+% https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-150.pdf
+% https://csrc.nist.gov/glossary/term/threat_intelligence
+
+All'interno dell'ambito della sicurezza informatica, la \emph{threat research} si occupa di raccogliere, analizzare e condividere informazioni (\emph{cyber threat information} \cite{oconnor2012python}) riguardanti minacce esistenti o emergenti. Tali evidenze possono essere ulteriormente elaborate fino alla produzione di \emph{threat intelligence reports}, documenti che descrivono le \emph{tactics, techniques, and procedures} (TTPs) adottate dai \emph{threat actors}, insieme alle tipologie di sistemi e di informazioni presi di mira \cite{oconnor2012python}.
+
+% Nel caso delle botnet, la \emph{threat research} può riguardare, tra le altre attività, la caratterizzazione e il reverse engineering del protocollo di \emph{Command-and-Control} C\&C utilizzato.
+
+Una possibile applicazione della \emph{threat research} nel contesto delle botnet consiste nella caratterizzazione e nel reverse engineering del protocollo di C\&C utilizzato. La ricostruzione del protocollo può consentire di interpretare le comunicazioni tra i bot e l'infrastruttura di C\&C, permettendo di identificare e analizzare i comandi trasmessi e, più in generale, di studiare il comportamento della botnet.
+
+% Conoscenza sia nelle tecniche di analisi del malware sia nelle caratteristiche e nelle tecniche impiegate dal malware stesso.
+% L'obiettivo dell'analista è quello di capire come funziona il malware in generale ma sopratutto fare il reverse engineering del protocollo di C\&C.
+
+Per svolgere tale attività, un esperto di cybersecurity, una volta entrato in possesso di un campione di malware appartenente a una botnet, può eseguirne la \emph{malware analysis}, ricorrendo a tecniche di analisi statica, dinamica o ad altre metodologie di SRE, combinandole tra loro e scegliendo quelle più adatte al campione. A tale scopo, l'analista si avvale delle proprie conoscenze teoriche e della propria esperienza, integrandole, quando necessario, con le informazioni ricavate dalla consultazione di fonti e documentazione disponibili online.
+
+% \cite{caballero2009dispatcher} Dispatcher: Enabling Active Botnet Infiltration using Automatic Protocol Reverse-Engineering
+
+Quando l'analista ha raccolto tutte le informazioni rilevanti sul protocollo di C\&C, può realizzare un modulo per la cattura dei messaggi, da qui in avanti indicato come \capture{}. Il \capture{} implementa esclusivamente la quantità minima di funzionalità necessaria per comunicare con l'infrastruttura di C\&C e simulare il comportamento di un bot, permettendo di effettuare un'attività di \emph{botnet infiltration} \cite{oconnor2012python}. Il modulo si connette all'infrastruttura, presentandosi come una potenziale vittima, interagisce con essa e cattura i messaggi scambiati. Questi possono essere successivamente salvati e utilizzati per analisi più approfondite e su scala più ampia, considerando contemporaneamente più botnet.
+
+Il processo descritto è rappresentato nella figura \Cref{fig:context_diagram_1} mediante un diagramma di contesto, che illustra sia la fase di creazione del modulo, attraverso la malware analysis, sia quella del suo utilizzo operativo, durante la quale vengono catturati i messaggi.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=.5]{img/contesto_1.png}
+    \caption{Diagramma di contesto del sistema}  % e uso del modulo generato.
+    \label{fig:context_diagram_1}    
+\end{figure}
+
+% Il vantaggio di questo approccio, oltre alla possibilità per l'analista di acquisire nuove conoscenze.
+
+Il vantaggio di questo approccio risiede soprattutto nel controllo diretto dell'intero processo, che permette all'analista di adattare dinamicamente risorse e tempo ai diversi aspetti, in funzione della loro rilevanza e della difficoltà riscontrata. Tuttavia, il lavoro manuale richiesto all'analista, nonostante l'esperienza acquisita nel tempo e l'adozione di pratiche volte a velocizzarlo possano renderlo più efficiente, rimane oneroso. 
+
+Considerando che l'analista probabilmente lavorerà su botnet differenti, nella realizzazione dei \capture{} cercherà, quando possibile, di mantenere un'architettura e un comportamento uniformi, ad esempio adottando un'interfaccia comune e una restituzione strutturata dei messaggi. Questo evidenzia ulteriormente i limiti dell'approccio manuale, che richiede un processo lungo e spesso ripetitivo, aumentando il carico cognitivo richiesto all'analista. Infine, non bisogna sottovalutare il fatto che tale processo possa richiedere competenze specialistiche di malware analysis, che non tutti i \emph{threat researcher} necessariamente possiedono.
+
+\section{\system{}} % 3.2
+
+Un'opportunità per ridurre il carico sull'analista consiste nell'automatizzare, interamente o parzialmente, le attività di analisi del campione e la successiva creazione del \capture{}. La presente tesi si concentra proprio su questo aspetto, proponendo \system{} come soluzione al problema descritto.
+
+La responsabilità primaria del sistema consiste pertanto nell'analizzare in maniera autonoma campioni di malware appartenenti a diverse botnet, al fine di ricavare tutte le informazioni necessarie alla generazione del relativo \capture{}. Il processo di analisi sarà orientato a raggiungere l'obiettivo finale, concentrandosi sull'acquisizione delle conoscenze strettamente necessarie a ricostruire il protocollo di C\&C utilizzato. BotScope follows a best-effort approach: it automatically generates a \capture{} from the information extracted during malware analysis, without guaranteeing that the resulting module is correct or fully functional for every sample. senza garantire la correttezza/accuratezza del modulo, 
+
+Tra le responsabilità del sistema non rientrano, perché non necessarie (se vengono fatte in più meglio, altrimenti non importa), la comprensione completa delle caratteristiche e del funzionamento interno del malware analizzato.
+
+Il sistema dovrà essere progettato in modo da ricevere in input un file binario generico (non necessariamente malware), cui ci si riferirà con \binary{} e, opzionalmente, funzionare con una \kb{}.
+
+di conseguenza il ruolo dell'esperto di cybersecurity non è più principalmente quello di analista, ma cambia e diventa in maggior percentuale quello di "revisore", oltre a rimanere utilizzatore del modulo, che una volta generato può usarlo, sotto la sua responsabilità, come preferisce, potendo modificarlo, estenderlo,
+fino ad arrivare a eseguirlo. così da spostando allocazione di risorse mentali per altri attività.
+
+% (parte di tempo riconvertita in revisione + analisi, altra liberata).
+% il modulo fa qualcosa di grave? responsabilità dell'utente
+
+% BotScope follows a best-effort approach: it automatically generates a Capture Module from the information extracted during malware analysis, without guaranteeing that the resulting module is correct or fully functional for every sample.
+% attenzione: il sistema non avrà il compito di verificare o garantire il corretto funzionamento del modulo prodotto e quindi l'analisi si concluderà con la generazione del modulo stesso. responsabilità dell'utilizzo = utente
+
+Quello che va a fare il sistema mostrato nella figura \Cref{fig:context_diagram_2} (diagramma di contesto).
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=.5]{img/contesto_2.png}
+    \caption{Diagramma di contesto del sistema}  % e uso del modulo generato.
+    \label{fig:context_diagram_2}    
+\end{figure}
+
+\subsection{Requisiti del sistema} % 3.2.1
+
+Il sistema e il modulo dovranno soddisfare sia i requisiti derivanti dalla definizione iniziale del problema (non mi piace problema, voglio dire tipo nella sezione successiva), sia quelli che verranno progressivamente individuati e formalizzati da fasi di progettazione e implementazione.
+
+
+per poter incastrarsi pipeline
+
+\begin{enumerate}
+    \item funzionali: input e output
+    \item non funzionali: autonomia e indipendenza dalla famiglia di botnet
+    \item Requisiti di sicurezza: Natura difensiva del modulo generato e Sicurezza del processo di analisi.
+    \item requisiti qualità architetturali (ingegneria del software).
+\end{enumerate}
+
+\subsection{Proprietà del \capture{}} % 3.2.2
+
+altri requisti
+
+\begin{enumerate}
+    \item BotNetInterface
+    \item MessageSchema
+\end{enumerate}
+
+\iffalse
+\begin{enumerate}
+    \item Introduzione: Nell'ambito di analisi delle botnet un'attività possibile è quella di gain insight on comunicazioni scambiate tra il bot e l'infrastruttura di CC.
+    \item definizione del modulo: A tale scopo un analista può fare questo: crea un modulo software che si comporta come una vittima, stesso comportamento bot, ma implementando solo la parte di comunicazione con CC, nulla del resto, così da ricevere i messaggi.
+    \item sviluppo manuale: Per fare questo a partire dal malware sample l'analista deve sviluppare in qualche modo il modulo di cattura. Tradizionalmente l'analista è OBBLIGATO a dover ricavare in qualche modo a partire dal campione di malware le informazioni necessarie alla realizzazione del modulo. Concentrandosi sul protocollo di comunicazione CC e sui messaggi scambiati. l'implementazione software dovrà essere specifica sul modulo.
+    \item uso del modulo: il modulo può essere usato dall'analista per acquisire i messaggi trasmessi dal server. 
+    \item caratteristiche del modulo: visto che l'analista ripete questa operazione per più campione botnet si presuppone che adotti alcune strategie, interfaccia comune per il modulo, cercando di uniformare il comportamento, così come restituire i messaggi in una certa maniera strutturata, schema standardizzato, perché così posso fare un post processing (l'analista, dovendo sviluppare molti moduli, tende a uniformarli.)
+    \item diagramma di contesto: l'intero processo, unendo sviluppo e uso di un singolo modulo viene schematizzato nel diagramma, in cui si evidenziano le due fasi.
+    \item limiti: il vantaggio dell'autonomia è istruttivo per l'analista (che impara), che può dedicare tempo e risorse variabili al campione (controllo tailored dell'analisi). l'attività manuale, sebbene nel tempo l'analista possa acquisire esperienza e pratiche che velocizzano il suo lavoro, è onerosa. gli svantaggi sono più pesanti, perché l'attività è lunga, ripetitiva, basti pensare a dare una struttura uniforme a moduli e messaggi.
+    % costo temporale; costo cognitivo/specialistico; ripetitività e uniformazione del codice/output.
+    % Inoltre hai un'osservazione interessante sull'autonomia dell'analista: la manualità permette un'analisi tailored, adattata al campione e alla conoscenza progressivamente acquisita.
+\end{enumerate}
+
+3.2 \system
+
+\begin{enumerate}
+    \item L'automazione di questa fase, del tutto o anche solo in parte, rappresenta pertanto un'opportunità per ridurre carico sull'analista, spostando allocazione di risorse mentali per altri attività. (parte di tempo riconvertita in revisione + analisi, altra liberata).
+    \item è proprio su questo aspetto dell'automazione si concentra la tesi. per risolverlo si definisce il sistema \system
+    \item responsabilità primaria del sistema: analizzare automaticamente, fare il modulo, non richiesto altre info sul malware, non verifica correttezza
+    \item ruolo di knowledge base come input: fornire conoscenza
+    \item ruolo dell'utente dopo generazione: usare il modulo come vuole. 
+    \item diagramma di contesto di \system
+\end{enumerate}
+
+\fi
+
+\iffalse
 \section{Definizione del problema} % 3.1
 
 Il problema oggetto di studio e sviluppo in questa tesi consiste nella progettazione e nella successiva implementazione di un sistema in grado di ricevere in ingresso un file binario arbitrario e, qualora questo appartenga a una botnet, generare automaticamente un modulo software capace di catturare le comunicazioni Command-and-Control ricevute dall'infrastruttura di comando e di tradurle in una rappresentazione strutturata. % Server C\&C
@@ -13,16 +126,16 @@ La responsabilità primaria del sistema consiste pertanto nell'analizzare in man
 Il processo di analisi dovrà quindi essere orientato a raggiungere l'obiettivo finale di generazione del modulo, concentrandosi sull'acquisizione delle conoscenze strettamente necessarie a ricostruire il protocollo di comunicazione utilizzato. Di conseguenza, tra le responsabilità del sistema non rientra la comprensione completa delle caratteristiche e del funzionamento interno del malware analizzato. Nonostante il processo di analisi possa, come effetto collaterale, portare alla ricostruzione di ulteriori dettagli sul comportamento del campione, tali informazioni non costituiscono un obiettivo del sistema.
 
 Analogamente, il sistema non avrà il compito di verificare o garantire il corretto funzionamento del modulo prodotto e quindi l'analisi si concluderà con la generazione del modulo stesso. La successiva validazione del modulo e la valutazione dei risultati ottenuti resteranno invece di competenza dell'utente finale. Quest'ultimo potrà utilizzare il modulo generato come preferisce, potendo modificarlo, estenderlo, fino ad arrivare a eseguirlo. % secondo le proprie necessità
-
+\fi
 \section{Input e output del sistema} % 3.2
 
-\subsection{Input} % 3.2.1
+% \subsection{Input} % 3.2.1
 
 Il sistema dovrà essere progettato per accettare come unico dato di ingresso un file binario arbitrario. Nella pratica operativa, tale file corrisponderà generalmente a un campione di malware in formato eseguibile appartenente a una botnet; tuttavia, il sistema non dovrà imporre alcun vincolo sulla natura o sul formato del file fornito.
 
 Un requisito fondamentale dell'architettura è la capacità di operare in completa autonomia, senza disporre di alcuna conoscenza preliminare sul campione analizzato. Di conseguenza, al sistema non potranno essere fornite informazioni aggiuntive relative al file di ingresso, quali, ad esempio, la famiglia di appartenenza, descrizioni del comportamento o delle funzionalità del malware, oppure il protocollo di comunicazione utilizzato.
 
-\subsection{Output} % 3.2.2
+% \subsection{Output} % 3.2.2
 
 La natura dell'output che verrà restituito dal sistema dipenderà strettamente dall'esito dell'eventuale fase di analisi preliminare effettuata sul file ricevuto in ingresso.
 
@@ -36,7 +149,7 @@ La scelta di utilizzare Python come linguaggio di destinazione è dovuta a diver
 
 Il secondo aspetto riguarda un requisito tecnico legato alla gestione del traffico di rete in tempo reale. L'impiego di costrutti avanzati di Python, come i generatori, attraverso l'istruzione \texttt{yield}, consente di elaborare progressivamente i messaggi C\&C secondo un modello \textit{lazy}, anziché mantenerne l'intero contenuto in memoria \cite{ramalho2022yield}. Tale approccio permette infatti di limitare il consumo di memoria del modulo, facilitandone l'integrazione con altri sistemi e rendendolo idoneo a operare per periodi di tempo prolungati. % Chapter 17
 
-\section{Requisiti del problema} % 3.3
+%\section{Requisiti del problema} % 3.3
 
 Una volta definiti il problema, gli obiettivi del sistema e le caratteristiche dell'input e dell'output attesi, la progettazione dell'architettura gode di un ampio margine di libertà. In linea di principio, non sono infatti imposti specifici vincoli riguardo agli strumenti, alle tecniche o ai componenti da impiegare per la realizzazione della soluzione.
 
@@ -52,7 +165,10 @@ Per chiarezza espositiva, tali requisiti possono essere suddivisi in due categor
 
         Il sistema dovrà essere progettato in modo da poter essere applicato a campioni appartenenti a differenti famiglie di botnet, senza introdurre dipendenze specifiche da una particolare tipologia o dalle caratteristiche peculiari di una singola famiglia.
 
-        Lo stesso principio di indipendenza dovrà essere applicato anche al protocollo di comunicazione C\&C. La soluzione proposta dovrà essere in grado di gestire differenti modalità di interazione tra il malware e l'infrastruttura di C\&C, indipendentemente dal protocollo di comunicazione, dalle tecnologie di trasporto o dai formati dei messaggi utilizzati.
+        % Lo stesso principio di indipendenza dovrà essere applicato anche al protocollo di comunicazione C\&C. 
+
+        La soluzione proposta dovrà essere in grado di gestire differenti modalità di interazione tra il malware e l'infrastruttura di C\&C, indipendentemente dal protocollo di comunicazione, dalle tecnologie di trasporto o dai formati dei messaggi utilizzati.
+
 
         \item \textbf{Autonomia del processo di analisi}.
         
@@ -81,7 +197,7 @@ Oltre ai requisiti precedentemente individuati, la progettazione dell'architettu
 
 In particolare, l'architettura proposta dovrà adottare un approccio modulare, favorendo una chiara separazione delle responsabilità tra i componenti del sistema. La soluzione dovrà inoltre essere progettata per potersi integrare facilmente con eventuali pipeline di analisi e framework già esistenti. Infine, dovranno essere previste adeguate funzionalità di \textit{logging}, utili a tracciare le principali operazioni svolte dal sistema e a supportare le attività di monitoraggio e debugging.
 
-\section{Interfaccia del modulo di output} % 3.4
+%\section{Interfaccia del modulo di output} % 3.4
 
 Al fine di consentire l'integrazione del sistema all'interno di workflow esterni e pipeline di automazione più ampie, è indispensabile che l'output prodotto rispetti alcuni vincoli strutturali e comportamentali predefiniti.
 
@@ -104,8 +220,46 @@ In particolare, la conformità dell'output si articola su due livelli distinti:
         \item Metodo \texttt{sniff}. Ha lo scopo di mantenere attiva la connessione con il server C\&C ed eseguire la cattura dei messaggi. Il metodo è progettato per rimanere in esecuzione indefinitamente e dovrà essere implementato come un generatore Python, restituendo mediante l'istruzione \texttt{yield} gli oggetti corrispondenti ai messaggi catturati, dopo averli ricevuti e decodificati.
     \end{itemize}
 
-    L'interfaccia astratta che ogni modulo generato dovrà implementare è riportata in \Cref{fig:botnet_interface}.
+    L'interfaccia astratta che ogni modulo generato dovrà implementare è riportata in \Cref{fig:botnet_interface}. La \Cref{fig:botnet_main} mostra invece un possibile esempio di utilizzo pratico di un modulo conforme all'interfaccia definita.
 
+    \begin{figure}[t]
+        \centering
+
+        \begin{minipage}{0.45\linewidth}
+            \centering
+            \begin{lstlisting}[frame=single]
+from abc import ABC, abstractmethod
+class BotNetInterface(ABC):
+    @abstractmethod
+    def connect(self):
+        pass
+    @abstractmethod
+    def sniff(self):
+        pass
+            \end{lstlisting}
+            \captionof{figure}{Interfaccia astratta \texttt{BotNetInterface}}
+            \label{fig:botnet_interface}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.45\linewidth}
+            \centering
+            \begin{lstlisting}[frame=single]
+b = BotNet()
+while True:
+    try:
+        b.connect()
+        for message in b.sniff():
+            print(message)
+    except:
+        pass
+        \end{lstlisting}
+        \captionof{figure}{Esempio di uso di un generico modulo \texttt{BotNet} che implementa \texttt{BotNetInterface}}
+            \label{fig:botnet_main}
+        \end{minipage}
+
+    \end{figure}
+
+    \iffalse
     \begin{figure}[t]
         \centering
         \begin{minipage}{0.5\linewidth}
@@ -121,10 +275,10 @@ class BotNetInterface(ABC):
             \end{lstlisting}
         \end{minipage}
         \caption{Interfaccia astratta \texttt{BotNetInterface}}
-        \label{fig:botnet_interface}
+        label{fig:botnet_interface}
     \end{figure}
     
-    La \Cref{fig:botnet_main} mostra invece un possibile esempio di utilizzo pratico di un modulo conforme all'interfaccia definita.
+    
 
     \begin{figure}[t]
         \centering
@@ -141,8 +295,9 @@ while True:
             \end{lstlisting}
         \end{minipage}
         \caption{Esempio di uso di un generico modulo \texttt{BotNet} che implementa \texttt{BotNetInterface}}
-        \label{fig:botnet_main}
+        label{fig:botnet_main}
     \end{figure}
+    \fi
 
     \item[Schema dei messaggi.] \hspace{1em} \texttt{MessageSchema}
     
@@ -154,6 +309,8 @@ while True:
 \end{description}
 
 Pertanto, l'output prodotto dal sistema non dovrà più limitarsi a essere funzionalmente corretto, ma dovrà rispettare entrambi i vincoli architetturali descritti. La conformità a questi due nuovi requisiti permetterà infatti di assicurare l'interoperabilità, la riusabilità e la scalabilità del processo di cattura.
+
+\iffalse
 
 \section{Diagramma di contesto del sistema} % 3.5
 
@@ -206,7 +363,7 @@ Da un lato, il sistema sviluppato si deve occupare dell'analisi del file binario
     \caption{Diagramma di contesto del sistema}  % e uso del modulo generato.
     \label{fig:context_diagram}
 \end{figure}
-
+\fi
 \iffalse
 @startuml
 left to right direction
