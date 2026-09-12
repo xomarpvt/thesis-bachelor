@@ -51,7 +51,7 @@ Indicazioni dettagliate relative alle risorse hardware, alle configurazioni di d
 
 Per ciascun campione di malware considerato è stata effettuata una singola esecuzione, secondo il medesimo protocollo sperimentale. La completa autonomia del sistema durante l'esecuzione consente infatti di applicare tale protocollo a tutti i campioni considerati, garantendo uniformità nelle modalità di analisi.
 
-L’analisi è stata avviata manualmente fornendo il \textsc{Binary File} e la \textsc{Knowledge Base}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output il \textsc{SRE Report} e il \textsc{Python Module}, che potranno essere utilizzati per la successiva valutazione dei risultati.
+L'analisi è stata avviata manualmente fornendo il \textsc{Binary File} e la \textsc{Knowledge Base}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output il \textsc{SRE Report} e il \textsc{Python Module}, che potranno essere utilizzati per la successiva valutazione dei risultati.
 
 
 \section{Definizione delle metriche di valutazione} % 6.3
@@ -141,40 +141,10 @@ Le metriche considerate sono riportate in \Cref{tab:codice}, insieme alla relati
 
 Per la campagna sperimentale condotta nell'ambito di questa tesi, si è deciso di concentrare l'analisi su una famiglia di botnet in particolare, la famiglia Mirai, selezionando cinque campioni che rispettano i principi precedentemente definiti.
 
-La famiglia Mirai si è diffusa a partire dall'agosto 2016 \cite{antonakakis2017mirai} e rappresenta un'evoluzione della preesistente botnet BASHLITE, conosciuta anche come Gafgyt, una famiglia di malware DDoS che infettava dispositivi Linux attraverso il brute force di credenziali predefinite.
-
 A distanza di circa dieci anni dalla sua comparsa, i malware derivati da Mirai continuano a dominare il panorama del malware IoT, come evidenziato da due fonti indipendenti. Il report 2025 di Zscaler ThreatLabz indica Mirai come la minaccia prevalente, con una quota del 40\%, seguita da Mozi e Gafgyt, rispettivamente al secondo e al terzo posto, entrambe con una quota inferiore al 20\%. Complessivamente, queste tre famiglie rappresentano la maggior parte dell'attività osservata, superando i due terzi del totale. Dati simili, basati sulle osservazioni raccolte tramite gli honeypot proprietari di Kaspersky, sono confermati anche dal report \textit{IT Threat Evolution} relativo al Q2 2026, che evidenzia parallelamente la crescita dell'attività di un'altra botnet rinomata, Prometei.
 
 % Zscaler ThreatLabz 2025 Mobile, IoT \& OT Threat Report
 % https://securelist.com/malware-report-q2-2026-pc-iot-statistics/120960
-
-% \subsection{La botnet Gafgyt}
-\subsection{La botnet Mirai} % 6.4.1 \cite{antonakakis2017mirai}
-
-Mirai è una famiglia di malware di tipo \emph{worm-like} che si diffonde attraverso l'infezione di dispositivi IoT, arruolandoli successivamente all'interno di una botnet utilizzata per condurre attacchi DDoS. La sua architettura è decentralizzata e prevede tre componenti principali, ossia il C\&C, il \emph{report server} e il \emph{loader}, che costituiscono l'infrastruttura interposta tra i bot e il botmaster.
-
-La propagazione di Mirai avviene attraverso un rapido meccanismo di scanning che invia in modo asincrono e \emph{stateless} pacchetti TCP SYN verso indirizzi IPv4 pseudocasuali, sulle porte TCP $23$ e $2323$, utilizzate dal protocollo Telnet. Quando viene identificata una potenziale vittima, Mirai tenta di stabilire una connessione mediante un attacco di tipo brute force, provando diverse coppie di username e password selezionate da un pool di 62 credenziali. Rispetto a BASHLITE, il set di credenziali viene ampliato con combinazioni specifiche per router consumer e dispositivi IoT.
-
-Una volta completato con successo il login, Mirai invia al report server l'indirizzo IP della vittima e le relative credenziali. Questo evento attiva il loader, che procede all'infezione del dispositivo vulnerabile eseguendo il login, identificando l'architettura e l'ambiente di esecuzione e scaricando il binario specifico per il sistema. Al termine dell'infezione, il binario scaricato viene eliminato e il malware procede all'offuscamento del nome del processo e all'interruzione dei processi concorrenti o associati a infezioni concorrenti, comprese altre varianti di Mirai. A questo punto, il bot effettua la scansione di nuove potenziali vittime e, simultaneamente, rimane in ascolto dei comandi provenienti dal C\&C, che possono essere utilizzati per condurre attacchi DDoS. % senza implementare meccanismi di persistenza. i processi concorrenti utilizzano le porte 22 e 23
-
-Un evento rilevante nella storia di Mirai è stato il rilascio pubblico del codice sorgente nell'ottobre 2016, che ha favorito la proliferazione di nuove varianti e la rapida introduzione di nuove funzionalità. Queste spaziano dal miglioramento delle capacità di infezione, attraverso l'ampliamento delle credenziali utilizzate e il potenziamento dei meccanismi di protezione dalle infezioni concorrenti, fino all'impiego di binari progettati per complicare l'attività di SRE, ad esempio mediante tecniche di packing.
-
-Sebbene Mirai continui a essere utilizzata, oggi il principale rischio è rappresentato dalle varianti emergenti. Queste possono derivare sia da famiglie di malware preesistenti, come Gafgyt, che hanno incorporato moduli o caratteristiche di Mirai, sia dallo sviluppo di nuove famiglie basate sul codice sorgente. Tra le principali varianti successive rientrano: % \cite{A threat modeling framework for IoT Based botnet attacks}
-
-\begin{description}
-    \item[\textbf{Hajime} \normalfont(2016).] Utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento di funzionalità e adotta una comunicazione peer-to-peer, basata su BitTorrent.
-    \item[\textbf{Satori} \normalfont(2017).] Per la sua diffusione sfrutta vulnerabilità del protocollo \emph{Universal Plug and Play} (UPnP) presenti in router Huawei e dispositivi basati sul Realtek SDK, senza ricorrere allo scanning. Da Satori è derivata a sua volta \emph{Coin Robber}, che sfrutta vulnerabilità di Claymore Miner per il furto di criptovalute.
-    \item[\textbf{IoT Reaper} \normalfont(2018).] Sfrutta vulnerabilità note nei servizi HTTP di dispositivi IoT e, a differenza della connessione persistente di Mirai con il C\&C, effettua periodicamente richieste HTTP non cifrate. % utilizza il linguaggio Lua
-    \item[\textbf{Mozi} \normalfont(2019).] Combina caratteristiche di Gafgyt, Mirai e IoT Reaper, adottando a un'architettura peer-to-peer, gestita con un protocollo basato su Distributed Hash Table (DHT), che viene utilizzato per la comunicazione tra i nodi e per veicolare payload malevoli, rendendo più difficile il loro rilevamento.
-    % \item Pink (2021): è stata riconosciuta come la prima botnet IoT che presenta una topologia ibrida, combinando un server C\&C centralizzato con un'architettura di rete decentralizzata. I principali bersagli sono i router con fibra ottica e oltre che per gli attacchi DDoS è stata protagonista di attacchi di inserimento di annunci all'interno di siti web HTTP. (non è variante Mirai).
-\end{description}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[scale=.35]{img/mirai.png}
-    \caption[Mirai operation]{Mirai operation \cite{antonakakis2017mirai}}
-    \label{fig:mirai}
-\end{figure}
 
 \subsection{Dataset campioni} % 6.4.2
 % \subsubsection{Provenienza}

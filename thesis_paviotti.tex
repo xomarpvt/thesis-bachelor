@@ -90,17 +90,22 @@
     breaklines=true
 }
 
+
+\usepackage{tabularx} % <--- FONDAMENTALE: calcola lo spazio automaticamente
+
+% Crea una colonna di tipo X (flessibile) ma con testo centrato
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
 \newcommand{\system}{\textsc{BotScope}}
 \newcommand{\capture}{\textsc{Capture Module}}
 \newcommand{\binary}{\textsc{Binary File}}
 \newcommand{\kb}{\textsc{Knowledge Base}}
 \newcommand{\interface}{\texttt{Botnet Interface}}
 \newcommand{\schema}{\texttt{Message Schema}}
+\newcommand{\classifier}{\textsc{Classifier}}
+\newcommand{\sreagent}{\textsc{SRE Agent}}
+\newcommand{\codeagent}{\textsc{Code Agent}}
 
-\usepackage{tabularx} % <--- FONDAMENTALE: calcola lo spazio automaticamente
-
-% Crea una colonna di tipo X (flessibile) ma con testo centrato
-\newcolumntype{Y}{>{\centering\arraybackslash}X}
 
 \begin{document}
 \maketitle

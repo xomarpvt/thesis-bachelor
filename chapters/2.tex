@@ -1,66 +1,64 @@
-\documentclass[../thesis_paviotti.tex]{subfiles}
-
-\begin{document}
-
 \chapter{Lo stato dell'arte} % 2
 
 Questo capitolo ha l'obiettivo di presentare i principali concetti teorici e le nozioni fondamentali necessarie per comprendere gli argomenti trattati nei capitoli successivi. Saranno quindi introdotti gli aspetti essenziali su cui si fonda lo sviluppo del lavoro descritto in questa tesi.
 
 \section{Malware e botnet} % 2.1
 
-In generale, qualsiasi software progettato per compromettere la riservatezza, l'integrità o la disponibilità di un sistema informatico, di una rete o dei dati di un utente può essere classificato come \textit{malware}, abbreviazione di \textit{malicious software}. Il malware può assumere diverse forme e, in base al proprio obiettivo, può appartenere a una o più categorie, tra cui, ad esempio, \textit{backdoor}, \textit{information stealer}, \textit{launcher}, \textit{worm}, \textit{virus} e altre \cite{sikorski2012malware}. % Capitolo 0
+In generale, qualsiasi software progettato per compromettere la riservatezza, l'integrità o la disponibilità di un sistema informatico, di una rete o dei dati di un utente può essere classificato come \emph{malware} \cite{sikorski2012malware}, abbreviazione di \emph{malicious software}. Il malware può assumere diverse forme e, in base al proprio obiettivo, può appartenere a una o più categorie, tra cui, ad esempio, \emph{backdoor}, \emph{information stealer}, \emph{launcher}, \emph{worm}, \emph{virus} e altre. % Capitolo 0
 
 % Il malware può essere sviluppato con differenti finalità: il furto di informazioni, il danneggiamento dei sistemi o l'accesso a dispositivi non autorizzato.
 % Forme del malware: programmi eseguibili, \textit{script} o codice incorporato in altri software
 % Altre categorie: dropper, downloader
 
-Nel corso degli anni, l'evoluzione delle infrastrutture di rete e il cambiamento delle abitudini tecnologiche hanno portato a un aumento del numero di dispositivi connessi e del tempo durante il quale essi rimangono online. Questo fenomeno, unito alla presenza di vulnerabilità di sicurezza nei sistemi, ha favorito lo sviluppo e la diffusione di nuove minacce informatiche, tra cui le \textit{botnet}, oggi considerate una delle principali minacce nel panorama della sicurezza informatica.
+Nel corso degli anni, l'evoluzione delle infrastrutture di rete e il cambiamento delle abitudini tecnologiche hanno portato a un aumento del numero di dispositivi connessi e del tempo durante il quale essi rimangono online. Questo fenomeno, unito alla presenza di vulnerabilità di sicurezza nei sistemi, ha favorito lo sviluppo e la diffusione di nuove minacce informatiche, tra cui le botnet, oggi considerate una delle principali minacce nel panorama della sicurezza informatica.
 
-Una botnet è una rete di host compromessi, detti \textit{bot}, controllati da remoto da uno o più attaccanti, chiamati \textit{botmaster}. Il malware installato sul dispositivo consente al botmaster di controllare da remoto i dispositivi e di eseguire azioni malevole. \cite{silva2013botnets} % Capitolo 1-2
+Una \emph{botnet} \cite{silva2013botnets} è una rete di host compromessi, detti \emph{bot}, controllati da remoto da uno o più attaccanti, chiamati \emph{botmaster}. Il malware installato sul dispositivo consente al botmaster di controllare da remoto i dispositivi e di eseguire azioni malevole. % Capitolo 1-2
 
 Dal punto di vista degli attaccanti, le botnet rappresentano uno strumento estremamente redditizio, poiché consentono di ottenere un ritorno economico attraverso lo sfruttamento dei dispositivi compromessi. Una volta infettati, tali dispositivi possono essere impiegati simultaneamente per eseguire attività malevole su larga scala, generando danni economici per utenti, aziende e Internet Service Provider (ISP) e fungendo da infrastruttura per numerose attività criminali online.
 
-Le botnet possono essere impiegate per numerose attività, tra cui invio di spam, distribuzione di malware, furto di informazioni, frodi informatiche e attacchi \textit{Distributed Denial of Service} (DDoS). Tra queste, gli attacchi DDoS rappresentano uno degli utilizzi più diffusi, poiché consentono di sfruttare la capacità trasmissiva complessiva dei dispositivi compromessi per sovraccaricare il bersaglio e rendere i suoi servizi indisponibili.
+Le botnet possono essere impiegate per numerose attività, tra cui invio di spam, distribuzione di malware, furto di informazioni e attacchi \emph{Distributed Denial of Service} (DDoS). Tra queste, gli attacchi DDoS rappresentano uno degli utilizzi più diffusi, poiché consentono di sfruttare la capacità trasmissiva complessiva dei dispositivi compromessi per sovraccaricare il bersaglio e rendere i suoi servizi indisponibili. % frodi informatiche,
 
-% estorsioni
+\subsection{Architettura} % 2.1.1
 
-\subsection{Botnet IoT} % 2.1.1
-
-Parallelamente alla crescita delle botnet, si sono evolute anche le tecniche di difesa, che possono essere di tipo reattivo, intervenendo dopo la compromissione, oppure preventivo, con l'obiettivo di impedire o limitare l'infezione prima che questa si verifichi. Nonostante il progressivo rafforzamento dei meccanismi di protezione, la continua evoluzione delle tecnologie e dei dispositivi connessi ha offerto nuove opportunità agli attaccanti, contribuendo all'espansione della superficie d'attacco. In particolare, la rapida diffusione dei dispositivi appartenenti all'\textit{Internet of Things} (IoT) ha favorito la creazione e la diffusione di botnet su larga scala, a causa delle risorse hardware limitate e di configurazioni di sicurezza spesso inadeguate.
-
-% Internet of Things botnets: A survey on Artificial Intelligence based detection techniques
-
-Nel 2016 Internet è stata interessata dalla diffusione della botnet \textit{Mirai}, composta principalmente da dispositivi embedded e IoT compromessi, che nel giro di poco tempo è stata responsabile di alcuni dei più grandi attacchi DDoS mai registrati.
-
-La rapida espansione di Mirai è stata resa possibile dalla combinazione di diversi fattori, tra cui la relativa semplicità dell'implementazione del malware, l'estrema efficienza della scansione della rete, la capacità di infettare dispositivi eterogenei e, soprattutto, lo sfruttamento della presenza di credenziali predefinite deboli o mai modificate sui dispositivi IoT. \cite{antonakakis2017mirai} % Capitolo 1
-
-\subsection{Architettura} % 2.1.2
-
-Il componente fondamentale di una botnet è l'infrastruttura di \textit{Command-and-Control} (C\&C), che permette la comunicazione tra il botmaster e i bot compromessi, coordinandone le attività. Attraverso il canale C\&C vengono trasmessi i comandi, che i bot interpretano ed eseguono sul dispositivo infetto.
+Il componente fondamentale di una botnet è l'infrastruttura di \emph{Command-and-Control} (C\&C) \cite{silva2013botnets}, che permette la comunicazione tra il botmaster e i bot compromessi, coordinandone le attività. Attraverso il canale C\&C vengono trasmessi i comandi, che i bot interpretano ed eseguono sul dispositivo infetto. % Capitolo 2.3
 
 Per realizzare tale comunicazione possono essere impiegati diversi protocolli di rete. Oltre alla trasmissione dei comandi, il canale C\&C consente di mantenere il controllo dei bot, distribuire aggiornamenti del malware e raccogliere informazioni dai dispositivi compromessi. I protocolli utilizzati, così come le funzionalità implementate, variano in funzione degli obiettivi della botnet.
 
-L'architettura dell'infrastruttura C\&C influenza direttamente la robustezza e la capacità di sopravvivenza della botnet. Le principali architetture adottate sono quelle centralizzate, caratterizzate da un modello \textit{client-server} con uno o pochi server C\&C, e quelle decentralizzate, generalmente basate su reti \textit{peer-to-peer} (P2P), ma esistono anche architetture ibride che combinano entrambi gli approcci \cite{silva2013botnets}. % Capitolo 2.3-2.6
+L'architettura dell'infrastruttura C\&C influenza direttamente la robustezza e la capacità di sopravvivenza della botnet. Le architetture possono essere ricondotte principalmente a tre modelli: centralizzato, distribuito e ibrido \cite{silva2013botnets, hachem2011topology}. % Capitolo 2.6, Pagina 3
 
-% che combinano caratteristiche di entrambi gli approcci
+Nel \emph{centralized C\&C model}, il botmaster individua uno o più host che fungono da server C\&C e costituiscono il punto di contatto per i bot compromessi, secondo tre principali configurazioni topologiche. La topologia a \emph{stella singola} prevede un unico server C\&C centrale al quale si collegano tutti i bot, secondo un'organizzazione analoga al modello \emph{client-server} (\Cref{fig:botnet_topology} (a)). La topologia a \emph{stella multi-server} utilizza invece più server C\&C, tra loro interconnessi e tra cui vengono distribuiti i bot, aumentando la ridondanza e favorendo la scalabilità dell'infrastruttura (\Cref{fig:botnet_topology} (b)). Infine, la topologia \emph{gerarchica} prevede che alcuni bot assumano la funzione di \emph{proxy server}, fungendo da intermediari tra gli altri bot e i server C\&C, riducendo il numero di bot che conosce direttamente l'indirizzo del server C\&C (\Cref{fig:botnet_topology} (c)).
 
-\subsection{Ciclo di vita} % 2.1.3
+% Il C\&C server può essere una macchina compromessa o un provider legittimo. Ovviamente i protocolli sui canali di comunicazioni sono protetti per evitare l'eavesdropping. Il modello centralizzato è quello più utilizzato grazie alla sua semplicità di implementazione e ridotta latenza, con gli svantaggi di facilità di detection e compromissione.
 
-Il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi concatenate, secondo il modello proposto in \cite{silva2013botnets}: % Capitolo 2.4
+Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, tipicamente basata su reti \emph{peer-to-peer} (P2P), dove non esiste un server C\&C centrale, i bot comunicano tra loro e il botmaster impartisce i comandi collegandosi a un nodo qualsiasi della rete (\Cref{fig:botnet_topology} (d)). Sebbene questo modello sia generalmente più complesso da realizzare, l'infrastruttura è più resistente alle attività di rilevamento e smantellamento. Infine, l'\emph{hybrid C\&C model} combina, secondo diversi approcci, elementi dei modelli centralizzato e distribuito, spesso assegnando ruoli differenti ai nodi. % l'assenza di un punto centrale di controllo elimina un singolo punto di fallimento. 
+
+% Le principali topologie associate ai modelli centralizzato e distribuito sono illustrate nella \Cref{fig:botnet_topology}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img/topologia.png}
+    \caption[Topologie delle botnet]{Topologie delle botnet. Adattato da \cite{hachem2011topology}}
+    \label{fig:botnet_topology}
+\end{figure}
+
+\subsection{Ciclo di vita} % 2.1.2
+
+Secondo il modello proposto in \cite{silva2013botnets}, il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi, realizzate secondo modalità differenti in funzione dell'architettura C\&C adottata:
+
+% Il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi, la cui implementazione può variare in funzione dell'architettura C\&C adottata, secondo il modello proposto in \cite{silva2013botnets}: % Capitolo 2.4
 
 % \begin{enumerate}[label=Fase (\arabic*)., leftmargin=*] \end{enumerate}
 
 \begin{description}
     \item[Infezione iniziale.] Un host viene compromesso attraverso dei vettori di attacco comuni e diventa un potenziale bot.
-    \item[Iniezione secondaria.] Il malware iniziale, che può essere un \textit{dropper} o un \textit{downloader}, scarica o attiva il componente principale della botnet, trasformando il dispositivo in un bot controllabile dal botmaster. 
-    \item[Connessione C\&C.] Il nuovo bot deve stabilire una connessione con l'infrastruttura C\&C per registrare la propria presenza e per mettersi in attesa di istruzioni o aggiornamenti. La risoluzione dell'indirizzo del server C\&C avviene tramite metodi statici (indirizzi IP o nomi di dominio \textit{hardcoded}) oppure mediante tecniche più sofisticate, come i \textit{Domain Generation Algorithm} (DGA). % hardcoded nel binario
-    \item[Attività malevole.] Il bot è ora nella fase operativa, è pronto per ricevere i \textit{payload} di comando ed eseguire le attività malevole ordinate dal botmaster.
+    \item[Iniezione secondaria.] Il malware iniziale, che può essere un \emph{dropper} o un \emph{downloader}, scarica o attiva il componente principale della botnet, trasformando il dispositivo in un bot controllabile dal botmaster.
+    \item[Connessione C\&C.] Il nuovo bot deve stabilire una connessione con l'infrastruttura C\&C per registrare la propria presenza e per mettersi in attesa di istruzioni. L'individuazione dei nodi o degli \emph{endpoint} dell'infrastruttura C\&C può avvenire tramite metodi statici (indirizzi IP o nomi di dominio \emph{hardcoded}) oppure con tecniche più sofisticate, come i \emph{Domain Generation Algorithm} (DGA).
+    %\item[Connessione C\&C.] Il nuovo bot deve stabilire una connessione con l'infrastruttura C\&C per registrare la propria presenza e per mettersi in attesa di istruzioni o aggiornamenti. La risoluzione dell'indirizzo del server C\&C avviene tramite metodi statici (indirizzi IP o nomi di dominio \emph{hardcoded}) oppure mediante tecniche più sofisticate, come i \emph{Domain Generation Algorithm} (DGA). % hardcoded nel binario
+    \item[Attività malevole.] Il bot è ora nella fase operativa, è pronto per ricevere i \emph{payload} di comando ed eseguire le attività malevole ordinate dal botmaster.
     \item[Manutenzione e aggiornamento.] Alla fine la botnet entra nella fase di manutenzione, che ha l'obiettivo di garantire la sua sopravvivenza nel lungo periodo. Il botmaster può inviare aggiornamenti del malware, con lo scopo di correggere vulnerabilità o aggiungere nuove funzionalità.
 \end{description}
 
-Il modello C\&C introduce però una vulnerabilità intrinseca: la necessità per i bot di comunicare con l'infrastruttura di comando espone l'attività malevola all'osservazione, costituendo un punto debole sfruttato dalle metodologie di rilevamento. Il traffico analizzato include l'\textit{handshake} iniziale (scambio di identificativi ed eventuale \textit{profiling}, ovvero la raccolta di informazioni sulle caratteristiche dell'host compromesso), il \textit{beaconing} periodico verso un \textit{endpoint} C\&C (che funge da \textit{keepalive} per segnalare la disponibilità del bot) e i payload di comando.
-
-% \cite{silva2013botnets} Capitolo 2.4
+Il modello C\&C, in particolare nelle architetture centralizzate, introduce però una vulnerabilità intrinseca \cite{silva2013botnets}: la necessità per i bot di comunicare con l'infrastruttura di comando espone l'attività malevola all'osservazione, costituendo un punto debole sfruttato dalle metodologie di rilevamento. Il traffico analizzato include l'\textit{handshake} iniziale, con lo scambio di identificativi ed l'eventuale \emph{profiling} dell'host compromesso, il \emph{beaconing} periodico verso un \emph{C\&C endpoint} per segnalare la disponibilità del bot (\emph{keepalive}) e i payload di comando. % Capitolo 2.4
 
 \begin{figure}[t]
     \centering
@@ -107,14 +105,48 @@ Il modello C\&C introduce però una vulnerabilità intrinseca: la necessità per
     \label{fig:botnet}
 \end{figure}
 
-% \subsection{Detailed Command-and-Control}
-% \subsubsection{Handshake, profiling e beaconing}
-% \subsubsection{Esempi Attacchi}
-% \subsubsection{Esempio Mirai}
+\subsection{IoT botnet e Mirai} \label{sec:mirai} % 2.1.3
+
+% Le botnet costituiscono una minaccia informatica presente da diversi anni. Nell'ambito della cosiddetta Quarta Rivoluzione Industriale. La compromissione di tali dispositivi può quindi avere implicazioni sia per la sicurezza dei sistemi sia per la privacy degli utenti.
+
+% Parallelamente alla crescita delle botnet, si sono evolute anche le tecniche di difesa, che possono essere di tipo reattivo, intervenendo dopo la compromissione, oppure preventivo, con l'obiettivo di impedire o limitare l'infezione prima che questa si verifichi. Nonostante il progressivo rafforzamento dei meccanismi di protezione, la continua evoluzione delle tecnologie e dei dispositivi connessi ha offerto nuove opportunità agli attaccanti, contribuendo all'espansione della superficie d'attacco. In particolare, la rapida diffusione dei dispositivi appartenenti all'\textit{Internet of Things} (IoT) ha favorito la creazione e la diffusione di botnet su larga scala, a causa delle risorse hardware limitate e di configurazioni di sicurezza spesso inadeguate.
+
+La progressiva diffusione delle tecnologie e dei dispositivi appartenenti all'\emph{Internet of Things} (IoT) ha contribuito ad ampliare la superficie di attacco e, di conseguenza, le opportunità per la diffusione delle botnet \cite{lefoane2025iot}. L'adozione dell'IoT ha infatti interessato un numero crescente di settori, dalle applicazioni domestiche, come le smart home, a quelle sanitarie, energetiche e industriali. I dispositivi IoT sono interconnessi e possono raccogliere, elaborare e trasmettere attraverso Internet grandi quantità di dati, spesso caratterizzati da requisiti di sicurezza e riservatezza particolarmente elevati.
+
+Le caratteristiche dell'ecosistema IoT rappresentano uno dei principali fattori che può rendere questi dispositivi vulnerabili alla compromissione da parte degli attaccanti \cite{lefoane2025iot}. Molti di essi presentano risorse computazionali e capacità di memoria limitate, rendendo più complessa l'adozione di meccanismi di sicurezza avanzati senza incidere sulle loro funzionalità e prestazioni. A ciò si aggiungono configurazioni di sicurezza talvolta insufficienti, che possono trasformare i dispositivi in punti deboli dell'ecosistema, facilitandone l'arruolamento all'interno di una botnet.
+
+Questi elementi hanno favorito la diffusione delle \emph{IoT botnet} e degli attacchi condotti con esse, principalmente di tipo DDoS, ma anche campagne di \emph{phishing} e attacchi \emph{ransomware}. Le IoT botnet rappresentano una sfida rilevante per la sicurezza informatica anche dal punto di vista del rilevamento, poiché, a differenza di alcuni attacchi condotti attraverso botnet tradizionali, possono generare traffico proveniente da indirizzi di rete legittimi e con caratteristiche difficili da distinguere dal traffico normale.
+
+L'impatto potenziale delle IoT botnet è stato evidenziato in modo particolarmente significativo dalla diffusione a partire dall'agosto 2016 di Mirai. In pochi mesi, la botnet ha raggiunto centinaia di migliaia di dispositivi compromessi ed è stata impiegata per alcuni dei più grandi attacchi DDoS osservati fino ad allora, colpendo servizi e organizzazioni di rilievo in Europa e negli Stati Uniti \cite{lefoane2025iot, antonakakis2017mirai}. La minaccia rappresentata dalle botnet, in particolare nell'ambito IoT, rimane tuttavia attuale: nel 2025 sono state osservate nuove generazioni di varianti della famiglia Mirai, con oltre trentamila dispositivi IoT compromessi e una capacità di attacco stimata fino a $30 \; Tbps$ \cite{nokia2025ddos}. % Trend 4
+
+\emph{Mirai} \cite{antonakakis2017mirai} è una famiglia di malware di tipo \emph{worm-like} e rappresenta un'evoluzione della preesistente botnet \emph{BASHLITE}, conosciuta anche come \emph{Gafgyt}, che infettava dispositivi Linux attraverso il \emph{brute force} di credenziali predefinite. La sua rapida espansione è stata favorita dalla semplicità del malware, dall'efficienza della scansione della rete e, soprattutto, dallo sfruttamento di credenziali predefinite deboli o mai modificate sui dispositivi IoT, permettendole di compromettere dispositivi eterogenei su larga scala. La sua architettura è centralizzata e prevede tre componenti principali, il C\&C, il \emph{report server} e il \emph{loader}, che costituiscono l'infrastruttura interposta tra i bot e il botmaster.
+
+La propagazione di Mirai avviene attraverso un rapido meccanismo di scanning che invia in modo asincrono e \emph{stateless} pacchetti TCP SYN verso indirizzi IPv4 pseudocasuali, sulle porte TCP $23$ e $2323$, utilizzate dal protocollo Telnet. Quando viene identificata una potenziale vittima, Mirai tenta di stabilire una connessione mediante un attacco di tipo brute force, provando diverse coppie di username e password selezionate da un pool di 62 credenziali. Rispetto a BASHLITE, il set di credenziali viene ampliato con combinazioni specifiche per router consumer e dispositivi IoT.
+
+Una volta completato con successo il login, Mirai invia al report server l'indirizzo IP della vittima e le relative credenziali. Questo evento attiva il loader, che procede all'infezione del dispositivo vulnerabile eseguendo il login, identificando l'architettura e l'ambiente di esecuzione e scaricando il binario specifico per il sistema. Al termine dell'infezione, il binario scaricato viene eliminato e il malware procede all'offuscamento del nome del processo e all'interruzione dei processi concorrenti o associati a infezioni concorrenti, comprese altre varianti di Mirai. A questo punto, il bot effettua la scansione di nuove potenziali vittime e, simultaneamente, rimane in ascolto dei comandi provenienti dal C\&C, che possono essere utilizzati per condurre attacchi DDoS. % senza implementare meccanismi di persistenza. i processi concorrenti utilizzano le porte 22 e 23
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[scale=.5]{img/mirai.png}
+    \caption[Mirai operation]{Mirai operation \cite{antonakakis2017mirai}}
+    \label{fig:mirai}
+\end{figure}
+
+Un evento significativo nella storia di Mirai è stato il rilascio pubblico del codice sorgente nell'ottobre 2016 \cite{antonakakis2017mirai}, che ha favorito la proliferazione di nuove varianti e la rapida introduzione di nuove funzionalità. Queste spaziano dal miglioramento delle capacità di infezione, attraverso l'ampliamento delle credenziali utilizzate e il potenziamento dei meccanismi di protezione dalle infezioni concorrenti, fino all'impiego di binari progettati per complicare l'attività di SRE, ad esempio mediante tecniche di packing.
+
+Sebbene Mirai continui a essere utilizzata, oggi il principale rischio, come già osservato in precedenza, è rappresentato dalle sue varianti emergenti. Queste possono derivare sia da famiglie di malware preesistenti, come Gafgyt, che hanno incorporato moduli o caratteristiche di Mirai, sia dallo sviluppo di nuove famiglie basate sul codice sorgente. Tra le varianti successive più rilevanti si annoverano \cite{hojun2024variant}:
+
+\begin{description}
+    \item[\textbf{Hajime} \normalfont(2016).] Utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento di funzionalità e adotta una comunicazione peer-to-peer, basata su BitTorrent.
+    \item[\textbf{Satori} \normalfont(2017).] Per la sua diffusione sfrutta vulnerabilità del protocollo \emph{Universal Plug and Play} (UPnP) presenti in router Huawei e dispositivi basati sul Realtek SDK, senza ricorrere allo scanning. Da Satori è derivata a sua volta \emph{Coin Robber}, che sfrutta vulnerabilità di Claymore Miner per il furto di criptovalute.
+    \item[\textbf{IoT Reaper} \normalfont(2018).] Sfrutta vulnerabilità note nei servizi HTTP di dispositivi IoT e, a differenza della connessione persistente di Mirai con il C\&C, effettua periodicamente richieste HTTP non cifrate. % utilizza il linguaggio Lua
+    \item[\textbf{Mozi} \normalfont(2019).] Combina caratteristiche di Gafgyt, Mirai e IoT Reaper, adottando a un'architettura peer-to-peer, gestita con un protocollo basato su Distributed Hash Table (DHT), che viene utilizzato per la comunicazione tra i nodi e per veicolare payload malevoli, rendendo più difficile il loro rilevamento.
+    % \item Pink (2021): è stata riconosciuta come la prima botnet IoT che presenta una topologia ibrida, combinando un server C\&C centralizzato con un'architettura di rete decentralizzata. I principali bersagli sono i router con fibra ottica e oltre che per gli attacchi DDoS è stata protagonista di attacchi di inserimento di annunci all'interno di siti web HTTP. (non è variante Mirai).
+\end{description}
 
 \section{Malware analysis} % 2.2
 
-La \textit{malware analysis} (analisi del malware) è la disciplina che si occupa di analizzare i malware al fine di identificarne le funzionalità, comprenderne il comportamento e sviluppare adeguate contromisure per il rilevamento e la mitigazione delle minacce \cite{sikorski2012malware}. % Capitolo 0
+La \textit{malware analysis} (analisi del malware) \cite{sikorski2012malware} è la disciplina che si occupa di analizzare i malware al fine di identificarne le funzionalità, comprenderne il comportamento e sviluppare adeguate contromisure per il rilevamento e la mitigazione delle minacce. % Capitolo 0
 
 Nel contesto della risposta a un incidente di sicurezza, la malware analysis consente di raccogliere le informazioni necessarie per ricostruire quanto accaduto, determinando gli obiettivi, le capacità e il comportamento del malware. Tra i risultati dell'analisi vi è anche l'individuazione di elementi utili al rilevamento, tra cui le \textit{signatures} e gli \textit{Indicators of Compromise} (IoC). Questi ultimi possono essere di tipo \textit{host-based}, quando riguardano artefatti presenti sul sistema compromesso, come file creati o modificati e variazioni al registro di sistema, oppure \textit{network-based}, quando sono ricavati dall'analisi del traffico di rete e consentono di individuare comunicazioni riconducibili all'attività del malware.
 
@@ -124,9 +156,9 @@ Nella maggior parte dei casi, chi conduce l'analisi dispone esclusivamente del f
 
 \subsection{Analisi statica} % 2.2.1
 
-La \textit{static analysis} consiste nell'esaminare un malware senza eseguirlo, analizzandone la struttura e il contenuto al fine di ricavarne informazioni sul funzionamento.
+La \textit{static analysis}\cite{sikorski2012malware} consiste nell'esaminare un malware senza eseguirlo, analizzandone la struttura e il contenuto al fine di ricavarne informazioni sul funzionamento. % Capitolo 1
 
-Le tecniche di analisi statica di base comprendono l'utilizzo di strumenti antivirus per una prima classificazione del campione, il calcolo di hash per identificarne univocamente il file e l'ispezione delle informazioni contenute nell'eseguibile, quali stringhe, intestazioni del formato binario, librerie importate o esportate. Sebbene queste tecniche consentano di ottenere rapidamente informazioni preliminari, da sole raramente permettono di comprendere completamente il comportamento del malware \cite{sikorski2012malware}.  % Capitolo 1
+Le tecniche di analisi statica di base comprendono l'utilizzo di strumenti antivirus per una prima classificazione del campione, il calcolo di hash per identificarne univocamente il file e l'ispezione delle informazioni contenute nell'eseguibile, quali stringhe, intestazioni del formato binario, librerie importate o esportate. Sebbene queste tecniche consentano di ottenere rapidamente informazioni preliminari, da sole raramente permettono di comprendere completamente il comportamento del malware.
 
 % e altri metadati utili
 
@@ -329,10 +361,11 @@ A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di s
 
     \begin{figure}[t]
         \centering
-        \includegraphics[scale=.40]{img/masdroid.png}
-        \caption[Panoramica dell'architettura di MASDroid]{Panoramica dell'architettura di MASDroid \cite{wei2026masdroid}}
+        \includegraphics[width=0.95\textwidth]{img/masdroid.png}
+        \caption[Panoramica dell'architettura di MASDroid]{Panoramica dell'architettura di MASDroid.\cite{wei2026masdroid}. Riprodotto \copyright{} 2026 IEEE}
         \label{fig:masdroid}
     \end{figure}
+
 \end{description}
 
 \subsection{Interazione Persona-LLM nel SRE}
@@ -368,10 +401,3 @@ Nonostante ciò, al momento le evidenze empiriche sul raggiungimento di un ruolo
 
 % https://github.com/agentrebench/AgentRE-Bench
 % Coordinamento con SOK e Challenges and Future Directions
-
-\ifSubfilesClassLoaded{%
-    \bibliographystyle{../plain_\languagename}
-    \bibliography{../thud.bib}
-}{}
-
-\end{document}

@@ -110,13 +110,13 @@ Dopo aver definito gli obiettivi del sistema e le sue caratteristiche principali
 
 Al fine di favorire una semplice integrazione del sistema all'interno di workflow esterni già esistenti e pipeline di automazione più ampie, è necessario che ogni \capture{} sia conforme a un insieme di proprietà prestabilite. Tali vincoli sono stati pertanto identificati e definiti già durante la fase di analisi dei requisiti, anticipandone la formalizzazione rispetto alle successive fasi di progettazione e implementazione.
 
-Si è deciso quindi di fissare un linguaggio di programmazione per i \capture{}, al fine di garantire l'uniformità dei moduli, scegliendo a questo proposito Python in virtù di due motivi principali. Il primo è l'ampio utilizzo del linguaggio nell'ambito della cybersecurity e della \textit{Network Forensics}, grazie alla disponibilità di un vasto ecosistema di librerie e strumenti dedicati all'analisi e all'elaborazione dei dati di rete. Il secondo riguarda la disponibilità di costrutti avanzati, come i generatori, che consentono di elaborare progressivamente i messaggi di C\&C secondo un modello \textit{lazy}, permettendo così di gestire il flusso di messaggi in modo efficiente anche durante l'analisi del traffico di rete in tempo reale.
+Si è deciso quindi di fissare un linguaggio di programmazione per i \capture{}, al fine di garantire l'uniformità dei moduli, scegliendo a questo proposito Python in virtù di due motivi principali. Il primo è l'ampio utilizzo del linguaggio nell'ambito della cybersecurity e della \emph{Network Forensics}, grazie alla disponibilità di un vasto ecosistema di librerie e strumenti dedicati all'analisi e all'elaborazione dei dati di rete. Il secondo riguarda la disponibilità di costrutti avanzati, come i generatori, che consentono di elaborare progressivamente i messaggi di C\&C secondo un modello \emph{lazy}, permettendo così di gestire il flusso di messaggi in modo efficiente anche durante l'analisi del traffico di rete in tempo reale.
 
 % \cite{oconnor2012python} \cite{ramalho2022yield} Chapter 17
 
-% Il primo riguarda il fatto che tale linguaggio è ampiamente utilizzato nell'ambito della cybersecurity e della \textit{Network Forensics}, grazie alla disponibilità di un ampio ecosistema di librerie e strumenti dedicati all'analisi e all'elaborazione dei dati di rete \cite{oconnor2012python}. Il secondo aspetto riguarda un requisito tecnico legato alla gestione del traffico di rete in tempo reale. L'impiego di costrutti avanzati di Python, come i generatori, attraverso l'istruzione \texttt{yield}, consente di elaborare progressivamente i messaggi C\&C secondo un modello \textit{lazy}, anziché mantenerne l'intero contenuto in memoria \cite{ramalho2022yield}. Tale approccio permette infatti di limitare il consumo di memoria del modulo, facilitandone l'integrazione con altri sistemi e rendendolo idoneo a operare per periodi di tempo prolungati. % Chapter 17
+% Il primo riguarda il fatto che tale linguaggio è ampiamente utilizzato nell'ambito della cybersecurity e della \emph{Network Forensics}, grazie alla disponibilità di un ampio ecosistema di librerie e strumenti dedicati all'analisi e all'elaborazione dei dati di rete \cite{oconnor2012python}. Il secondo aspetto riguarda un requisito tecnico legato alla gestione del traffico di rete in tempo reale. L'impiego di costrutti avanzati di Python, come i generatori, attraverso l'istruzione \texttt{yield}, consente di elaborare progressivamente i messaggi C\&C secondo un modello \emph{lazy}, anziché mantenerne l'intero contenuto in memoria \cite{ramalho2022yield}. Tale approccio permette infatti di limitare il consumo di memoria del modulo, facilitandone l'integrazione con altri sistemi e rendendolo idoneo a operare per periodi di tempo prolungati. % Chapter 17
 
-Ciascun \capture{} dovrà inoltre essere \textit{self-contained}, ovvero completamente autoconsistente, includendo al suo interno tutte le definizioni, le classi e le dipendenze necessarie a implementare in autonomia le funzionalità previste dal modulo, tra cui l'infiltrazione, la cattura del traffico, l'elaborazione e il parsing dei comandi.
+Ciascun \capture{} dovrà inoltre essere \emph{self-contained}, ovvero completamente autoconsistente, includendo al suo interno tutte le definizioni, le classi e le dipendenze necessarie a implementare in autonomia le funzionalità previste dal modulo, tra cui l'infiltrazione, la cattura del traffico, l'elaborazione e il parsing dei comandi.
 
 Infine, per favorire l'integrazione dei \capture{} all'interno di sistemi esterni e consentire la gestione scalabile di più moduli, sono stati definiti un'interfaccia standardizzata per il modulo e uno schema comune per i messaggi.
 
@@ -235,7 +235,7 @@ while True:
 
 \section{Diagramma di contesto del sistema} % 3.5
 
-Considerando il sistema come una generica \textit{black box}, la trattazione del problema può concludersi con la costruzione del relativo diagramma di contesto, riportato in \Cref{fig:context_diagram}. Il diagramma di contesto fornisce una rappresentazione ad alto livello del sistema, dei suoi confini e delle principali interazioni con l'ambiente operativo, senza entrare nel dettaglio della sua struttura interna.
+Considerando il sistema come una generica \emph{black box}, la trattazione del problema può concludersi con la costruzione del relativo diagramma di contesto, riportato in \Cref{fig:context_diagram}. Il diagramma di contesto fornisce una rappresentazione ad alto livello del sistema, dei suoi confini e delle principali interazioni con l'ambiente operativo, senza entrare nel dettaglio della sua struttura interna.
 
 Da un lato, il sistema sviluppato si deve occupare dell'analisi del file binario di input e, qualora siano soddisfatte le condizioni previste, della generazione del relativo output. Dall'altro, viene rappresentato un possibile utilizzo operativo del modulo generato da parte di un utente, che può impiegarlo per la cattura del traffico dell'infrastruttura C\&C e per la restituzione dei messaggi intercettati in forma strutturata.
 
@@ -262,8 +262,8 @@ Da un lato, il sistema sviluppato si deve occupare dell'analisi del file binario
         \node[actor, below=2.5cm of mod] (output) {Messaggi\\Strutturati\\\texttt{MessageSchema}};
 
         % Connessioni Fase 1
-        \draw[arrow] (user) -- node[above] {\footnotesize File binario} node[below] {\footnotesize\textit{Input}} (sys);
-        \draw[dashed_arrow] (sys) -- node[above] {\footnotesize Modulo generato} node[below] {\footnotesize\textit{Output}} (mod);
+        \draw[arrow] (user) -- node[above] {\footnotesize File binario} node[below] {\footnotesize\emph{Input}} (sys);
+        \draw[dashed_arrow] (sys) -- node[above] {\footnotesize Modulo generato} node[below] {\footnotesize\emph{Output}} (mod);
 
         % Connessioni Fase 2
         \draw (user.south) |- ++(0,-1.5) -| node[pos=0.25, below] {\footnotesize Esecuzione (post-generazione)} (mod.south); % [dashed_arrow]
