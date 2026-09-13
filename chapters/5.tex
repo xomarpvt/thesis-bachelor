@@ -1,4 +1,4 @@
-\chapter{BotScope: implementazione} % 5
+\chapter{BotScope: implementazione} \label{chap:implementazione} % 5
 
 Questo capitolo è dedicato all'implementazione del sistema progettato. Verranno illustrate le principali scelte implementative adottate e descritte le modalità di realizzazione dei singoli componenti, con un livello di dettaglio variabile in funzione della complessità e della rilevanza dei diversi aspetti.
 
@@ -8,7 +8,7 @@ Questo capitolo è dedicato all'implementazione del sistema progettato. Verranno
 
 \section{Ambiente di sviluppo} % 5.1
 
-L'implementazione del sistema è stata realizzata in Python 3.13 \footnote{\url{https://www.python.org}}, mentre per la gestione dell'ambiente di sviluppo e delle dipendenze del progetto è stato utilizzato Conda \footnote{\url{https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/index.html}}.
+L'implementazione del sistema è stata realizzata in Python 3.13 \cite{python2026py313}, mentre per la gestione dell'ambiente di sviluppo e delle dipendenze del progetto è stato utilizzato Conda \cite{conda2026env}.
 
 La scelta del linguaggio di implementazione è ricaduta su Python principalmente grazie all'ampio ecosistema di librerie disponibili per le funzionalità richieste dal sistema. Tra queste rientrano, in particolare, librerie dedicate all'analisi del malware, all'integrazione con LLM, agenti, MCP e all'interazione con gli ambienti di esecuzione. La disponibilità di strumenti già consolidati ha pertanto consentito di concentrare lo sviluppo sulla logica specifica dell'architettura proposta, riducendo la necessità di implementare direttamente funzionalità di supporto.
 
@@ -17,27 +17,29 @@ La scelta del linguaggio di implementazione è ricaduta su Python principalmente
 
 \section{Moduli principali} % 5.2
 
-In questa sezione viene presentata, nell'ordine, l'implementazione dei tre moduli fondamentali del sistema: \textsc{Classifier}, \textsc{SRE Agent} e \textsc{Code Agent}. Le componenti specifiche impiegate da ciascun modulo sono approfondite nelle sezioni successive, a cui si rimanda di volta in volta nel corso della trattazione.
+In questa sezione viene presentata, nell'ordine, l'implementazione dei tre moduli fondamentali del sistema: \classifier{}, \sreagent{} e \codeagent{}. Le componenti specifiche impiegate da ciascun modulo sono approfondite nelle sezioni successive, a cui si rimanda di volta in volta nel corso della trattazione.
 
 \subsection{Classifier} % 5.2.1
 
-Inizialmente, il modulo calcola gli hash del file binario, tra cui il digest SHA-256, mediante la libreria \texttt{hashlib}\footnote{\url{https://docs.python.org/3/library/hashlib.html}}. L'hashing riveste un ruolo fondamentale nell'analisi del malware, poiché consente di identificare univocamente un campione tramite una \textit{fingerprint}. L'hash può quindi essere utilizzato come etichetta identificativa del file e, soprattutto, come riferimento per condividere e confrontare informazioni tra reverse engineer. Ad esempio, il digest calcolato può essere impiegato per verificare la presenza del campione all'interno di database di malware o di servizi online di \textit{threat intelligence} \cite{sikorski2012malware}.
+Inizialmente, il modulo calcola gli hash del \binary{}, tra cui il digest SHA-256, usati come \emph{fingerprint} per identificare univocamente il campione. L'hashing riveste un ruolo fondamentale nell'analisi del malware \cite{sikorski2012malware}, perché consentono ai reverse engineer di condividere e confrontare informazioni tra loro. Ad esempio, il digest calcolato può essere impiegato per verificare la presenza del campione in database di malware o servizi online di \textit{threat intelligence}.
 
 \subsubsection{Virus Total}
 
-A questo scopo viene utilizzato il servizio VirusTotal\footnote{\url{https://virustotal.com}}, che consente di sottoporre un file all'analisi di numerosi \textit{antivirus engine}, fornendo un report che elenca i rilevamenti di attività malevola, le informazioni tecniche sul campione e che suggerisce un nome e una categoria di \textit{Malware Threat}.
+A questo scopo viene utilizzato il servizio VirusTotal \cite{virustotal2026vt}, che consente di sottoporre un file all'analisi di numerosi \emph{antivirus engine}, fornendo un report che elenca i rilevamenti di attività malevola, le informazioni tecniche sul campione e che suggerisce un nome e una categoria di \emph{malware threat}.
 
-Nell'implementazione è stata utilizzata l'API pubblica di VirusTotal, disponibile gratuitamente entro specifici limiti di utilizzo e destinata a un impiego non commerciale e non professionale \footnote{\url{https://docs.virustotal.com/reference/overview}}. Per ottimizzare il processo, viene inizialmente verificata la presenza del campione nel database tramite il suo hash. In caso positivo, si recupera direttamente il report associato, altrimenti, il file viene caricato e analizzato.
+Nell'implementazione è stata utilizzata l'API pubblica di VirusTotal, disponibile gratuitamente entro specifici limiti di utilizzo e destinata a un impiego non commerciale e non professionale. Per ottimizzare il processo, viene inizialmente verificata la presenza del campione nel database tramite il suo hash. In caso positivo, si recupera direttamente il report associato, altrimenti, il file viene caricato e analizzato.
+
+% https://docs.virustotal.com/reference/overview
 
 Le informazioni ottenute vengono utilizzate per determinare la natura del campione mediante un'euristica basata sul numero assoluto di rilevamenti e sulla percentuale di antivirus engine che lo classificano come malevolo. Quando il campione non supera la soglia prefissata viene scartato e l'analisi termina.
 
 \subsubsection{YARA}
 
-Per l'individuazione della famiglia del malware si ricorre invece all'applicazione delle \emph{YARA rules}. YARA è un progetto open source utilizzato per identificare e classificare campioni di malware attraverso regole che definiscono specifiche caratteristiche ricercabili all'interno dei file analizzati. Tali regole combinano pattern, come stringhe e sequenze di byte, con condizioni logiche che determinano quando una regola corrisponde al campione esaminato \cite{sikorski2012malware}. % Appendice B, pagina 475
+Per l'individuazione della famiglia del malware si ricorre invece all'applicazione delle \emph{YARA rules}. YARA \cite{sikorski2012malware, yarax2026yara} è un progetto open source utilizzato per identificare e classificare campioni di malware attraverso regole che definiscono specifiche caratteristiche ricercabili all'interno dei file analizzati. Tali regole combinano pattern, come stringhe e sequenze di byte, con condizioni logiche che determinano quando una regola corrisponde al campione esaminato. % Appendice B, pagina 475
 
-Per questa implementazione viene utilizzato YARA-X \footnote{\url{https://github.com/VirusTotal/yara-x/}}, insieme alla relativa libreria Python \footnote{\url{https://virustotal.github.io/yara-x/docs/api/python/}}. YARA-X è una nuova implementazione del linguaggio di YARA, progettata per mantenere la compatibilità con le regole esistenti, introducendo anche correzioni e nuove funzionalità.
+Per questa implementazione viene utilizzato YARA-X \cite{yarax2026yara}, una nuova implementazione del linguaggio di YARA, progettata per mantenere la compatibilità con le regole esistenti, introducendo anche correzioni e nuove funzionalità. Il \classifier{} carica quindi l'insieme delle YARA rules definite, con regole specifiche per ciascuna famiglia di botnet supportata, e le compila, preparandole per l'analisi del file binario. Successivamente, il campione viene confrontato con tutte le regole caricate, alla ricerca di una corrispondenza. Nel caso venga trovato un match, è possibile fornire al \sreagent{} l'informazione riguardante la famiglia a cui appartiene il campione, così da supportare la sua analisi.
 
-Il \textsc{Classifier} carica quindi l'insieme delle YARA rules definite, con regole specifiche per ciascuna famiglia di malware supportata, e le compila, preparandole per l'analisi del file binario. Successivamente, il campione viene confrontato con tutte le regole caricate, alla ricerca di una corrispondenza. Nel caso venga individuato un match, la regola corrispondente permette di individuare la famiglia del campione, fornendo al \textsc{SRE Agent} un'informazione aggiuntiva a supporto dell'analisi.
+% insieme alla relativa libreria Python \footnote{\url{https://virustotal.github.io/yara-x/docs/api/python/}}
 
 \iffalse
 https://virustotal.github.io/yara/
