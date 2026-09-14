@@ -1,15 +1,3 @@
-\chapter{Prima appendice}
-
-\lipsum[1]
-
-\begin{itemize}
-    \item Hardware (1*A100) / (4*H100)
-    \item vLLM Recipe (quantizzazione)
-    \item Usage Parameters (0.8) / (1.0 thinking, 0.8)
-\end{itemize}
-
-\lipsum[1]
-
 % ============================================================
 % Trucco Avanzato per distinguere Chiavi e Valori in YAML
 % ============================================================
@@ -61,6 +49,7 @@
     breakatwhitespace=true,
     % Numeri di riga
     numbers=left,
+    showlines=true,
     numberstyle=\tiny\ttfamily\color{yamlnumber},
     stepnumber=1,
     numbersep=12pt,
@@ -74,6 +63,21 @@
     xrightmargin=8pt,
     upquote=true
 }
+
+\chapter{Prima appendice} \label{app:llm}
+
+Come anticipato nel \Cref{chap:valutazione} il LLM in esecuzione su cluster GPU di UNIUD, con a disposizione diverse GPU NVIDIA H100 Tensor Core, basate sull'architettura NVIDIA Hopper e ciascuna con $80 \; GB$ di High Bandwidth Memory 3.
+
+Per qwen check è stato usato checkpoint ufficiale quantizzazione FP8, che sta ampiamente in una GPU h100
+
+Per Deepseek LLM ufficiale che ha una rappresentazione mixed precision FP4/FP8, con pesi del LLM insieme a KV cache che occupa 4 GPU, si ha il full 1M context.
+
+
+\begin{description}
+    \item[Qwen 3.6 27B \cite{alibaba2026qwen3.6-27b}.] Sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con 27 miliardi di parametri. Presenta una finestra di contesto nativa di 262.144 token (256K), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
+
+    \item[DeepSeek V4-Flash Preview \cite{deepseekai2026deepseekv4}.] Sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali 13 miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
+\end{description}
 
 % ============================================================
 % YAML listing (Uso)
@@ -108,7 +112,7 @@
     \end{minipage}
 \end{figure}
 
-\lipsum[1]
+questi sono i sampling parameters scelti. Nota. deepseek, durante il thinking gli ignora, usando $1.00$ per la temperature e $1.00$ per top p. Per il thinking qwen solo attivato. deepseek ha none, low, high e max, usato max
 
 \begin{table}[t]
     \centering
@@ -119,10 +123,10 @@
         \toprule
         \textbf{LLM} & & \textbf{Qwen 3.6 27B} & \textbf{DeepSeek V4-Flash Preview} \\
         \midrule
-        \multirow{2}{*}{\emph{temperature}} & \footnotesize\textsc{SRE Agent} & $0.80$ & $0.80 \hspace{1em} (1.00 \text{ thinking})$ \\
-        & \footnotesize\textsc{Code Agent}  & $0.60$ & $0.60 \hspace{1em} (1.00 \text{ thinking})$ \\
-        \multirow{2}{*}{\emph{top\_p}} & \footnotesize\textsc{SRE Agent} & $0.95$ & $0.95 \hspace{1em} (1.00 \text{ thinking})$ \\
-        & \footnotesize\textsc{Code Agent}  & $0.90$ & $0.90 \hspace{1em} (1.00 \text{ thinking})$ \\
+        \multirow{2}{*}{\emph{temperature}} & \footnotesize\sreagent{} & $0.80$ & $0.80 \hspace{1em} (1.00 \text{ thinking})$ \\
+        & \footnotesize\codeagent{}  & $0.60$ & $0.60 \hspace{1em} (1.00 \text{ thinking})$ \\
+        \multirow{2}{*}{\emph{top\_p}} & \footnotesize\sreagent{} & $0.95$ & $0.95 \hspace{1em} (1.00 \text{ thinking})$ \\
+        & \footnotesize\codeagent{}  & $0.90$ & $0.90 \hspace{1em} (1.00 \text{ thinking})$ \\
         \emph{} & \\
         \emph{presence\_penalty} & & \multicolumn{2}{c}{$0.0$} \\
         \emph{frequency\_penalty} & & \multicolumn{2}{c}{$0.0$} \\
@@ -135,6 +139,10 @@
     \caption{Sampling Parameters}
     \label{tab:sampling_parameters}
 \end{table}
+
+% top k sre  40
+% top k code 20
+% min p 0
 
 \chapter{Seconda appendice}
 
@@ -183,10 +191,13 @@
     upquote=true
 }
 
-\lstinputlisting[
-    style=pystyle,
-    caption={BotNet Template},
-    label={lst:py}
-]{appendices/botnet_template.py}
+\begin{multicols}{2}
+    \lstinputlisting[
+        style=pystyle,
+        caption={Botnet Template},
+        label={lst:py}
+    ]{appendices/botnet_template.py}
+\end{multicols}
+
 
 \chapter{Terza appendice}

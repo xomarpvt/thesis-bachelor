@@ -35,24 +35,15 @@ Tutti gli esperimenti sono stati condotti utilizzando un computer personale dota
 
 \subsection{LLM} % 6.2.2
 
-Per la sperimentazione sono stati selezionati due LLM, eseguiti tramite vLLM sul \emph{GPU cluster} dell'Università degli Studi di Udine. La scelta dei modelli è stata effettuata soprattutto tenendo conto delle risorse computazionali a disposizione, considerando al contempo le differenti dimensioni, caratteristiche architetturali e prestazioni riportate nei principali benchmark pubblici di valutazione dei modelli considerati.
+Per la sperimentazione sono stati selezionati due LLM diversi, \emph{Qwen 3.6 27B} \cite{alibaba2026qwen3.6-27b} e \emph{DeepSeek V4-Flash Preview} \cite{deepseekai2026deepseekv4}. La scelta dei modelli è stata effettuata principalmente sulla base delle risorse computazionali disponibili, tenendo conto delle diverse dimensioni e caratteristiche architetturali dei modelli, nonché delle prestazioni da essi riportate nei principali benchmark pubblici di valutazione, tra cui \cite{artificialanalysis2026aaii}.
 
-Di seguito vengono presentati i due modelli selezionati.
-
-\begin{description}
-    \item[Qwen 3.6 27B \cite{alibaba2026qwen3.6-27b}.] Sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con 27 miliardi di parametri. Presenta una finestra di contesto nativa di 262.144 token (256K), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
-
-    \item[DeepSeek V4-Flash Preview \cite{deepseekai2026deepseekv4}.] Sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali 13 miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
-\end{description}
-
-Indicazioni dettagliate relative alle risorse hardware, alle configurazioni di deployment per vLLM e ai sampling parameters utilizzati sono riportate nell'appendice.
+I LLM impiegati nella campagna sperimentale sono stati eseguiti tramite il software vLLM sul \emph{GPU cluster} dell'Università degli Studi di Udine. Nell'\Cref{app:llm} sono descritti in dettaglio i LLM utilizzati, le risorse hardware impiegate, le configurazioni di deployment adottate per vLLM e i sampling parameters dei LLM usati per la presente sperimentazione.
 
 \subsection{Protocollo sperimentale} % 6.2.3
 
 Per ciascun campione di malware considerato è stata effettuata una singola esecuzione, secondo il medesimo protocollo sperimentale. La completa autonomia del sistema durante l'esecuzione consente infatti di applicare tale protocollo a tutti i campioni considerati, garantendo uniformità nelle modalità di analisi.
 
 L'analisi è stata avviata manualmente fornendo il \textsc{Binary File} e la \textsc{Knowledge Base}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output il \textsc{SRE Report} e il \textsc{Python Module}, che potranno essere utilizzati per la successiva valutazione dei risultati.
-
 
 \section{Definizione delle metriche di valutazione} % 6.3
 
@@ -139,12 +130,13 @@ Le metriche considerate sono riportate in \Cref{tab:codice}, insieme alla relati
 
 \section{Campagna sperimentale} % 6.4
 
-Per la campagna sperimentale condotta nell'ambito di questa tesi, si è deciso di concentrare l'analisi su una famiglia di botnet in particolare, la famiglia Mirai, selezionando cinque campioni che rispettano i principi precedentemente definiti.
+Per la campagna sperimentale condotta nell'ambito di questa tesi, si è deciso di concentrare l'analisi su una singola famiglia di botnet IoT, la famiglia Mirai, selezionando cinque campioni che rispettano i principi precedentemente definiti. La scelta di questa famiglia non è casuale, come già descritto nella \Cref{sec:mirai}, Mirai rappresenta uno dei principali riferimenti nel panorama delle botnet IoT, anche a distanza di dieci anni dalla sua comparsa.
 
-A distanza di circa dieci anni dalla sua comparsa, i malware derivati da Mirai continuano a dominare il panorama del malware IoT, come evidenziato da due fonti indipendenti. Il report 2025 di Zscaler ThreatLabz indica Mirai come la minaccia prevalente, con una quota del 40\%, seguita da Mozi e Gafgyt, rispettivamente al secondo e al terzo posto, entrambe con una quota inferiore al 20\%. Complessivamente, queste tre famiglie rappresentano la maggior parte dell'attività osservata, superando i due terzi del totale. Dati simili, basati sulle osservazioni raccolte tramite gli honeypot proprietari di Kaspersky, sono confermati anche dal report \textit{IT Threat Evolution} relativo al Q2 2026, che evidenzia parallelamente la crescita dell'attività di un'altra botnet rinomata, Prometei.
+% A distanza di circa dieci anni dalla sua comparsa, i malware derivati da Mirai continuano a dominare il panorama del malware IoT, come evidenziato da due fonti indipendenti.
 
-% Zscaler ThreatLabz 2025 Mobile, IoT \& OT Threat Report
-% https://securelist.com/malware-report-q2-2026-pc-iot-statistics/120960
+Tale rilevanza è confermata da due fonti indipendenti. Il report 2025 di Zscaler ThreatLabz \cite{zscaler2025threatiot} indica Mirai come la minaccia prevalente, con una quota del 40\%, seguita da Mozi e Gafgyt, rispettivamente al secondo e al terzo posto, entrambe con una quota inferiore al 20\%. Dati simili, basati sulle osservazioni raccolte tramite gli honeypot proprietari di Kaspersky, sono confermati anche dal report \emph{IT Threat Evolution} \cite{kaspersky2026itthreat} relativo al Q2 2026, che evidenzia parallelamente la crescita dell'attività di un'altra botnet rinomata, Prometei.
+
+% Complessivamente, queste tre famiglie rappresentano la maggior parte dell'attività osservata, superando i due terzi del totale. (Mirai + Mozi + Gafgyt)
 
 \subsection{Dataset campioni} % 6.4.2
 % \subsubsection{Provenienza}
@@ -289,7 +281,7 @@ https://hub.harborframework.com/tasks/terminal-bench/path-tracing-reverse/latest
 https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/latest
 \fi
 
-L'andamento osservato, pur essendo limitato al sistema considerato e al metodo di valutazione adottato, risulta coerente con quello evidenziato da alcuni benchmark pubblici. In particolare, l'Artificial Analysis Intelligence Index v4.2, che aggrega dieci valutazioni delle capacità dei LLM in ambito generale, scientifico, di coding e agentico, assegna a DS4FP un punteggio di $33$, superiore al $29$ ottenuto da Q3627 \cite{artificial_analysis}. Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1 \cite{merrill2026terminalbench}, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627.
+L'andamento osservato, pur essendo limitato al sistema considerato e al metodo di valutazione adottato, risulta coerente con quello evidenziato da alcuni benchmark pubblici. In particolare, l'Artificial Analysis Intelligence Index v4.2, che aggrega dieci valutazioni delle capacità dei LLM in ambito generale, scientifico, di coding e agentico, assegna a DS4FP un punteggio di $33$, superiore al $29$ ottenuto da Q3627 \cite{artificialanalysis2026aaii}. Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1 \cite{merrill2026terminalbench}, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627.
 
 Tornando alle singole attività, per la \textsc{Renaming Task} la \Cref{tab:res2} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\% e l'85\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\% e il 55\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\% e il 65\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni rimane senza nome, riducendo le informazioni semantiche disponibili. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \textsc{Renaming Task} tendenzialmente conservativo, nonostante l'impiego dei due cicli di rinomina.
 
