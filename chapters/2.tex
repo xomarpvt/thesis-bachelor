@@ -1,6 +1,6 @@
 \chapter{Lo stato dell'arte} % 2
 
-Questo capitolo ha l'obiettivo di presentare i principali concetti teorici e le nozioni fondamentali necessarie per comprendere gli argomenti trattati nei capitoli successivi. Saranno quindi introdotti gli aspetti essenziali su cui si fonda lo sviluppo del lavoro descritto in questa tesi.
+% Questo capitolo ha l'obiettivo di presentare i principali concetti teorici e le nozioni fondamentali necessarie per comprendere gli argomenti trattati nei capitoli successivi. Saranno quindi introdotti gli aspetti essenziali su cui si fonda lo sviluppo del lavoro descritto in questa tesi.
 
 \section{Malware e botnet} % 2.1
 
@@ -298,7 +298,7 @@ Dal punto di vista dei livelli di comunicazione, il \textit{data layer} definisc
 
 \subsection{LLM nella binary analysis} % 2.4.1
 
-I rapidi progressi nel campo dell'AI hanno portato all'impiego degli LLM anche nel SRE, dove le loro capacità di comprensione e generazione del codice possono essere sfruttate dai reverse engineer per supportare il processo di analisi binaria dei software.
+I rapidi progressi nel campo dell'AI hanno portato all'impiego dei LLM anche nel SRE, dove le loro capacità di comprensione e generazione del codice possono essere sfruttate dai reverse engineer per supportare il processo di analisi binaria dei software.
 
 In questo contesto si inseriscono i due lavori descritti di seguito.
 
@@ -320,7 +320,7 @@ In questo contesto si inseriscono i due lavori descritti di seguito.
         \label{fig:llm_decompile}
     \end{figure}
 
-    I risultati sperimentali ottenuti con LLM4Decompile mostrano come LLM specializzati possano superare gli strumenti tradizionali di decompilazione, evidenziando il potenziale degli LLM come supporto alle attività di SRE.
+    I risultati sperimentali ottenuti con LLM4Decompile mostrano come LLM specializzati possano superare gli strumenti tradizionali di decompilazione, evidenziando il potenziale dei LLM come supporto alle attività di SRE.
 
     \item[ReCopilot \cite{chen2025recopilot}.] Presenta un LLM specializzato nelle principali attività dell'analisi statica, progettato per operare come un copilota a supporto del reverse engineer durante il processo di analisi.
 
@@ -340,12 +340,12 @@ In questo contesto si inseriscono i due lavori descritti di seguito.
 
 \subsection{LLM nella malware analysis}
 
-Dopo le prime applicazioni degli LLM al SRE in contesti generici, il loro impiego è stato progressivamente esteso anche ad ambiti più specifici della cybersecurity, tra cui la malware analysis.
+Dopo le prime applicazioni dei LLM al SRE in contesti generici, il loro impiego è stato progressivamente esteso anche ad ambiti più specifici della cybersecurity, tra cui la malware analysis.
 
-A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di seguito, progettate per sfruttare le capacità degli LLM a supporto dell'analisi dei campioni malevoli e delle attività di SRE.
+A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di seguito, progettate per sfruttare le capacità dei LLM a supporto dell'analisi dei campioni malevoli e delle attività di SRE.
 
 \begin{description}
-    \item[Project IRE \cite{caswell2025projectire}.] Sviluppato da Microsoft, rappresenta uno dei primi esempi industriali di applicazione degli LLM alla malware analysis. Il sistema è progettato per classificare automaticamente un file eseguibile come benigno o maligno disponendo esclusivamente del campione binario, senza fare affidamento su metadati, telemetria o altre informazioni relative alla sua provenienza. L'obiettivo è assistere gli analisti nella gestione dell'elevato numero di file da analizzare, riducendo i tempi e il carico operativo.
+    \item[Project IRE \cite{caswell2025projectire}.] Sviluppato da Microsoft, rappresenta uno dei primi esempi industriali di applicazione dei LLM alla malware analysis. Il sistema è progettato per classificare automaticamente un file eseguibile come benigno o maligno disponendo esclusivamente del campione binario, senza fare affidamento su metadati, telemetria o altre informazioni relative alla sua provenienza. L'obiettivo è assistere gli analisti nella gestione dell'elevato numero di file da analizzare, riducendo i tempi e il carico operativo.
 
     Project IRE adotta un'architettura agentica nella quale un LLM coordina una suite di strumenti specializzati per il SRE. L'architettura consente di combinare diversi livelli di analisi, passando dall'analisi binaria a basso livello alla ricostruzione del control flow, fino all'interpretazione ad alto livello del comportamento del codice. I diversi strumenti, accessibili tramite API, includono sandbox per l'analisi dei campioni, strumenti Microsoft e componenti open source, tra cui decompilatori, strumenti per la ricerca e per il recupero di documentazione.
 
@@ -380,7 +380,7 @@ A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di s
 
 \subsection{Interazione Persona-LLM nel SRE}
 
-La crescente diffusione degli LLM nelle attività di SRE evidenzia come lo stato dell'arte della ricerca si stia progressivamente orientando verso l'integrazione di tali modelli all'interno del flusso di lavoro dei reverse engineer. % la ricerca scientifica e le prospettive future del settore
+La crescente diffusione dei LLM nelle attività di SRE evidenzia come lo stato dell'arte della ricerca si stia progressivamente orientando verso l'integrazione di tali modelli all'interno del flusso di lavoro dei reverse engineer. % la ricerca scientifica e le prospettive future del settore
 
 In questo contesto, tra il 2024 e il 2025, Basque et al. \cite{basque2026srellmstudy} hanno condotto il primo studio sistematico volto a comprendere come gli LLM possano collaborare con i reverse engineer durante le attività di SRE. Lo studio si propone di analizzare le modalità con cui gli LLM vengono integrati nel processo di analisi, il loro impatto sul flusso di lavoro dei reverse engineer e la percezione del loro utilizzo.
 
@@ -408,7 +408,7 @@ Lo studio evidenzia dunque che, in assenza di un avanzamento tecnologico nell'am
 
 % A Survey on Agentic Security: Applications, Threats and Defenses (https://arxiv.org/pdf/2510.06445): descrive l'utilizzo degli agenti LLM-based nella cybersecurity.
 
-Tuttavia, è fondamentale sottolineare che tale conclusione è stata formulata considerando una modalità di interazione basata su assistenti conversazionali e sullo stato dell'arte della GenAI precedente alle più recenti evoluzioni. La diffusione, tra il 2025 e il 2026, dei sistemi agentici basati su LLM ha contribuito ad affermare un paradigma di interazione differente, nel quale il modello può pianificare autonomamente le attività da svolgere, utilizzare strumenti e modificare le proprie azioni sulla base dei risultati ottenuti. Questo approccio può quindi modificare il ruolo degli LLM nella SRE, spostandolo da una funzione prevalentemente assistiva a forme di collaborazione caratterizzata da una maggiore autonomia.
+Tuttavia, è fondamentale sottolineare che tale conclusione è stata formulata considerando una modalità di interazione basata su assistenti conversazionali e sullo stato dell'arte della GenAI precedente alle più recenti evoluzioni. La diffusione, tra il 2025 e il 2026, dei sistemi agentici basati su LLM ha contribuito ad affermare un paradigma di interazione differente, nel quale il modello può pianificare autonomamente le attività da svolgere, utilizzare strumenti e modificare le proprie azioni sulla base dei risultati ottenuti. Questo approccio può quindi modificare il ruolo dei LLM nella SRE, spostandolo da una funzione prevalentemente assistiva a forme di collaborazione caratterizzate da una maggiore autonomia.
 
 Proprio in questa direzione si sviluppa il lavoro di Radey et al. \cite{radey2026challenges}, che analizza le capacità tecniche dei sistemi agentici applicati alla SRE e propone una classificazione basata sulle modalità di analisi adottate. Gli autori distinguono tra \emph{static analysis agents}, che si concentrano prevalentemente sull'analisi statica del codice decompilato, e \emph{hybrid agents}, che combinano attività di analisi statica e dinamica. Un'ulteriore distinzione riguarda il grado di autonomia con cui i sistemi operano. Nei sistemi \emph{human-in-the-loop}, il reverse engineer mantiene un ruolo attivo nel processo, verificando le azioni dell'agente e garantendo che l'analisi venga svolta in sicurezza. Nei sistemi autonomi, invece, gli agenti possono condurre autonomamente il processo di analisi, coordinandosi e comunicando tra loro senza un intervento umano diretto.
 
@@ -418,6 +418,6 @@ Nonostante le potenzialità del paradigma agentico, lo studio evidenzia diverse 
 
 % Vincoli di contesto che possono limitare la quantità di informazioni considerate durante l'analisi.
 
-Il paradigma agentico rappresenta dunque una naturale evoluzione dell'impiego degli LLM nella SRE, ma è ancora in una fase iniziale e in rapida evoluzione, come testimonia la crescente attenzione della ricerca verso questi sistemi. La loro efficacia deve ancora essere verificata in maniera estesa in scenari realistici, anche attraverso benchmark capaci di catturare adeguatamente le caratteristiche delle attività tipiche di reverse engineering. Le sfide future non riguarderanno quindi soltanto il miglioramento degli LLM, ma anche la progettazione di agenti robusti in grado di sfruttarne pienamente il potenziale, integrandoli efficacemente con gli strumenti e gli ambienti di analisi, così da garantire autonomia e affidabilità al processo di reverse engineering.
+Il paradigma agentico rappresenta dunque una naturale evoluzione dell'impiego dei LLM nella SRE, ma è ancora in una fase iniziale e in rapida evoluzione, come testimonia la crescente attenzione della ricerca verso questi sistemi. La loro efficacia deve ancora essere verificata in maniera estesa in scenari realistici, anche attraverso benchmark capaci di catturare adeguatamente le caratteristiche delle attività tipiche di reverse engineering. Le sfide future non riguarderanno quindi soltanto il miglioramento dei LLM, ma anche la progettazione di agenti AI robusti in grado di sfruttarne pienamente il potenziale, integrandoli efficacemente con gli strumenti e gli ambienti di analisi, così da garantire autonomia e affidabilità al processo di reverse engineering.
 
 % Se gli agenti verranno impiegati per automatizzare una parte sempre maggiore della SRE, gli avversari potranno infatti adattare i propri binari non soltanto per ostacolare il reverse engineer umano, ma anche per sfruttare le specifiche limitazioni dei sistemi agentici.
