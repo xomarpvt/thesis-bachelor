@@ -188,16 +188,117 @@ questi sono i sampling parameters scelti. Nota. deepseek, durante il thinking gl
     breaklines=true,
     breakatwhitespace=true,
     showstringspaces=false,
-    upquote=true
+    upquote=true,
+    tabsize=1
 }
 
 \begin{multicols}{2}
     \lstinputlisting[
         style=pystyle,
         caption={Botnet Template},
-        label={lst:py}
+        label={lst:py1}
     ]{appendices/botnet_template.py}
 \end{multicols}
 
+\begin{multicols}{2}
+    \lstinputlisting[
+        style=pystyle,
+        caption={Parser Template},
+        label={lst:py2}
+    ]{appendices/parser_template.py}
+\end{multicols}
+
+\begin{multicols}{2}
+    \lstinputlisting[
+        style=pystyle,
+        caption={Botnet Interface},
+        label={lst:py3}
+    ]{appendices/botnet_interface.py}
+\end{multicols}
 
 \chapter{Terza appendice} \label{app:schema}
+\lstdefinelanguage{json}{
+    basicstyle=\scriptsize\ttfamily\color{black},
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=false,
+    keepspaces=true,
+    tabsize=2,
+    stringstyle=\color{pystring},
+    morekeywords={true,false,null},
+    keywordstyle=\color{pybuiltin}\bfseries
+}
+
+\lstdefinestyle{jsonstyle}{
+    language=json,
+    basicstyle=\scriptsize\ttfamily\color{black},
+    backgroundcolor=\color{pybg},
+    frame=single,
+    rulecolor=\color{pyline},
+    framerule=0.8pt,
+    framesep=8pt,
+    xleftmargin=24pt,
+    xrightmargin=8pt,
+    numbers=left,
+    numberstyle=\tiny\ttfamily\color{pycomment},
+    numbersep=12pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    keepspaces=true,
+    tabsize=2,
+    upquote=true
+}
+
+\lstinputlisting[
+    style=jsonstyle,
+    caption={Message Schema},
+    label={lst:json}
+]{appendices/message_schema.json}
+
+
+\chapter{Idea}
+
+\begin{minipage}{\textwidth}
+%\singlespacing % Opzionale: per stringere l'interlinea dell'albero se usi interlinea 1.5 nella tesi
+\dirtree{%
+.1 thesis-bachelor/.
+.2 thesis\_paviotti.pdf \dots{} \begin{tiny}PDF tesi\end{tiny}.
+.2 thesis/ \dots{} \begin{tiny}Cartella contenente i file sorgente della tesi in LaTeX\end{tiny}.
+.3 main.tex \dots{} \begin{tiny}File principale di compilazione\end{tiny}.
+.3 chapters/ \dots{} \begin{tiny}Cartella contenente i singoli capitoli (.tex)\end{tiny}.
+.3 bibliography.bib \dots{} \begin{tiny}File delle citazioni e fonti bibliografiche\end{tiny}.
+.2 project/ \dots{} \begin{tiny}Cartella contenente gli artefatti del sistema software\end{tiny}.
+.3 knowledge\_base/ \dots{} \begin{tiny}File documentali di contesto per il modello\end{tiny}.
+.3 prompt/ \dots{} \begin{tiny}Testi dei prompt ingegnerizzati\end{tiny}.
+.3 schema/ \dots{} \begin{tiny}Schema JSON per la validazione strutturale dell'output\end{tiny}.
+.3 templates/ \dots{} \begin{tiny}Modelli di codice e pipeline logica principale\end{tiny}.
+.3 risultati/ \dots{} \begin{tiny}File di log e output delle sessioni di test\end{tiny}.
+}
+\end{minipage}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+}
+
+\vspace{3cm}
+
+\noindent
+\begin{minipage}{0.7\textwidth}
+    \textbf{Collegamento Web:} \\
+    \url{https://github.com/xomarpvt/thesis-bachelor}
+    
+    \vspace{0.3cm}
+    %\textit{Nota: La repository è strutturata pubblicamente per garantire la trasparenza metodologica degli artefatti e del testo sorgente.}
+\end{minipage}
+\begin{minipage}{0.3\textwidth}
+    \begin{center}
+        % Genera un QR code di 2.5 centimetri di lato
+        \qrcode[height=2.5cm]{https://github.com/xomarpvt/thesis-bachelor} \\
+        \vspace{0.1cm}
+        %\begin{tiny}\textsc{Scansiona per aprire}\end{tiny}
+    \end{center}
+\end{minipage}
