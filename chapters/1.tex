@@ -1,25 +1,100 @@
-\documentclass[../thesis_paviotti.tex]{subfiles}
-
-\begin{document}
-
 \chapter{Introduzione} % 1
 
-\lipsum[1-2]
+Le botnet costituiscono da anni una minaccia rilevante nel panorama della sicurezza informatica \cite{silva2013botnets}. L'evoluzione delle superfici di attacco ha inoltre favorito la diffusione di botnet composte da dispositivi IoT, rendendo questo fenomeno di particolare interesse, soprattutto per quanto riguarda il loro studio \cite{lefoane2025iot} e il loro impiego in attacchi di elevata intensità \cite{nokia2025ddos}.
 
-\section{Problema} % 1.1
+Parallelamente, in tempi più recenti si è osservata un significativo incremento nell'adozione dei Large Language Model (LLM), favorita in larga parte dalla crescente diffusione di sistemi di AI general-purpose e dalla dimostrazione delle loro capacità in un ampio spettro di domini applicativi \cite{li2024fundamental}. Oltre alle applicazioni in ambiti quali la medicina, l'economia, l'ingegneria e lo sviluppo software, un settore di particolare interesse è rappresentato dalla cybersecurity, dove gli LLM e gli agenti LLM-based possono essere impiegati per svolgere attività di scoperta autonoma delle vulnerabilità (red teaming), di difesa dalle minacce, (blue teaming) e per implementare applicazioni di sicurezza domain-specific \cite{agentic2025security}.
 
-\lipsum[3-4]
+% cite https://aclanthology.org/2024.acl-long.599.pdf
+% cite https://arxiv.org/pdf/2510.06445
 
-\section{Struttura della tesi} % 1.2
+Il contributo di questa tesi si colloca quindi all'intersezione tra l'esigenza di analizzare e monitorare le attività delle botnet e le nuove opportunità offerte dai LLM. L'idea alla base del lavoro nasce dall'esperienza maturata dal Dott. Elia Cal, responsabile della gestione di un honeypot proprietario del gruppo di ricerca di cybersecurity dell'Università degli Studi di Udine. L'attività svolta prevede la cattura di campioni di botnet, in particolare rivolti a dispositivi IoT, e la successiva analisi del malware per comprenderne il comportamento e sviluppare moduli di cattura in grado di eseguire attività di infiltrazione \cite{caballero2009dispatcher} e interagire con l'infrastruttura C\&C, permettendo di raccogliere i comandi ricevuti. L'utilizzo contemporaneo di più moduli consente inoltre di raccogliere il traffico di rete generato, successivamente analizzato per individuare pattern, comandi di attacco e relativi bersagli.
 
-% \subsection{Ambito del lavoro (?)} % 3.1.1
-% \subsection{Obiettivi del sistema (?)} % 3.1.2
-% \subsection{Responsabilità del sistema (?)} % 3.1.3
+% Qui voglio dire che lui nelle sue attività cattura campioni botnet, in particolare IoT, quindi analisi del malware e crea modulo di cattura che possa eseguire attività cosiddetta infiltrazione \cite{caballero2009dispatcher} e catturare in generale i comandi C\&C. l'utilizzo contemporaneo più moduli consente di avere uno sniffer con cui raccogliere il traffico per poi analizzarlo, studiando trend, comandi di attacco e loro bersagli.
 
+%Proprio all'intersezione tra esigenza di analizzare e monitorare attività delle botnet e le nuove possibilità offerte dai LLM che si colloca il contributo di questa tesi. L'idea alla base del lavoro nasce dall'esperienza maturata dal Dott. Elia Cal, responsabile della gestione di un honeypot proprietaria del gruppo di ricerca di Cybersecurity dell'Università di Udine. ... cattura campioni botnet, in particolare IoT, quindi analisi del malware e crea modulo di cattura che possa eseguire attività cosiddetta infiltrazione \cite{caballero2009dispatcher} e catturare in generale i comandi C\&C. l'utilizzo contemporaneo più moduli consente di avere uno sniffer con cui raccogliere il traffico per poi analizzarlo, studiando trend, comandi di attacco e loro bersagli.
+
+L'intero processo, se svolto manualmente, è particolarmente oneroso, anche considerando che la maggior parte dei campioni osservati corrisponde a mutazioni riconducibili a poche famiglie di botnet dominanti \cite{hojun2024variant}. Proprio da questi aspetti emerge la domanda alla base della tesi: in che misura un sistema autonomo basato su LLM può automatizzare l'analisi di campioni di botnet e la conseguente generazione di moduli di cattura riducendo l'intervento umano richiesto e mantenendo un livello di affidabilità sufficiente per l'impiego operativo?
+
+Per rispondere a tale domanda, questa tesi introduce \system{}, un sistema autonomo progettato per effettuare il reverse engineering di campioni di botnet e generare automaticamente i corrispondenti moduli di cattura. Il sistema opera a partire da campioni di botnet potenzialmente mai precedentemente osservati, senza richiedere informazioni specifiche sui campioni stessi né un intervento umano diretto, facendo leva sulle conoscenze proprie dei LLM e, ove disponibili, su eventuali conoscenze esterne relative alle famiglie di appartenenza.
+
+La progettazione e l'implementazione di \system{} affrontano in particolare il requisito dell'autonomia del sistema, mantenendo al contempo la possibilità di integrarlo all'interno di altri sistemi e garantendo all'utente trasparenza sulle operazioni eseguite e sui risultati prodotti, un aspetto fondamentale per consentire e guidare gli sviluppi futuri del sistema.
+
+Il sistema è stato infine sottoposto a una valutazione sperimentale utilizzando campioni rappresentativi dello scenario operativo considerato, con l'obiettivo di valutarne l'accuratezza nello svolgimento delle attività e trarre alcune considerazioni in merito al suo effettivo utilizzo. I risultati ottenuti evidenziano innanzitutto come l'approccio basato su LLM adottato per affrontare il problema risulti corretto e costituisca una direzione concreta e promettente per l'automazione di questo tipo di attività. La valutazione ha inoltre evidenziato l'utilità del sistema come strumento di supporto all'operatore umano, mostrando \dots. Sebbene la soluzione presenti ancora alcuni limiti, i risultati ottenuti mostrano come essa possa costituire una solida base per ulteriori sviluppi, con ampi margini di miglioramento sia nelle capacità di automazione sia nell'affidabilità e nell'accuratezza dei moduli generati.
+
+% Il sistema è stato infine sottoposto a una valutazione sperimentale utilizzando campioni rappresentativi dello scenario operativo considerato, con l'obiettivo di valutarne l'accuratezza nello svolgimento delle attività e trarre trarre conclusioni su utilizzo umano nel contesto operativo. risultati ottenuti mostrano fattibilità di uso questo sistema sottolineando principalmente come utilizzo LLM sia corretto e costituisca una direzione concreta da perseguire per automatizzazione di questo tipo di attività. Sebbene la soluzione presenti ancora alcune lacune e limiti, i risultati ottenuti mostrano che l'approccio costituisce una base solida su cui costruire ulteriori sviluppi, con ampi margini di miglioramento sia nelle capacità di automazione sia nell'affidabilità e nell'efficacia dei moduli generati.
+
+\iffalse
+
+%Botnet/IoT → “il problema è rilevante”
+%LLM → “abbiamo una tecnologia con capacità nuove”
+%Cybersecurity → “questa tecnologia viene già applicata a problemi di sicurezza”
+%La tua tesi → “possiamo applicarla anche a questo specifico problema?”
+
+Botnet fenomeno rilevante, da anni, studiato, evoluto anche per la superficie di attacco con IoT botnet. 
+
+% cite https://www.sciencedirect.com/science/article/pii/S1084804525000074
+% cite https://www.nokia.com/blog/ddos-in-2025-the-year-automation-took-the-wheel/
+
+In questo contesto, la recente evoluzione (ultimi anni) con la loro diffusione i Large Language Model sono evoluti rapidamente da modelli (language-specific?) a sistemi di Artificial Intelligence general purpose, dimostrando applicabili a grande spettro di domini.  Oltre alle applicazioni scientifiche tecniche sociali una particolare è cybersecurity (punto di incontro con prima), dove llm e llm-based agents vengono usati per -autonomous vulnerability discovery (red teaming), defending against threats (blue teaming) e domain-specific security + oltre a esporre nuove vulnerabilità con questi sistemi da cui ci si deve proteggere.
+
+% Le crescenti capacità degli LLM e dei sistemi basati su di essi aprono quindi nuove possibilità anche per l'analisi e il contrasto delle minacce informatiche descritte in precedenza.
+
+l'adozione e l'applicabilità viene confermata dai dati di real world adoption .
+% cite https://hai.stanford.edu/ai-index/2026-ai-index-report/economy
+% cite https://aclanthology.org/2024.acl-long.599.pdf
+% cite https://arxiv.org/pdf/2510.06445
+
+Proprio all'incontro questi temi, si posiziona contributo portato da questa tesi. L'idea per il problema alla base della tesi nasce / si origina dal Dott. Elia Cal, responsabile della gestione di un honeypot proprietaria del gruppo di ricerca di Cybersecurity dell'università di Udine. Nel contesto operativo (lui) cattura campioni botnet, sopratutto IoT, quindi esegue analisi del malware e crea modulo di cattura che possa infiltrarsi e catturare in generale i comandi, in particolare quelli di attacco contro "bersagli". Questo utile perché attraverso uno sniffer più botnet contemporaneamente permette quindi di analizzare il traffico, per vedere trend, bersagli e attacchi.
+
+% problema approccio manuale
+Esperienza di contesto operativo suggerisce che maggior parte di campioni sono mutazioni di poche famiglie dominanti (cit.) per cui nuove possibilità offerte da generative ai possono sfruttare queste cose andare a semplificare questo lavoro, con semplificazione / automatizzare tutto o parte questo processo. Il contributo della tesi si muove proprio verso questa direzione andando a proporre \system{}, un sistema autonomo che a partire da un campione malware e eventualmente una knowledge base, senza alcuna informazione sul campione, in completa autonomia e senza intervento umano, esegue analisi del malware per caratterizzare informazioni rilevanti per il modulo di cattura, costruendolo poi.
+
+% \system{} è un sistema autonomo che, a partire da un campione di malware mai precedentemente osservato e senza disporre di informazioni specifiche su di esso, sfrutta le proprie conoscenze generali del dominio per analizzarlo, caratterizzarne il comportamento e generare il corrispondente modulo di cattura.
+
+Progettazione e implementazione di \system{} hanno affrontato il problema di rendere autonomo il processo di analisi e generazione del modulo di cattura, garantendo allo stesso tempo integrazione potenziale con altri sistemi, mantenendo visibilità per utente di ispezionare operazioni eseguite e risultati prodotti (feedback fondamentale per evolvere il sistema).
+
+% forniscono evidenze a supporto
+Sistema \system{} è stato infine sottoposto a valutazione sperimentale su campioni realistici, volta a verificare l'accuratezza e caratterizzare utilizzo umano nel contesto operativo. risultati ottenuti mostrano fattibilità di uso questo sistema sottolineando principalmente come utilizzo LLM sia corretto e costituisca una direzione concreta da perseguire per automatizzazione di questo tipo di attività. Sebbene la soluzione presenti ancora alcune lacune e limiti, i risultati ottenuti mostrano che l'approccio costituisce una base solida su cui costruire ulteriori sviluppi, con ampi margini di miglioramento sia nelle capacità di automazione sia nell'affidabilità e nell'efficacia dei moduli generati.
+
+\fi
+
+\iffalse
+
+Si parte con il discorso malware e botnet. Questo è rispetto al malware è venuto fuori dopo, circa 2006 whatever e poi è andato in aumento ed evoluzione con gli anni fino a interessare il panorama IoT.
+
+Invece l'AI, nella branca LLM, è dal 2022 che è emersa e poi è esplosa di anno/anno, mese/mese con evoluzioni.
+
+La crescente capacità di LLM e suoi strumenti è normale che si guardi al problema di malware/botnet anche da questo punto di vista, costituisce una risorsa in più. C'è il buzz dell'AI e si prova a metterla dappertutto.
+
+Questa è una ricerca su LLM usati dal punto di vista difensivo, ma attenzione, come viene usata difensivamente viene usata anche offensivamente.
+
+Comunque il problema / il discorso che viene affrontato in questa tesi nasce da un idea del Dott. Elia Cal, responsabile gestione honeypot proprietaria del gruppo di ricerca di Cybersecurity dell'università di Udine. lui nel suo lavoro/ricerca gestisce anche uno sniffer e per i campioni di botnet, sopratutto IoT, che "prende", visto che gli piace l'analisi del malware studia i campioni e se riesce (?) crea un modulo di cattura che possa infiltrarsi e catturare in generale i comandi, in particolare quelli di attacco contro "bersagli". Questo permette quindi di analizzare il traffico, per vedere trend, bersagli e attacchi.
+
+Considerato che comunque la maggior parte di campioni sono mutazioni di poche famiglie dominanti (cit.) lui suggerisce studiare l'applicazione di generative AI per cercare di automatizzare tutto o parte questo processo. il contributo proposto è quindi il sistema \system{}. Questo è un sistema che di suo è autonomo e parte da un campione di malware, senza avere alcuna informazione su di lui, e da solo esegue azioni che portano alla generazione del modulo di cattura. nella progettazione e successiva implementazione del sistema è stato quindi importante garantire l'integrazione del sistema con altri workflow e l'accessibilità (?) utilizzabilità da parte dell'utente che deve avere trasparenza su quanto fatto. questo è fondamentale per eventuali sviluppi futuri.
+
+% Nella progettazione e nell'implementazione del sistema particolare attenzione è stata posta non solo alla capacità di automatizzare il processo, ma anche alla sua integrazione con i workflow esistenti e alla possibilità per l'operatore di comprenderne e verificarne le azioni. La trasparenza del processo e l'accessibilità dei risultati costituiscono infatti aspetti rilevanti per l'impiego del sistema nel contesto operativo e per eventuali successive estensioni.
+
+La soluzione è stata infine sottoposta a una valutazione sperimentale su campioni realistici, volta a verificarne la capacità di automatizzare il processo di generazione dei moduli di cattura. I risultati ottenuti mostrano la fattibilità dell'approccio proposto e, più in generale, evidenziano come l'impiego degli LLM possa costituire una direzione concreta per affrontare e automatizzare questo tipo di attività. Sebbene la soluzione presenti ancora alcune lacune e limiti, i risultati ottenuti mostrano che l'approccio costituisce una base solida su cui costruire ulteriori sviluppi, con ampi margini di miglioramento sia nelle capacità di automazione sia nell'affidabilità e nell'efficacia dei moduli generati.
+
+% La soluzione è stata infine sottoposta a una valutazione sperimentale su campioni realistici, volta a verificarne la capacità di automatizzare il processo di generazione dei moduli di cattura. I risultati ottenuti mostrano la fattibilità dell'approccio proposto e, soprattutto, forniscono evidenze a supporto dell'impiego degli LLM per affrontare questo tipo di problema. Sebbene la soluzione presenti ancora alcune lacune e limiti, i risultati mostrano come l'utilizzo degli LLM costituisca una direzione promettente per l'automazione del processo, offrendo una base concreta sulla quale sviluppare soluzioni progressivamente più autonome, affidabili ed efficaci.
+\fi
+
+\iffalse
+il primo capito è l'introduzione, che come dicevo sopra sarebbe da scrivere per ultimo, dopo che tutta la tesi è finita! Comunque, lo schema di massima per l'introduzione è il seguente:
+Contesto generale in cui si colloca questa ricerca
+Problema specifico che si vuole affrontare
+Soluzione proposta
+Metodo seguito
+Riassunto del resto della tesi
+\fi
+
+
+
+\section{Struttura della tesi} % 1.1
 
 2: Questo capitolo ha l'obiettivo di presentare i principali concetti teorici e le nozioni fondamentali necessarie per comprendere gli argomenti trattati nei capitoli successivi. Saranno quindi introdotti gli aspetti essenziali su cui si fonda lo sviluppo del lavoro descritto in questa tesi.
 
-3: Questo capitolo ha l'obiettivo di introdurre il problema affrontato nella tesi. Dopo una prima definizione generale, verranno analizzati in dettaglio gli input e gli output attesi dal sistema, evidenziandone le principali caratteristiche. Successivamente, saranno identificati i requisiti e i vincoli progettuali che guideranno lo sviluppo della soluzione. Il capitolo si concluderà con una rappresentazione sintetica del sistema con un diagramma di contesto.
+3: Questo capitolo ha l'obiettivo di introdurre il problema affrontato nella tesi. Dopo una prima definizione generale, verranno analizzati in dettaglio gli input e gli output attesi dal sistema, evidenziandone le principali caratteristiche. Successivamente, saranno identificati i requisiti e i vincoli progettuali che guideranno lo sviluppo della soluzione. % Il capitolo si concluderà con una rappresentazione sintetica del sistema con un diagramma di contesto.
 
 4: Questo capitolo ha l'obiettivo di presentare l'architettura proposta per risolvere il problema affrontato in questi tesi. In primo luogo verrà mostrata l'architettura generale, utilizzando un diagramma dei componenti, e successivamente, per ciascun componente, verranno individuate le caratteristiche principali. Infine, verrà descritto il funzionamento del sistema da un ulteriore punto di vista, illustrando un flusso di esecuzione completo mediante un diagramma delle attività e approfondendo il meccanismo di \textit{tool calling} con un diagramma di sequenza.
 
@@ -27,4 +102,4 @@
 
 6: Questo capitolo delinea gli obiettivi e la strategia adottata per valutare il sistema. Successivamente, vengono descritti l'ambiente sperimentale, i campioni selezionati per i test e le metriche utilizzate per la valutazione. Infine vengono presentati i risultati ottenuti e si discutono i principali risultati emersi.
 
-\end{document}
+7: Questo capitolo sintetizza il lavoro svolto, i limiti del lavoro, il lavoro che rimane da fare e i possibile percorsi da perseguire per l'eventuale sviluppo del software realizzato.
