@@ -1,4 +1,4 @@
-\chapter{Il problema} \label{chap:problema} % 3
+\chapter{\system{}: analisi dei requisiti} \label{chap:problema} % 3
 
 % Questo capitolo ha l'obiettivo di introdurre il problema affrontato nella tesi. Dopo una prima definizione generale, verranno analizzati in dettaglio gli input e gli output attesi dal sistema, evidenziandone le principali caratteristiche. Successivamente, saranno identificati i requisiti e i vincoli progettuali che guideranno lo sviluppo della soluzione. Il capitolo si concluderà con una rappresentazione sintetica del sistema con un diagramma di contesto.
 
@@ -126,37 +126,38 @@ La definizione completa della \interface{} è riportata in \Cref{fig:botnet_inte
 \begin{figure}[t]
     \centering
 
-    \begin{minipage}{0.45\linewidth}
+    \begin{minipage}{0.45\textwidth}
         \centering
-        \begin{lstlisting}[frame=single]
+        \begin{lstlisting}[frame=single, style=pystyle]
 from abc import ABC, abstractmethod
-class BotNetInterface(ABC):
-    @abstractmethod
-    def connect(self):
-        pass
-    @abstractmethod
-    def sniff(self):
-        pass
+class BotnetInterface(ABC):
+  @abstractmethod
+  def connect(self):
+    pass
+  @abstractmethod
+  def sniff(self):
+    pass
         \end{lstlisting}
-        \captionof{figure}{Interfaccia astratta \texttt{BotNetInterface}\\ \hspace{1em}}
+        \captionof{figure}{Interfaccia astratta \interface{}\\ \hspace{1em}}
         \label{fig:botnet_interface}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.45\linewidth}
+    \end{minipage}%
+    \hspace{0.05\textwidth}
+    \begin{minipage}{0.45\textwidth}
         \centering
-        \begin{lstlisting}[frame=single]
-b = BotNet()
+        \begin{lstlisting}[frame=single, style=pystyle]
+b = Botnet()
+
 while True:
-    try:
-        b.connect()
-        for message in b.sniff():
-            print(message)
-    except:
-        pass
-    \end{lstlisting}
-    \captionof{figure}{Esempio di uso di un generico modulo \texttt{BotNet} che implementa \texttt{BotNetInterface}}
+  try:
+    b.connect()
+    for message in b.sniff():
+      print(message)
+  except:
+    pass
+        \end{lstlisting}
+    \captionof{figure}{Esempio di uso di un generico modulo \botnet{} che implementa \interface{}}
         \label{fig:botnet_main}
-    \end{minipage}
+    \end{minipage}%
 \end{figure}
 
 Lo schema dei messaggi, \schema{}, definisce il formato comune a cui dovranno essere conformi gli oggetti restituiti dal metodo \texttt{sniff} del \capture{}. Considerata la natura eterogenea delle botnet analizzate, caratterizzate da protocolli di comunicazione e formati dei messaggi differenti, è essenziale avere una rappresentazione uniforme dei messaggi che consenta ai componenti successivi di elaborarli indipendentemente dalla botnet da cui provengono.

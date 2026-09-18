@@ -13,12 +13,14 @@
 %\course{Internet of Things, Big Data e Web}
 %\course{Matematica}
 %\course{Comunicazione Multimediale e Tecnologie dell'Informazione}
-\title{Generazione automatica di moduli \\ per la cattura delle comunicazioni \\ Command-and-Control delle botnet}
+%\title{Generazione automatica di moduli \\ per la cattura delle comunicazioni \\ Command-and-Control delle botnet}
+%Generazione agentica di moduli per la cattura dei comandi delle botnet
+%\title{Generazione agentica di \\ moduli per la cattura \\ dei comandi delle botnet}
+\title{Generazione agentica di moduli \\ per la cattura dei comandi delle botnet}
 % Automatic Generation of Modules for Capturing Malware Command-and-Control Communications
 \author{Omar Paviotti}
 \supervisor{Prof.\ Marino Miculan}
-\cosupervisor{Dott.\ Matteo Paier}
-%\cosupervisor{Dott.\ Matteo Paier \and Dott.\ Matteo Paier}
+\cosupervisor{Dr.\ Matteo Paier \and Dott. Elia Cal}
 %\tutor{Guido Necchi}
 %% Campi obbligatori: \title, \author e \course.
 %% Altri campi disponibili: \reviewer, \tutor, \chair, \date (anno accademico, calcolato in automatico), \rights
@@ -120,6 +122,55 @@
 \newcommand{\reversing}{\textsc{Reversing Task}}
 \newcommand{\botnet}{\textsc{Botnet}}
 \newcommand{\parser}{\textsc{Message Parser}}
+
+% ============================================================
+% Palette Colori "Python Modern"
+% ============================================================
+\definecolor{pykeyword}{HTML}{CF222E}   % Rosso per keyword (def, class, import, return)
+\definecolor{pybuiltin}{HTML}{953097}   % Viola per funzioni built-in (print, len, range)
+\definecolor{pystring}{HTML}{0A3069}    % Blu scuro per le stringhe
+\definecolor{pycomment}{HTML}{57606A}   % Grigio per i commenti
+\definecolor{pynumber}{HTML}{005A9C}    % Blu brillante per i numeri
+\definecolor{pybg}{HTML}{F6F8FA}        % Sfondo grigio chiarissimo
+\definecolor{pyline}{HTML}{D0D7DE}      % Bordo sottile elegante
+\definecolor{pyclass}{HTML}{8250DF}     % Viola per le classi
+\definecolor{pymethod}{HTML}{0550AE}    % Blu per i metodi
+\definecolor{pydecorator}{HTML}{B08800} % Giallo/arancio per i decoratori
+
+% ============================================================
+% Definizione dello Stile Python
+% ============================================================
+\lstdefinestyle{pystyle}{
+    language=Python,
+    basicstyle=\small\ttfamily\color{black},
+    keywordstyle=\color{pykeyword}\bfseries,
+    stringstyle=\color{pystring},
+    commentstyle=\color{pycomment}\itshape,
+    moredelim=**[is][\color{pynumber}]{£}{£},
+    backgroundcolor=\color{pybg},
+    frame=single,
+    rulecolor=\color{pyline},
+    framerule=0.8pt,
+    framesep=8pt,
+    xleftmargin=24pt,
+    xrightmargin=8pt,
+    emph=[1]{print,len,range,str,int,float,dict,list,set,enumerate,zip},
+    emphstyle=[1]\color{pymethod}, % Evidenziazione avanzata per numeri, built-in e decoratori
+    emph=[2]{BotnetInterface,Botnet},
+    emphstyle=[2]\color{pymethod}\bfseries, % Evidenziazione avanzata per classi
+    emph=[3]{connect,sniff},
+    emphstyle=[3]\color{pymethod}\bfseries, % Evidenziazione avanzata per metodi
+    % emph=[4]{@abstractmethod},
+    % emphstyle=[4]\color{pydecorator}\bfseries, % Evidenziazione avanzata per decoratori
+    numbers=left,
+    numberstyle=\tiny\ttfamily\color{pycomment},
+    numbersep=12pt,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    upquote=true,
+    tabsize=1
+}
 
 \begin{document}
 \maketitle

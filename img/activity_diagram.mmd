@@ -1,0 +1,110 @@
+---
+config:
+  theme: base
+  themeVariables:
+    background: "#ffffff"
+
+    # Nodes
+    primaryColor: "#E8E7F5"
+    primaryBorderColor: "#9692C4"
+    primaryTextColor: "#2F2E46"
+    secondaryColor: "#F1F0FA"
+    tertiaryColor: "#F8F8FC"
+
+    # Lines
+    lineColor: "#CBD5E1"
+    textColor: "#334155"
+
+    # Notes / Labels
+    noteBkgColor: "#FFF7D6"
+    noteBorderColor: "#E5C96A"
+    noteTextColor: "#3F3F46"
+
+    # Flowchart
+    nodeBorder: "#9692C4"
+    clusterBkg: "rgba(148,163,184,0.05)"
+    clusterBorder: "#CBD5E1"
+    edgeLabelBackground: "#ffffff"
+
+  flowchart:
+    htmlLabels: true
+    curve: basis
+    padding: 8
+    nodeSpacing: 25
+    rankSpacing: 35
+    diagramPadding: 5
+---
+
+flowchart LR
+
+    start((<span style='font-weight:bold;'>Start</span>))
+    finish((<span style='font-weight:bold;'>End</span>))
+
+    binary[/Binary File/]
+    kb[/Knowledge Base/]
+    capture[/Capture Module/]
+    report[/SRE Reports/]
+
+    start --> binary
+    start --> kb
+    capture --> finish
+
+    subgraph M1["<span style='font-size:20px; font-weight:bold;'>Classifier</span>"]
+        direction LR
+
+        A[Preliminary<br>Analysis]
+        D1{Malicious<br>Sample?}
+        D2{Relevant<br>Sample?}
+        END((<span style='font-weight:bold;'>End</span>))
+
+        A --> D1
+        D1 -->|False| END
+        D1 -->|True| D2
+        D2 -->|False| END
+    end
+
+    subgraph M2["SRE Agent"]
+        direction TB
+
+        D3{Additional<br>Information<br>Available?}
+        
+        B[Prompts<br>Retrieval]
+        C[Knowledge<br>Retrieval]
+        D[SRE<br>Activities]
+        E[Symbol Recovery<br>Activities]
+        F[Final Report<br>Generation]
+
+        D3 -->|False| D4
+        D3 -->|True| C
+        C --> D4
+
+        D4{Stripped<br>Sample?}
+
+        B --> D3
+
+        D4 -->|False| D
+        D4 -->|True| E
+        E --> D
+        D --> F
+    end
+
+    subgraph M3["Code Agent"]
+        G[Report<br>Retrieval]
+        H[Code Templates<br>Retrieval]
+        I[Message Schema<br>Retrieval]
+        J[Prompts<br>Retrieval]
+        K[Code<br>Generation]
+
+        G --> H
+        H --> I
+        I --> J
+        J --> K
+    end
+    
+    binary --> A
+    kb --> C
+
+    D2 -->|True| B
+    F --> report
+    report --> G
+    K --> capture

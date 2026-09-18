@@ -1,0 +1,114 @@
+---
+config:
+  theme: base
+  themeVariables:
+    background: "#ffffff"
+
+    # Actors
+    actorBkg: "#E8E7F5"
+    actorBorder: "#9692C4"
+    actorTextColor: "#2F2E46"
+    actorLineColor: "#CBD5E1"
+
+    # Messages
+    signalColor: "#475569"
+    signalTextColor: "#334155"
+    lineColor: "#CBD5E1"
+
+    # Notes
+    noteBkgColor: "#FFF7D6"
+    noteBorderColor: "#E5C96A"
+    noteTextColor: "#3F3F46"
+
+    activationBkgColor: "#CBD5E1"
+    activationBorderColor: "#94A3B8"
+
+  sequence:
+    width: 100
+    actorMargin: 25
+    actorFontSize: 14
+    actorFontWeight: 600
+    noteFontSize: 14
+    noteFontWeight: 500
+    noteAlign: center
+    diagramMarginX: 5
+    diagramMarginY: 5
+---
+
+sequenceDiagram
+
+participant SREAgent as SRE<br>Agent
+participant LLM
+
+%% participant Sandbox as Sandbox<br>Environment
+
+%% =========================================================
+%% INITIALIZATION
+%% =========================================================
+rect rgba(148,163,184,0.05)
+
+    Note over SREAgent: Initialization
+
+    create participant SandboxMCPClient as Sandbox<br>MCP Client
+    SREAgent->>SandboxMCPClient: <<create>>
+
+    create participant SREMCPClient as SRE<br>MCP Client
+    SREAgent->>SREMCPClient: <<create>>
+
+    SandboxMCPClient->>SandboxMCPServer: Connection Setup
+    %% SandboxMCPServer-->>SandboxMCPClient: Connection Established
+    SREMCPClient->>SREMCPServer: Connection Setup
+    %% SREMCPServer->>SREMCPClient: Connection Established
+
+end
+
+participant SandboxMCPServer as Sandbox<br>MCP Server
+participant SREMCPServer as SRE<br>MCP Server
+participant SREFramework as SRE<br>Framework
+
+%% =========================================================
+%% TOOL DISCOVERY
+%% =========================================================
+rect rgba(59,130,246,0.05)
+
+    Note over SREAgent: Sandbox Env.<br>Tool Discovery
+
+    SREAgent->>SandboxMCPClient: list_tools()
+    SandboxMCPClient->>SandboxMCPServer: tools/list
+    SandboxMCPServer-->>SandboxMCPClient: Tools
+    %% loop For each tool end
+    %% SandboxMCPClient->>SandboxMCPClient: format_tools()
+    SandboxMCPClient-->>SREAgent: Tools
+
+end
+
+Note over SREAgent, SREFramework: ⋮　⋮　⋮　⋮　⋮　⋮　⋮
+
+%% =========================================================
+%% SRE FRAMEWORK TOOL INVOCATION
+%% =========================================================
+rect rgba(16,185,129,0.05)
+
+    Note over SREAgent: SRE Framework<br>Tool Invocation
+
+    SREAgent->>+LLM: Chat Completion
+    LLM-->>-SREAgent: Response +<br>Tool Calls (0..N)
+
+    %% loop For each tool call end
+
+    Note over SREAgent: ⋮
+
+    SREAgent->>SREMCPClient: call_tool(name, arguments)
+    SREMCPClient->>SREMCPServer: tools/call
+
+    SREMCPServer->>+SREFramework: Tool execution
+    SREFramework-->>-SREMCPServer: Result
+
+    SREMCPServer-->>SREMCPClient: Result
+    SREMCPClient-->>SREAgent: Result
+
+    Note over SREAgent: ⋮
+
+end
+
+%% Note over SREAgent, SREFramework: ⋮　　⋮　　⋮　　⋮　　⋮　　⋮　　⋮

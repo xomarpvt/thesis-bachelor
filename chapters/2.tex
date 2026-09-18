@@ -1,4 +1,4 @@
-\chapter{Lo stato dell'arte} % 2
+\chapter{Background} % 2
 
 % Questo capitolo ha l'obiettivo di presentare i principali concetti teorici e le nozioni fondamentali necessarie per comprendere gli argomenti trattati nei capitoli successivi. Saranno quindi introdotti gli aspetti essenziali su cui si fonda lo sviluppo del lavoro descritto in questa tesi.
 
@@ -36,8 +36,8 @@ Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, 
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.95\textwidth]{img/topologia.png}
-    \caption[Topologie delle botnet]{Topologie delle botnet. Adattato da \cite{hachem2011topology}}
+    \includegraphics[width=0.75\textwidth]{img/botnet_topology.pdf}
+    \caption[Topologie delle botnet]{Modelli e topologie delle botnet. Adattato da \cite{hachem2011topology}}
     \label{fig:botnet_topology}
 \end{figure}
 
@@ -62,6 +62,7 @@ Il modello C\&C, in particolare nelle architetture centralizzate, introduce per√
 
 \begin{figure}[t]
     \centering
+    \iffalse
     \begin{tikzpicture}[
         node distance=10mm,
         box/.style={
@@ -101,6 +102,8 @@ Il modello C\&C, in particolare nelle architetture centralizzate, introduce per√
         (C.north east);
 
     \end{tikzpicture}
+    \fi
+    \includegraphics[width=0.95\textwidth]{img/botnet_lifecycle.pdf}
     \caption[Ciclo di vita di una botnet]{Ciclo di vita di una botnet \cite{silva2013botnets}}
     \label{fig:botnet_lifecycle}
 \end{figure}
@@ -133,7 +136,7 @@ Una volta completato con successo il login, Mirai invia al report server l'indir
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.5]{img/mirai.png}
+    \includegraphics[width=0.65\textwidth]{img/mirai_operation.pdf}
     \caption[Mirai operation]{Mirai operation \cite{antonakakis2017mirai}}
     \label{fig:mirai_operation}
 \end{figure}
@@ -289,7 +292,7 @@ Dal punto di vista dei livelli di comunicazione, il \textit{data layer} definisc
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.5]{img/mcp.png}
+    \includegraphics[width=0.95\textwidth]{img/mcp_architecture.pdf}
     \caption[Architettura del Model Context Protocol (MCP)]{Architettura del Model Context Protocol (MCP) \cite{anthropic2024mcp}}
     \label{fig:mcp_architecture}
 \end{figure}
@@ -315,7 +318,9 @@ In questo contesto si inseriscono i due lavori descritti di seguito.
 
     \begin{figure}[t]
         \centering
-        \includegraphics[scale=.40]{img/decompile.png}
+        \includegraphics[width=0.45\textwidth]{img/llm_decompile_end.pdf}%
+        \hspace{0.05\textwidth}%
+        \includegraphics[width=0.45\textwidth]{img/llm_decompile_ref.pdf}%
         \caption[Approcci LLM4Decompile-End e -Ref per la decompilazione]{Approcci LLM4Decompile-End e -Ref per la decompilazione \cite{tan2024llm4decompile}} % di codice binario
         \label{fig:llm_decompile}
     \end{figure}
@@ -371,7 +376,7 @@ A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di s
 
     \begin{figure}[t]
         \centering
-        \includegraphics[width=0.95\textwidth]{img/masdroid.png}
+        \includegraphics[width=0.95\textwidth]{img/masdroid_overview.pdf}
         \caption[Panoramica dell'architettura di MASDroid]{Panoramica dell'architettura di MASDroid.\cite{wei2026masdroid}. Riprodotto \copyright{} 2026 IEEE}
         \label{fig:masdroid}
     \end{figure}

@@ -148,49 +148,6 @@ questi sono i sampling parameters scelti. Nota. deepseek, durante il thinking gl
 
 \lipsum[1]
 
-% ============================================================
-% Palette Colori "Python Modern"
-% ============================================================
-\definecolor{pykeyword}{HTML}{CF222E}   % Rosso per keyword (def, class, import, return)
-\definecolor{pybuiltin}{HTML}{953097}   % Viola per funzioni built-in (print, len, range)
-\definecolor{pystring}{HTML}{0A3069}    % Blu scuro per le stringhe
-\definecolor{pycomment}{HTML}{57606A}   % Grigio per i commenti
-\definecolor{pynumber}{HTML}{005A9C}    % Blu brillante per i numeri
-\definecolor{pybg}{HTML}{F6F8FA}        % Sfondo grigio chiarissimo
-\definecolor{pyline}{HTML}{D0D7DE}      % Bordo sottile elegante
-
-% ============================================================
-% Definizione dello Stile Python
-% ============================================================
-\lstdefinestyle{pystyle}{
-    language=Python,
-    % basicstyle=\small\ttfamily\color{black},
-    basicstyle=\scriptsize\ttfamily\color{black},
-    keywordstyle=\color{pykeyword}\bfseries,
-    stringstyle=\color{pystring},
-    commentstyle=\color{pycomment}\itshape,
-    % Evidenziazione avanzata per numeri, built-in e decoratori
-    emph={print,len,range,str,int,float,dict,list,set,tuple,enumerate,zip},
-    emphstyle=\color{pybuiltin},
-    moredelim=**[is][\color{pynumber}]{£}{£}, % Per evidenziare i numeri se necessario
-    % Formattazione blocco e bordi
-    backgroundcolor=\color{pybg},
-    frame=single,
-    rulecolor=\color{pyline},
-    framerule=0.8pt,
-    framesep=8pt,
-    xleftmargin=24pt,
-    xrightmargin=8pt,
-    % Gestione spazi e righe
-    numbers=left,
-    numberstyle=\tiny\ttfamily\color{pycomment},
-    numbersep=12pt,
-    breaklines=true,
-    breakatwhitespace=true,
-    showstringspaces=false,
-    upquote=true,
-    tabsize=1
-}
 
 \begin{multicols}{2}
     \lstinputlisting[
