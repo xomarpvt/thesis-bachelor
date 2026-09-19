@@ -1,118 +1,124 @@
 \chapter{\system{}: valutazione} \label{chap:valutazione} % 6
 
-% Questo capitolo delinea gli obiettivi e la strategia adottata per valutare il sistema. Successivamente, vengono descritti l'ambiente sperimentale, i campioni selezionati per i test e le metriche utilizzate per la valutazione. Infine vengono presentati i risultati ottenuti e si discutono i principali risultati emersi.
+% Questo capitolo delinea gli obiettivi e la strategia adottata per valutare il sistema. Successivamente, vengono descritti l'ambiente sperimentale, i campioni selezionati per i test e i criteri utilizzate per la valutazione. Infine vengono presentati i risultati ottenuti e si discutono i principali risultati emersi.
 
 \section{Obiettivi e criteri} % 6.1
 % \subsection{Strategia di validazione} % 6.1.1
 
-Lo scopo generale della valutazione è quello di determinare il grado di maturità raggiunto dal sistema,  così da valutarne l'effettiva applicabilità nel contesto reale per cui è stato progettato e stabilire se il suo impiego possa risultare concretamente vantaggioso. La valutazione del sistema \system{} condotta in questa tesi si concentrerà su due obiettivi principali.
+Lo scopo generale della valutazione del sistema è quello di determinare il grado di maturità raggiunto, così da valutarne l'effettiva applicabilità nel contesto reale per cui è stato progettato e stabilire se il suo impiego possa risultare concretamente vantaggioso. La valutazione del sistema \system{} condotta in questa tesi si concentrerà su due obiettivi principali.
 
-Il primo obiettivo, di carattere preliminare e meno rilevante, consiste nel verificare la correttezza funzionale del sistema, accertandosi che i tre moduli principali (\textsc{Classifier}, \textsc{SRE Agent} e \textsc{CodeAgent}) producano il comportamento atteso nello scenario operativo. In particolare, saranno verificati il corretto funzionamento della pipeline, il suo grado di autonomia e la produzione degli output previsti.
+Il primo obiettivo, di carattere preliminare e meno rilevante, consiste nel verificare la correttezza funzionale del sistema, accertandosi che i tre moduli principali (\classifier{}, \sreagent{} e \codeagent{}) producano il comportamento atteso nello scenario operativo. In particolare, saranno verificati il corretto funzionamento della pipeline, il suo grado di autonomia e la produzione degli output previsti.
 
-Il secondo obiettivo, di maggiore rilevanza e sul quale si concentrerà maggiormente la sperimentazione, consiste nel valutare l'accuratezza dei due output più importanti, ovvero i \textsc{SRE Report} e il \textsc{Capture Module}, rispetto ai requisiti definiti.
+Il secondo obiettivo, di maggiore rilevanza e sul quale ci si concentrerà maggiormente durante la sperimentazione, consiste nel valutare l'accuratezza dei due output più importanti, ovvero i \report{} e il \capture{}, rispetto ai requisiti definiti.
 
-A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni malevoli, selezionando quelli maggiormente rappresentativi dello scenario operativo di riferimento. I campioni dovranno essere sufficientemente significativi e presentare un'adeguata varietà, considerando, ad esempio, architetture differenti e campioni sottoposti o meno al processo di stripping. Per poter interpretare efficacemente e confrontare i risultati della successiva analisi, sarà inoltre necessario definire una metodologia di classificazione che consenta di valutare oggettivamente il grado di difficoltà dei campioni.
+A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni di malware significativi, selezionando quelli maggiormente rappresentativi dello scenario operativo di riferimento e garantendo allo stesso tempo un'adeguata varietà. Per poter interpretare efficacemente e confrontare i risultati ottenuti sarà inoltre necessario definire una metodologia di classificazione che consenta di valutare oggettivamente il grado di difficoltà dei campioni.
 
-In più, dovranno anche essere utilizzati almeno due LLM diversi, così da dimostrare l'indipendenza del sistema da uno specifico modello e, soprattutto, analizzare l'influenza delle loro caratteristiche differenti sui risultati ottenuti. Infine, le prestazioni in termini di risorse computazionali e tempi di esecuzione non costituiscono una dimensione rilevante per questa valutazione, poiché il sistema non è progettato per un utilizzo ad alta frequenza né per operare in presenza di limiti stringenti sulle risorse disponibili.
+% A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni malevoli, selezionando quelli maggiormente rappresentativi dello scenario operativo di riferimento. I campioni dovranno essere sufficientemente significativi e presentare un'adeguata varietà, considerando, ad esempio, architetture differenti e campioni sottoposti o meno al processo di stripping. 
 
-La strategia di testing proposta prevede una valutazione end-to-end progressiva, condotta al termine di ciascun modulo della pipeline. Ad eccezione del \textsc{Classifier}, la cui valutazione risulta immediata una volta scelti i campioni, per gli altri due moduli è necessario effettuare un confronto con una \emph{ground truth}. Quest'ultima è costituita dalla documentazione relativa al funzionamento e al comportamento dei malware analizzati, insieme ai moduli di cattura effettivamente funzionanti, ed è stata definita con il supporto di un esperto di SRE specializzato nell'analisi di malware.
+In più, dovranno essere utilizzati più LLM, così da dimostrare l'indipendenza del sistema da uno specifico modello e, soprattutto, analizzare l'influenza delle loro differenti caratteristiche sui risultati ottenuti. Infine, le prestazioni in termini di risorse computazionali e tempi di esecuzione non costituiscono una dimensione rilevante per questa valutazione, poiché il sistema non è stato progettato per un utilizzo ad alta frequenza né per operare in presenza di limiti stringenti sulle risorse disponibili.
 
-La valutazione del \textsc{Classifier} considera due aspetti distinti: il riconoscimento della natura malevola del campione e l'individuazione della famiglia di malware. % basandosi sulla corrispondenza più probabile.
+La strategia di testing proposta prevede una valutazione \emph{end-to-end} progressiva, condotta al termine di ciascun modulo principale della pipeline. Ad eccezione del \classifier{}, la cui valutazione risulta immediata una volta scelti i campioni, per gli altri due moduli è necessario effettuare un confronto con una \emph{ground truth}. Quest'ultima è costituita dalla documentazione relativa al funzionamento e al comportamento dei malware analizzati, insieme ai moduli di cattura effettivamente funzionanti, ed è stata definita con il supporto di un esperto di cybersecurity, SRE e malware analysis.
 
-La valutazione dello \textsc{SRE Agent}, il componente centrale della pipeline, si concentra sulla correttezza e sulla completezza delle informazioni riportate nei \textsc{SRE Report}. In particolare, l'analisi tiene conto sia della presenza delle informazioni attese sia della loro accuratezza, penalizzando l'omissione di elementi rilevanti. In più, per i binari stripped, è necessario valutare quantitativamente e qualitativamente l'attività di rinomina.
+La valutazione del \classifier{} considera due aspetti distinti, il riconoscimento della natura malevola del campione e l'individuazione della famiglia di botnet a cui appartiene. % basandosi sulla corrispondenza più probabile.
 
-Infine, la valutazione del \textsc{Code Agent} riguarda l'implementazione prodotta nel \textsc{Capture Module}, verificandone la correttezza funzionale e la sua coerenza con le informazioni raccolte nello \textsc{SRE Report} e con le specifiche fornite attraverso i prompt, i \textsc{Code Templates} e il \textsc{MessageSchema}. % (Comportamento atteso) Gli aspetti puramente stilistici assumono un ruolo secondario.
+% il componente centrale della pipeline,
 
-Come già evidenziato per la difficoltà dei campioni, anche la valutazione delle informazioni estratte, della rinomina delle funzioni e del codice generato richiede la definizione di criteri il più possibile oggettivi e riproducibili. A tal fine, per ciascuno di questi aspetti dovranno essere individuati opportuni criteri di valutazione. 
+La valutazione del \sreagent{} si concentra sulla correttezza e sulla completezza delle informazioni riportate nei \report{}, al fine di determinare l'accuratezza della \reversing{}. In particolare, l'analisi tiene conto sia della presenza delle informazioni attese, sia della loro esattezza, penalizzando eventuali omissioni. Inoltre, per i binari stripped, è necessario valutare quantitativamente e qualitativamente le attività di rinomina svolte, al fine di misurare l'efficacia della \renaming{}.
+
+Infine, la valutazione del \codeagent{} riguarda l'implementazione del \capture{}, verificandone la correttezza funzionale e la coerenza con le informazioni raccolte nei \report{} e con le specifiche fornite attraverso i prompt, i \templates{} e il \textsc{MessageSchema}. % (Comportamento atteso) Gli aspetti puramente stilistici assumono un ruolo secondario.
+
+Come già evidenziato per la difficoltà dei campioni, anche le valutazioni delle informazioni estratte, della rinomina delle funzioni e del codice prodotto richiedono l'individuazione di criteri di valutazione il più possibile oggettivi e riproducibili. % A tal fine, per ciascuno di questi aspetti dovranno essere individuati opportuni criteri di valutazione. 
 
 \section{Configurazione sperimentale} % 6.2
 
-\subsection{Ambiente di esecuzione} % 6.2.1
+\subsection{Ambiente di esecuzione e LLM} % 6.2.1
+% \subsection{LLM} % 6.2.2
 
-Tutti gli esperimenti sono stati condotti utilizzando un computer personale dotato di hardware convenzionale. Il software è stato quindi eseguito sul sistema locale, mentre l'inferenza dei modelli linguistici è stata demandata a un'infrastruttura esterna, come anticipato nella sezione relativa all'implementazione.
+Tutti gli esperimenti sono stati condotti utilizzando un computer personale dotato di hardware convenzionale, eseguendo il software sul sistema locale. L'inferenza dei LLM è stata invece eseguita sul \emph{GPU cluster} dell'Università degli Studi di Udine, mediante il software vLLM \cite{vllm2026vllm}.
 
-% è stata demandata, tramite API,
+Per la sperimentazione sono stati selezionati due LLM diversi, \emph{Qwen 3.6 27B} \cite{alibaba2026qwen3.6-27b} e \emph{DeepSeek V4-Flash Preview} \cite{deepseekai2026deepseekv4}. Al fine di rendere più concisi i riferimenti ai LLM, si adotterà l'abbreviazione \emph{Q3627} per il primo e \emph{DS4FP} per il secondo.
 
-\subsection{LLM} % 6.2.2
+La scelta dei modelli è stata effettuata principalmente sulla base delle risorse computazionali disponibili, tenendo conto delle diverse dimensioni e caratteristiche architetturali dei modelli, nonché delle prestazioni da essi riportate nei principali benchmark pubblici di valutazione, tra cui \cite{artificialanalysis2026aaii}. 
 
-Per la sperimentazione sono stati selezionati due LLM diversi, \emph{Qwen 3.6 27B} \cite{alibaba2026qwen3.6-27b} e \emph{DeepSeek V4-Flash Preview} \cite{deepseekai2026deepseekv4}. La scelta dei modelli è stata effettuata principalmente sulla base delle risorse computazionali disponibili, tenendo conto delle diverse dimensioni e caratteristiche architetturali dei modelli, nonché delle prestazioni da essi riportate nei principali benchmark pubblici di valutazione, tra cui \cite{artificialanalysis2026aaii}.
+Nell'\Cref{app:llm} sono descritte in dettaglio le caratteristiche dei LLM utilizzati, le risorse hardware impiegate, le configurazioni di deployment adottate per vLLM e i sampling parameters usati per la presente sperimentazione.
 
-I LLM impiegati nella campagna sperimentale sono stati eseguiti tramite il software vLLM sul \emph{GPU cluster} dell'Università degli Studi di Udine. Nell'\Cref{app:llm} sono descritti in dettaglio i LLM utilizzati, le risorse hardware impiegate, le configurazioni di deployment adottate per vLLM e i sampling parameters dei LLM usati per la presente sperimentazione.
+\subsection{Protocollo sperimentale} % 6.2.2
 
-\subsection{Protocollo sperimentale} % 6.2.3
+Ciascun campione di malware è stato sottoposto a una singola esecuzione secondo un protocollo sperimentale uniforme che, grazie all'autonomia del sistema durante l'esecuzione, è stato applicato in modo coerente a tutti i campioni.
 
-Per ciascun campione di malware considerato è stata effettuata una singola esecuzione, secondo il medesimo protocollo sperimentale. La completa autonomia del sistema durante l'esecuzione consente infatti di applicare tale protocollo a tutti i campioni considerati, garantendo uniformità nelle modalità di analisi.
+L'analisi è stata avviata manualmente fornendo in input il \binary{} e la \kb{}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output i \report{} e il \capture{}, successivamente utilizzati per la valutazione dei risultati.
 
-L'analisi è stata avviata manualmente fornendo il \textsc{Binary File} e la \textsc{Knowledge Base}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output il \textsc{SRE Report} e il \textsc{Python Module}, che potranno essere utilizzati per la successiva valutazione dei risultati.
-
-\section{Definizione delle metriche di valutazione} % 6.3
+\section{Definizione dei criteri di valutazione} % 6.3
 
 \subsection{Complessità del campione} % 6.3.1
 
-Per caratterizzare la complessità di ciascun campione è necessario individuare gli elementi che contribuiscono a rendere più difficoltosa l'estrazione delle informazioni, attribuendo a ciascuno di essi un punteggio proporzionale alla complessità aggiuntiva che introduce.
+Per caratterizzare la complessità di ciascun campione è necessario individuare gli elementi che contribuiscono a rendere più difficoltosa l'estrazione delle informazioni, attribuendo a ciascuno di essi un punteggio proporzionale al grado di complessità introdotta.
 
-A tal fine sono stati individuati i criteri riportati nella \Cref{tab:complessita}, insieme a una descrizione del loro ruolo e del relativo significato. Il punteggio complessivo è ottenuto come somma dei singoli punteggi e, per convenzione, un valore più elevato corrisponde a un campione più complesso da analizzare. Ad eccezione del primo criterio, che tiene conto del risultato della compilazione prodotto dal framework di SRE adottato, tutti gli altri descrivono direttamente caratteristiche e proprietà del malware analizzato. % (malware o binario)
+A tal fine sono stati individuati i criteri riportati nella \Cref{tab:complexity_criteria}, insieme a una descrizione del loro ruolo e del relativo significato. Ad eccezione del primo criterio, che tiene conto del risultato della decompilazione prodotto dal framework di SRE adottato, tutti gli altri descrivono direttamente caratteristiche e proprietà del malware analizzato. % (malware o binario)
 
-Le singole metriche possono assumere valori secondo due modalità. Alcune sono di tipo binario e prevedono esclusivamente l'assegnazione del punteggio minimo o massimo, come nel caso del fingerprinting del sistema compromesso. Altre, invece, possono assumere un valore qualsiasi all'interno dell'intervallo definito, in funzione del livello di complessità osservato nel campione, come per il protocollo di C\&C adottato. In tutti i casi, il punteggio minimo è pari a $0$, mentre il valore massimo dipende dalla specifica caratteristica considerata. La somma dei valori massimi determina un punteggio teorico complessivo pari a $165$, corrispondente al livello massimo di complessità considerato dalla scala proposta.
+I criteri possono essere di tipo binario, con l'assegnazione del solo valore minimo o massimo, secondo la notazione \(\{min,max\}\), oppure possono assumere valori variabili nell'intervallo \([min,max]\), in funzione della complessità osservata. In entrambi i casi, il punteggio minimo è pari a $0$, mentre quello massimo varia in base alla caratteristica considerata. La complessità del campione, indicata come \emph{Complexity Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $165$. Per convenzione, a un valore maggiore corrisponde una complessità superiore del campione.
 
-\renewcommand{\topfraction}{0.8}
-\renewcommand{\textfraction}{0.2}
+% La somma dei valori massimi dei singoli criteri determina un \emph{Complexity Score} teorico massimo pari a $165$.
 
-\renewcommand{\tabularxcolumn}[1]{m{#1}}
+% Le singole metriche possono assumere valori secondo due modalità. Alcune sono di tipo binario e prevedono esclusivamente l'assegnazione del punteggio minimo o massimo, come nel caso del fingerprinting del sistema compromesso. Altre, invece, possono assumere un valore qualsiasi all'interno dell'intervallo definito, in funzione del livello di complessità osservato nel campione, come per il protocollo di C\&C adottato. In tutti i casi, il punteggio minimo è pari a $0$, mentre il valore massimo dipende dalla specifica caratteristica considerata. La somma dei valori massimi determina un punteggio teorico complessivo pari a $165$, corrispondente al livello massimo di complessità considerato dalla scala proposta.
+
+\renewcommand{\topfraction}{0.80}  % Alloca al massimo l'80% della pagina per i float.
+\renewcommand{\textfraction}{0.20} % Alloca almeno il 20\% della pagina per il testo
+
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/6/tables_1.tex]{tab1}
-    \caption{Complessità}
-    \label{tab:complessita}
+    \ExecuteMetaData[chapters/T.tex]{complexity-criteria}
+    \caption[Criteri di valutazione della complessità dei campioni malevoli]{Criteri di valutazione della complessità dei campioni malevoli e relativi intervalli di punteggio. La notazione ${min,max}$ indica che sono ammessi esclusivamente i valori minimo e massimo, mentre $[min,max]$ indica che il punteggio può assumere qualsiasi valore nell'intervallo.}
+    \label{tab:complexity_criteria}
 \end{table}
 
-\subsection{Efficacia della \textsc{Renaming Task}} % 6.3.2
+\subsection{Efficacia della \renaming{}} % 6.3.2
 
-Per questo aspetto, i parametri principali da valutare sono due. Il primo riguarda il numero di funzioni rinominate rispetto al totale delle funzioni presenti nel binario. Tale valore, espresso come percentuale e indicato nel seguito con ${RC}_{\%}$, viene definito \emph{Renaming Coverage}:
+Per la valutazione dell'efficacia della \renaming{} è necessario considerare due parametri principali. Il primo riguarda il numero di funzioni rinominate rispetto al totale delle funzioni presenti nel binario. Tale valore, espresso come percentuale e indicato nel seguito con ${RC}_{\%}$, viene definito \emph{Renaming Coverage}.
 
-\begin{equation}
+\begin{equation*}
     {RC}_{\%} = \frac{N_{fun. \text{ renamed}}}{N_{fun. \text{ total}}} \cdot 100
     \label{eq:renaming_coverage}
-\end{equation}
+\end{equation*}
 
-Considerando la strategia adottata dal \textsc{SRE Agent} per la fase di rinomina, che procede ricorsivamente a partire dal \texttt{main}, e il numero generalmente elevato di funzioni presenti nei campioni, è difficile aspettarsi valori di $C_{\%}$ prossimi al $100\%$. La strategia tende infatti a coinvolgere principalmente le funzioni più rilevanti per l'analisi, mentre le funzioni di importanza minore vengono progressivamente escluse. Ne deriva un effetto di \emph{diminishing returns}, per cui l'incremento del numero di funzioni rinominate produce un beneficio progressivamente minore.
+Il secondo parametro considera invece la qualità dei nomi assegnati e corrisponde alla percentuale di funzioni rinominate alle quali è stato associato un nome semanticamente corretto sulla base del comportamento osservato. Tale valore, indicato nel seguito con ${RA}_{\%}$, viene definito \emph{Renaming Accuracy}.
 
-Il secondo parametro considera quindi la qualità dei nomi assegnati e corrisponde alla percentuale di funzioni rinominate alle quali è stato associato un nome semanticamente corretto sulla base del comportamento osservato. Tale valore, indicato nel seguito con ${RA}_{\%}$, viene definito \emph{Renaming Accuracy}:
-
-\begin{equation}
+\begin{equation*}
     {RA}_{\%} = \frac{N_{fun. \text{ correct}}}{N_{fun. \text{ renamed}}} \cdot 100
-    \label{eq:naming_accuray}
-\end{equation}
+    \label{eq:renaming_accuracy}
+\end{equation*}
 
-Risulta quindi logico proporre un punteggio composito che unisce i due parametri. Per tenere conto dell'effetto di rendimenti decrescenti associato a $C_{\%}$, viene applicata una trasformazione logaritmica, ottenendo lo score finale, che mira a premiare una combinazione elevata di copertura e correttezza semantica. Questo valore viene indicato con $S_{\%}$ e viene definito \emph{Renaming Score}:
+Considerando che la strategia adottata per la \reversing{} tende a coinvolgere principalmente le funzioni più rilevanti per l'analisi, escludendo quelle di minore interesse, e che il numero di funzioni presenti nei campioni è generalmente elevato, è difficile aspettarsi valori di ${RC}_{\%}$ prossimi al $100\%$. Inoltre, all'aumentare del numero di funzioni rinominate, si può ipotizzare un effetto di \emph{diminishing returns}, per cui il beneficio derivante da ulteriori ridenominazioni tende progressivamente a ridursi.
 
-\begin{equation}
-    {RS}_{\%} = g({RC}_{\%}) \cdot {RA}_{\%} % \frac{}{100}
+% Considerando la strategia adottata dal \textsc{SRE Agent} per la fase di rinomina, che procede ricorsivamente a partire dal \texttt{main}, e il numero generalmente elevato di funzioni presenti nei campioni, è difficile aspettarsi valori di ${RC}_{\%}$ prossimi al $100\%$. La strategia tende infatti a coinvolgere principalmente le funzioni più rilevanti per l'analisi, mentre le funzioni di importanza minore vengono progressivamente escluse. Ne deriva un effetto di \emph{diminishing returns}, per cui l'incremento del numero di funzioni rinominate produce un beneficio progressivamente minore.
+
+Risulta quindi logico proporre un punteggio composito che unisce i due parametri. Per tenere conto dei rendimenti decrescenti associati a ${RC}_{\%}$, viene applicata una trasformazione logaritmica attraverso la funzione $g$, dove $k>0$ controlla il grado di attenuazione del contributo di ${RC}_{\%}$. La funzione è normalizzata in modo tale che $g(0)=0$ e $g(100)=1$, mantenendo invariati gli estremi dell'intervallo considerato. Il punteggio finale, indicato con ${RS}_{\%}$ e chiamato \emph{Renaming Score}, è volto a premiare una combinazione elevata di copertura e correttezza semantica.
+
+\begin{equation*}
+    {RS}_{\%} = g({RC}_{\%}) \cdot {RA}_{\%}
     \label{eq:renaming_score}
-\end{equation}
+\end{equation*}
 
-dove la funzione $g(x)$ è definita come:
-
-\begin{equation}
+\begin{equation*}
     g(x) = \frac{\log (1+k \cdot \frac{x}{100})}{\log(1+k)}
     \label{eq:logarithmic_transformation}
-\end{equation}
+\end{equation*}
 
-e $k>0$ controlla il grado di rendimenti decrescenti introdotto dalla funzione. La funzione è normalizzata in modo tale che $g(0)=0$ e $g(100)=1$, mantenendo quindi invariati gli estremi dell'intervallo considerato.
+\subsection{Accuratezza della \reversing{}} % 6.3.3
 
-\subsection{Accuratezza della \textsc{Reversing Task}} % 6.3.3
+In modo analogo alla valutazione della complessità del campione, è necessario definire i criteri che consentano di misurare l'efficacia e l'accuratezza della \reversing{}, il cui risultato è rappresentato dalla redazione dei \report{}. La valutazione considera quindi la capacità dell'agente di recuperare gli artefatti rilevanti, oltre che di ricostruire il comportamento e la logica di funzionamento del malware. Vengono penalizzate l'introduzione di ipotesi non supportate, la presenza di informazioni incoerenti o discordanti tra loro e la mancata identificazione di artefatti o elementi rilevanti.
 
-In modo analogo alla valutazione della complessità del campione, è necessario definire i criteri che consentano di misurare l'efficacia dell'attività di analisi svolta dal \textsc{SRE Agent}, il cui risultato è rappresentato dalla redazione dello \textsc{SRE Report}. La valutazione considera la capacità dell'agente di recuperare gli artefatti rilevanti e di ricostruire il comportamento e la logica di funzionamento del malware. Viene inoltre valutata la capacità di riconoscere l'assenza degli elementi non presenti nel campione e di evitare l'introduzione di ipotesi non supportate, con una penalizzazione per le informazioni rilevanti non identificate.
+% Le metriche considerate fanno direttamente riferimento agli elementi recuperati durante l'analisi, ad eccezione dell'ultima, che invece si concentra maggiormente sull'organizzazione e sulla coerenza delle informazioni riportate nei documenti finali, penalizzando eventuali contraddizioni o incoerenze.
 
-Gli artefatti e le informazioni oggetto della valutazione sono riportati nella \Cref{tab:artefatti}, insieme a una descrizione di ciò che comprende ciascuna voce e delle informazioni attese. Il punteggio complessivo è ottenuto come somma dei singoli punteggi e, per convenzione, un valore più elevato corrisponde a un'analisi più efficace. Le metriche considerate fanno direttamente riferimento agli elementi recuperati durante l'analisi, ad eccezione dell'ultima, che invece si concentra maggiormente sull'organizzazione e sulla coerenza delle informazioni riportate nei documenti finali, penalizzando eventuali contraddizioni o incoerenze.
+I criteri scelti per la valutazione sono riportati nella \Cref{tab:reversing_criteria}, insieme a una descrizione della loro interpretazione. A ciascun criterio può essere assegnato un punteggio compreso tra $0$ e un valore massimo variabile in funzione della sua importanza. I punteggi parziali consentono di valorizzare anche ricostruzioni incomplete ma corrette, evitando che un errore finale annulli le informazioni recuperate, a condizione che queste siano sufficientemente corrette e non fuorvianti. L'accuratezza della \reversing, indicata come \emph{Reversing Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $100$. Per convenzione, a un valore più elevato corrisponde un'analisi più efficace.
 
-A ciascuna metrica può essere assegnato un punteggio compreso tra un valore minimo, sempre pari a $0$, e un valore massimo, variabile in funzione dell'importanza dell'elemento considerato. L'utilizzo di punteggi parziali consente di rappresentare anche ricostruzioni incomplete ma in parte corrette. In questo modo, un errore nella conclusione finale non annulla necessariamente il valore delle informazioni correttamente recuperate, purché queste siano sufficientemente accurate da supportare la successiva verifica del reverse engineer e non risultino fuorvianti. La somma dei valori massimi determina un punteggio teorico complessivo pari a $100$, corrispondente a un'analisi completa e corretta.
+% La somma dei valori massimi determina un punteggio teorico complessivo pari a $100$, corrispondente a un'analisi completa e corretta.
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/6/tables_1.tex]{tab2}
+    \ExecuteMetaData[chapters/T.tex]{reversing-criteria}
     \caption{Criteri di valutazione della \textsc{Reversing Task}}
-    \label{tab:artefatti}
+    \label{tab:reversing_criteria}
 \end{table}
 
 \subsection{Funzionalità del \textsc{Capture Module}} % 6.3.4
@@ -155,7 +161,7 @@ Per quanto riguarda la provenienza, i primi tre campioni sono stati catturati tr
 
 \subsection{Difficoltà campioni} % 6.4.3
 
-Sulla base dei parametri riportati nella tabella \Cref{tab:complessita}, la tabella \Cref{tab:complessita_campioni} riporta il livello di difficoltà associato a ciascuno dei campioni scelto. Il punteggio complessivo, espresso su un massimo teorico di $165$, viene successivamente normalizzato in termini percentuali.
+Sulla base dei parametri riportati nella tabella \Cref{tab:complexity_criteria}, la tabella \Cref{tab:complessita_campioni} riporta il livello di difficoltà associato a ciascuno dei campioni scelto. Il punteggio complessivo, espresso su un massimo teorico di $165$, viene successivamente normalizzato in termini percentuali.
 
 I risultati evidenziano una difficoltà piuttosto eterogenea tra i campioni: \textsc{hopto} risulta il più difficile da analizzare (62\%), seguito da \textsc{deepsorrow} (56\%) e \textsc{marvisxoxo} (50\%); \textsc{onboardboat} presenta una difficoltà intermedia (43\%), mentre \textsc{ghost} è nettamente il più semplice (23\%).
 
@@ -178,8 +184,6 @@ Risulta particolarmente interessante osservare il contributo delle singole diffi
 Di seguito sono presentati i principali risultati ottenuti dalla campagna sperimentale condotta, in accordo con il protocollo e le metriche precedentemente definite.
 
 I risultati sono riportati mediante tabelle caratterizzate da una struttura comune. Le colonne sono organizzate secondo un indice gerarchico a due livelli, dove il primo identifica il campione considerato e il secondo specifica il modello LLM impiegato per l'esecuzione. Le righe riportano i criteri di volta in volta considerati, con i relativi valori, mentre la parte finale della tabella è dedicata ai punteggi complessivi calcolati a partire da questi.
-
-Al fine di rendere più concisi i riferimenti agli LLM, si adotteranno le abbreviazioni \textsl{Q3627} per \emph{Qwen 3.6 27B} e \textsl{DS4FP} per \emph{DeepSeek V4-Flash Preview}.
 
 \subsection{Statistiche di esecuzione} % 6.5.1
 

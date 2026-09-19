@@ -37,7 +37,9 @@ Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.75\textwidth]{img/botnet_topology.pdf}
-    \caption[Topologie delle botnet]{Modelli e topologie delle botnet. Adattato da \cite{hachem2011topology}}
+    \caption[Topologie delle botnet]{
+        Modelli e topologie delle botnet. Adattata da \cite{hachem2011topology}.
+    }
     \label{fig:botnet_topology}
 \end{figure}
 
@@ -62,49 +64,10 @@ Il modello C\&C, in particolare nelle architetture centralizzate, introduce per�
 
 \begin{figure}[t]
     \centering
-    \iffalse
-    \begin{tikzpicture}[
-        node distance=10mm,
-        box/.style={
-            rectangle,
-            rounded corners=5pt,
-            draw=black,
-            minimum width=25mm,
-            minimum height=9mm,
-            align=center,
-            font=\footnotesize
-        },
-        arrow/.style={
-            -{Stealth[length=2.0mm]},
-            semithick
-        }
-    ]
-
-        \node[box] (A) {Infezione\\iniziale};
-        \node[box, right=of A] (B) {Iniezione\\secondaria};
-        \node[box, right=of B] (C) {Connessione\\C\&C};
-        \node[box, right=of C] (D) {Attività\\malevole};
-        \node[box, right=of D] (E) {Manutenzione e\\aggiornamento};
-
-        \draw[arrow] (A) -- (B);
-        \draw[arrow] (B) -- (C);
-        \draw[arrow] (C) -- (D);
-        \draw[arrow] (D) -- (E);
-
-    \draw[arrow]
-        (E.south)
-        .. controls +(0,-9mm) and +(10mm,-7mm) ..
-        (C.south east);
-
-    \draw[arrow]
-        (C.north)
-        .. controls +(0,9mm) and +(10mm,7mm) ..
-        (C.north east);
-
-    \end{tikzpicture}
-    \fi
     \includegraphics[width=0.95\textwidth]{img/botnet_lifecycle.pdf}
-    \caption[Ciclo di vita di una botnet]{Ciclo di vita di una botnet \cite{silva2013botnets}}
+    \caption[Ciclo di vita di una botnet]{
+        Ciclo di vita di una botnet. Adattata da \cite{silva2013botnets}.
+    }
     \label{fig:botnet_lifecycle}
 \end{figure}
 
@@ -137,7 +100,9 @@ Una volta completato con successo il login, Mirai invia al report server l'indir
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.65\textwidth]{img/mirai_operation.pdf}
-    \caption[Mirai operation]{Mirai operation \cite{antonakakis2017mirai}}
+    \caption[Schema di funzionamento della botnet Mirai]{
+        Schema di funzionamento della botnet Mirai. Adattata da \cite{antonakakis2017mirai}.
+    }
     \label{fig:mirai_operation}
 \end{figure}
 
@@ -292,8 +257,11 @@ Dal punto di vista dei livelli di comunicazione, il \textit{data layer} definisc
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.95\textwidth]{img/mcp_architecture.pdf}
-    \caption[Architettura del Model Context Protocol (MCP)]{Architettura del Model Context Protocol (MCP) \cite{anthropic2024mcp}}
+    %\includegraphics[width=0.95\textwidth]{img/mcp_architecture.pdf}
+    \includegraphics[width=0.95\textwidth]{img/mcp_architecture.png}
+    \caption[Architettura del Model Context Protocol]{
+        Architettura del Model Context Protocol. Adattata da \cite{gutowska2025mcp}.
+        }
     \label{fig:mcp_architecture}
 \end{figure}
 
@@ -318,10 +286,23 @@ In questo contesto si inseriscono i due lavori descritti di seguito.
 
     \begin{figure}[t]
         \centering
-        \includegraphics[width=0.45\textwidth]{img/llm_decompile_end.pdf}%
-        \hspace{0.05\textwidth}%
-        \includegraphics[width=0.45\textwidth]{img/llm_decompile_ref.pdf}%
-        \caption[Approcci LLM4Decompile-End e -Ref per la decompilazione]{Approcci LLM4Decompile-End e -Ref per la decompilazione \cite{tan2024llm4decompile}} % di codice binario
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{img/llm_decompile_end.pdf}
+            \caption{\hspace{1em} Framework \emph{End2end-Decompile} basato su \emph{LLM4Decompile-End}}
+            \label{fig:llm_decompile_end}
+        \end{subfigure}
+        \hspace{0.05\textwidth}
+        \begin{subfigure}{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{img/llm_decompile_ref.pdf}
+            \caption{\hspace{1em} Framework \emph{Refined-Decompile} basato su \emph{LLM4Decompile-Ref}}
+            \label{fig:llm_decompile_ref}
+        \end{subfigure}
+
+        \caption[Framework \emph{End2end-Decompile} e \emph{Refined-Decompile}]{
+            Framework \emph{End2end-Decompile} e \emph{Refined-Decompile} per la decompilazione del codice binario. Adattata da \cite{tan2024llm4decompile}.
+        }
         \label{fig:llm_decompile}
     \end{figure}
 
@@ -362,7 +343,7 @@ A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di s
 
     L'obiettivo del framework è superare alcune delle principali limitazioni degli approcci esistenti, tra cui la possibilità di elusione delle tecniche di analisi puramente statica, il costo computazionale maggiore dell'analisi dinamica e, soprattutto, la limitata trasparenza dei processi decisionali dei sistemi tradizionali.
 
-    L'architettura di MASDroid, rappresentata anche nella \Cref{fig:masdroid}, può essere suddivisa in tre componenti principali:
+    L'architettura di MASDroid, rappresentata anche nella \Cref{fig:masdroid_overview}, può essere suddivisa in tre componenti principali:
 
     \begin{itemize}
         \item \textit{Static Analysis}: il file APK viene preliminarmente decompilato e analizzato, estraendo un insieme di caratteristiche che viene successivamente fornito ai diversi agenti come base comune per l'analisi.
@@ -377,8 +358,10 @@ A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di s
     \begin{figure}[t]
         \centering
         \includegraphics[width=0.95\textwidth]{img/masdroid_overview.pdf}
-        \caption[Panoramica dell'architettura di MASDroid]{Panoramica dell'architettura di MASDroid.\cite{wei2026masdroid}. Riprodotto \copyright{} 2026 IEEE}
-        \label{fig:masdroid}
+        \caption[Panoramica dell'architettura di \emph{MASDroid}]{
+            Panoramica dell'architettura di \emph{MASDroid}. Adattata da \cite{wei2026masdroid}, \copyright{} 2026 IEEE.
+        }
+        \label{fig:masdroid_overview}
     \end{figure}
 
 \end{description}

@@ -1,0 +1,99 @@
+---
+config:
+  themeVariables:
+    clusterBkg: "#ffffde"
+    clusterBorder: "#aaaa33"
+  themeCSS: |
+    .cluster rect {
+    stroke-width: 2px;
+    }
+---
+
+flowchart LR
+%% Definizione Stili
+%% classDef agent fill:#f9d0c4,stroke:#c0392b,stroke-width:2px,color:#333;
+classDef mcp fill:#d4e6f1,stroke:#2980b9,stroke-width:2px,color:#333;
+classDef tool fill:#fcf3cf,stroke:#f1c40f,stroke-width:2px,color:#333;
+classDef io fill:#e8f8f5,stroke:#1abc9c,stroke-width:2px,color:#333;
+classDef llm fill:#ECECFF,stroke:#9370DB,stroke-width:2px,color:#333;
+classDef primary fill:#FDEDEC,stroke:#C0392B,stroke-width:2px,color:#333;
+
+%% Artefatti di I/O
+binary([Binary\nFile]):::primary
+kb[(Knowledge\nBase)]:::io
+logs[(Logging\nFiles)]:::io
+prompt[(Prompt\nArchive)]:::io
+report[(SRE\nReports)]:::io
+template[(Code\nTemplates)]:::io
+schema[(Message\nSchema)]:::io
+capture([Capture\nModule]):::primary
+
+
+%% Componente LLM
+llm[LLM]:::llm
+
+subgraph codeagent [Code Agent]
+    llmclient2[LLM\nClient]:::llm
+end
+
+
+subgraph sreagent [SRE Agent]
+    sandboxclient[Sandbox\nMCP Client]:::mcp
+    sreclient[SRE\nMCP Client]:::mcp
+    llmclient1[LLM\nClient]:::llm
+end
+
+
+subgraph mcp [MCP Integration]
+	sreserver[SRE\nMCP Server]:::mcp
+	sandboxserver[Sandbox\nMCP Server]:::mcp
+end
+
+subgraph strumenti ["Execution Environments"]
+    sreframework[SRE\nFramework]:::tool
+    sandbox[Sandbox\nEnvironment]:::tool
+    sandboxfiles[(Sandbox\nFiles)]:::io
+end
+
+
+style mcp fill:#ffffde40,stroke:#aaaa3340,stroke-width:2px,color:#333
+style strumenti fill:#ffffde40,stroke:#aaaa3340,stroke-width:2px,color:#333
+
+sandbox -. "«create»".-> sandboxfiles
+
+
+%% Pipeline Agenti e MCP Clients
+subgraph classifier [Classifier]
+end
+style classifier fill:#ffffde,stroke:#aaaa33,stroke-width:2px,color:#333
+%%classifier[Classifier]:::agent
+
+%% Connessioni MCP: Trasporto (Client <-> Server)
+sreclient <--> |"stdio / HTTP"| sreserver
+sandboxclient <--> |"stdio / HTTP"| sandboxserver
+
+%% Connessioni Server -> Strumenti
+sreserver <--> |"Bridge / API"| sreframework
+sandboxserver <--> |"Bridge / API"| sandbox
+
+
+sreagent -. "«create»" .-> logs
+
+sreagent -. "«create»" .-> report
+codeagent -. "«use»" .-> report
+codeagent -. "«create»" .-> capture
+
+sreagent -. "«use»" .-> prompt
+codeagent -. "«use»" .-> prompt
+sreagent -. "«use»\n«optional»" .-> kb
+codeagent -. "«use»" .-> template
+codeagent -. "«use»" .-> schema
+
+%% Connessioni LLM
+llmclient1 <--> |"API"| llm
+llmclient2 <--> |"API"| llm
+
+
+classifier -. "«use»" .-> binary
+sreagent -. "«use»" .-> binary
+classifier --> sreagent

@@ -1,0 +1,65 @@
+%<*complexity-criteria>
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+\begin{tabularx}{\tablewidth}{|l|c|X|}
+    \hline
+    \textbf{Criterio} & \textbf{Score} & \textbf{Descrizione} \\
+    \hline
+    \emph{ghidra\_dbf} & $[0,20]$ & Quantifica la difficoltà per un reverse engineer nel comprendere e interpretare il risultato della decompilazione prodotto dal framework di SRE utilizzato, in questo caso Ghidra. \\
+    \hline
+    \emph{statically\_linked} & $\{0,10\}$ &  Indica che il binario è stato collegato staticamente, incorporando il codice delle librerie esterne utilizzate e aumentando così la quantità di codice da analizzare. \\
+    \hline
+    \emph{stripped} & $\{0,20\}$ &  Indica che il binario è stato sottoposto al processo di stripping, con la conseguente rimozione di informazioni simboliche quali nomi di funzioni, parametri e variabili. \\
+    \hline
+    \emph{obfuscated\_cc} & $[0,10]$ & Quantifica il livello di offuscamento degli endpoint di C\&C, considerando le modalità di memorizzazione e recupero, che possono variare da valori presenti in chiaro a valori cifrati, offuscati o recuperati dinamicamente a runtime. \\
+    \hline
+    \emph{dns\_other\_cc} & $\{0,5\}$ & Indica che la risoluzione dell'endpoint di C\&C avviene tramite DNS o coinvolge altri meccanismi di risoluzione complessi. \\
+    \hline
+    \emph{enc\_str} & $[0,10]$ & Quantifica il livello di offuscamento della tabella delle stringhe, quando questa è presente, passando dalla memorizzazione in chiaro all'utilizzo di meccanismi di cifratura o offuscamento più complessi. \\
+    \hline
+    \emph{protocol} & $[0,20]$ & Quantifica la complessità del protocollo di comunicazione utilizzato dal malware, considerando la struttura e le modalità di scambio dei dati, che possono variare da protocolli testuali e semplici a protocolli binari strutturati e più articolati. \\
+    \hline
+    \emph{passwd} & $\{0,5\}$ & Indica che il malware richiede una password o una chiave per completare con successo il processo di autenticazione. \\
+    \hline
+    \emph{fingerprint} & $\{0,5\}$ & Indica che il malware raccoglie informazioni relative al sistema compromesso. \\
+    \hline
+    \emph{enc\_conn} & $\{0,10\}$ & Indica che il malware utilizza un algoritmo di cifratura per cifrare e decifrare le comunicazioni. \\
+    \hline
+    \emph{dyn\_att} & $\{0,20\}$ & Indica che il malware registra dinamicamente, a runtime, alcuni metodi di attacco. \\
+    \hline
+    \emph{non\_std\_parsing} & $\{0,10\}$ & Indica che per il parsing dei comandi C\&C ricevuti il malware utilizza dei metodi che non sono tipici della famiglia di appartenenza. \\
+    \hline
+    \emph{has\_response} & $\{0,10\}$ & Indica che il malware risponde ai comandi C\&C ricevuti. \\
+    \hline
+    \emph{heartbeat} & $[0,10]$ & Quantifica la complessità del meccanismo di heartbeat utilizzato dal malware, che può variare da una semplice comunicazione periodica a meccanismi più complessi basati su challenge-response. \\
+    \hline
+    % \midrule
+    % \emph{Totale} & $[0,165]$ & \\
+    % \bottomrule
+\end{tabularx}
+%</complexity-criteria>
+
+%<*reversing-criteria>
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+\begin{tabularx}{\textwidth}{|l|c|X|}
+    \hline
+    \textbf{Criterio} & \textbf{Score} & \textbf{Descrizione} \\
+    \hline
+    \emph{host\_info} & $[0,10]$ & 	Misura il grado di successo nel recupero delle informazioni relative all'endpoint di C\&C contattato dal malware, quali indirizzo IP, hostname e porta. \\
+    \hline
+    \emph{crypto\_obfuscation} & $[0,15]$ & Misura il grado di recupero dei meccanismi di cifratura e offuscamento utilizzati dal malware, includendo sia il funzionamento della cifratura del traffico sia l'algoritmo di decifratura e il contenuto originale della tabella delle stringhe; in caso di assenza, valuta la corretta conferma della stessa. \\
+    \hline
+    \emph{protocol\_parsing} & $[0,20]$ & Misura il grado di identificazione e ricostruzione del protocollo di comunicazione utilizzato dal malware, considerando il formato dei pacchetti e la logica di parsing e framing. \\
+    \hline
+    \emph{login\_heartbeat} & $[0,15]$ & Misura il grado di successo nell'individuazione della procedura di autenticazione, inclusi l'ordine e il contenuto dei messaggi scambiati, e nella ricostruzione della logica di heartbeat, inclusi la frequenza e i payload utilizzati. \\
+    \hline
+    \emph{payload\_capabilities} & $[0,20]$ & Misura il grado di individuazione e corretta associazione delle procedure di attacco alle rispettive funzionalità e ai payload utilizzati dal malware. \\
+    \hline
+    \emph{cc\_lifecycle} & $[0,20]$ & Misura il grado di ricostruzione del ciclo di vita della comunicazione C\&C, con riferimento alla gestione degli acknowledgment dei messaggi ricevuti, alla trasmissione di feedback al C\&C, alla gestione dei fallimenti di connessione, ai meccanismi di riconnessione e alle procedure di arresto del malware. \\
+    \hline
+    \emph{consistency\_reliability} & $[0,10]$ & Misura il grado di coerenza delle informazioni riportate nei \textsc{SRE Report}, penalizzando la presenza di informazioni contraddittorie o incoerenti, anche quando le stesse risultano corrette in altre parti della documentazione. \\
+    \hline
+    % \midrule
+    % \emph{Totale} & $[0,100]$ & \\
+    % \bottomrule
+\end{tabularx}
+%</reversing-criteria>

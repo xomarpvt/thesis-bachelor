@@ -1,4 +1,4 @@
-\chapter{BotScope: progettazione} \label{chap:progettazione} % 4
+\chapter{\system{}: progettazione} \label{chap:progettazione} % 4
 
 % Questo capitolo ha l'obiettivo di presentare l'architettura proposta per risolvere il problema affrontato in questi tesi. In primo luogo verrà mostrata l'architettura generale, utilizzando un diagramma dei componenti, e successivamente, per ciascun componente, verranno individuate le caratteristiche principali. Infine, verrà descritto il funzionamento del sistema da un ulteriore punto di vista, illustrando un flusso di esecuzione completo mediante un diagramma delle attività e approfondendo il meccanismo di \textit{tool calling} con un diagramma di sequenza.
 
@@ -6,18 +6,20 @@
 
 Una modalità efficace per illustrare l'architettura proposta per \system{} e fornire una visione complessiva della sua organizzazione consiste nel ricorrere al diagramma dei componenti. Il diagramma UML dei componenti \cite{omg2017uml} è un diagramma strutturale utilizzato per rappresentare la struttura di un sistema software attraverso i suoi principali componenti e le relazioni che intercorrono tra essi. Esso consente di descrivere l'organizzazione delle diverse parti del sistema e le modalità attraverso cui queste collaborano per realizzare le funzionalità complessive. % Capitoli 11.6, B.7.10
 
-Il diagramma dei componenti realizzato è riportato in \Cref{fig:diagramma_componenti} e permette di evidenziare le principali aree funzionali in cui è organizzato \system{}, che è progettato come una \emph{pipeline} di analisi automatizzata, suddivisa in moduli. All'interno dell'architettura si distinguono, da un lato, la logica decisionale e gli agenti basati su LLM e, dall'altro, gli ambienti di esecuzione esterni con cui questi interagiscono attraverso il Model Context Protocol. A questi componenti si affiancano inoltre gli artefatti di input e di output, che comprendono sia l'input e l'output complessivi del sistema, sia i contenuti forniti alle diverse fasi della pipeline e i risultati prodotti nel corso dell'elaborazione.
+Il diagramma dei componenti realizzato è riportato in \Cref{fig:components_diagram} e permette di evidenziare le principali aree funzionali in cui è organizzato \system{}, che è progettato come una \emph{pipeline} di analisi automatizzata, suddivisa in moduli. All'interno dell'architettura si distinguono, da un lato, la logica decisionale e gli agenti basati su LLM e, dall'altro, gli ambienti di esecuzione esterni con cui questi interagiscono attraverso il Model Context Protocol. A questi componenti si affiancano inoltre gli artefatti di input e di output, che comprendono sia l'input e l'output complessivi del sistema, sia i contenuti forniti alle diverse fasi della pipeline e i risultati prodotti nel corso dell'elaborazione.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.35]{img/componenti.png}
-    \caption{Diagramma UML dei componenti dell'architettura proposta}
-    \label{fig:diagramma_componenti}
+    \includegraphics[width=0.95\textwidth]{img/componenti.png}
+    \caption[Diagramma dei componenti del sistema]{
+        Diagramma dei componenti dell'architettura proposta per \system{}.
+    }
+    \label{fig:components_diagram}
 \end{figure}
 
 \section{Componenti del sistema} % 4.2
 
-In questa sezione vengono descritti nel dettaglio i singoli componenti che costituiscono l'architettura proposta. Per ciascuno di essi vengono individuati i principali requisiti, le responsabilità e le funzionalità messe a disposizione degli altri componenti del sistema. La descrizione segue l'organizzazione mostrata nel diagramma di \Cref{fig:diagramma_componenti}, in ordine di appartenenza alle diverse aree funzionali individuate.
+In questa sezione vengono descritti nel dettaglio i singoli componenti che costituiscono l'architettura proposta. Per ciascuno di essi vengono individuati i principali requisiti, le responsabilità e le funzionalità messe a disposizione degli altri componenti del sistema. La descrizione segue l'organizzazione mostrata nel diagramma di \Cref{fig:components_diagram}, in ordine di appartenenza alle diverse aree funzionali individuate.
 
 \subsection{Artefatti} % 4.2.1
 
@@ -43,7 +45,7 @@ I \report{} rappresentano l'artefatto chiave dell'intera pipeline dal momento ch
 
 \subsection{Componenti decisionali} % 4.2.2
 
-Il \llm{} costituisce la base per l'implementazione delle funzionalità previste dal \sreagent{} e dal \codeagent{}, agendo come motore cognitivo e fornendo le capacità necessarie alla comprensione, al ragionamento, alla pianificazione e, ove previsto, all'utilizzo dei tool. Dal punto di vista tecnico, il LLM utilizzato deve garantire prestazioni adeguate alle attività previste, con buone capacità di reasoning, il supporto nativo a tool call strutturate e una finestra di contesto sufficientemente ampia.
+Il \llm{} costituisce la base per l'implementazione delle funzionalità previste dal \sreagent{} e dal \codeagent{}, che interagiscono con il modello attraverso il \llmclient{}. Il \llm{} assume dunque il ruolo di motore cognitivo, fornendo le capacità necessarie alla comprensione, al ragionamento, alla pianificazione e, ove previsto, all'utilizzo dei tool. Dal punto di vista tecnico, il \llm{} utilizzato deve garantire prestazioni adeguate alle attività previste, con buone capacità di reasoning, il supporto nativo a tool call strutturate e una finestra di contesto sufficientemente ampia.
 
 % (dimensioni sufficienti per il LLM e le tool call possono essere eventualmente emesse in parallelo)
 
@@ -89,21 +91,22 @@ Dopo aver descritto la struttura complessiva dell'architettura di \system{} e le
 
 A questo scopo viene utilizzato un diagramma UML delle attività \cite{omg2017uml}, un diagramma comportamentale che permette di rappresentare lo svolgimento di un processo attraverso il flusso delle attività, le decisioni, i percorsi alternativi, le attività eseguite in parallelo e, ove necessario, il flusso degli oggetti. % Capitolo 15
 
-Il diagramma delle attività realizzato è riportato in \Cref{fig:diagramma_attivita}. A differenza del diagramma dei componenti presentato nella sezione precedente, questo diagramma ha una finalità esclusivamente descrittiva: rappresenta infatti un flusso semplificato utilizzato solamente per illustrare il comportamento del sistema e non costituisce una specifica vincolante per l'implementazione.
+Il diagramma delle attività realizzato è riportato in \Cref{fig:activity_diagram}. A differenza del diagramma dei componenti presentato nella sezione precedente, questo diagramma ha una finalità esclusivamente descrittiva: rappresenta infatti un flusso semplificato utilizzato solamente per illustrare il comportamento del sistema e non costituisce una specifica vincolante per l'implementazione.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.60]{img/attivita_1.png}
-    \includegraphics[scale=.45]{img/attivita_2.png}
-    \caption{Diagramma UML delle attività della pipeline di analisi}
-    \label{fig:diagramma_attivita}
+    \includegraphics[width=0.95\textwidth]{img/activity_diagram.pdf}
+    \caption[Diagramma della attività di analisi]{
+        Diagramma delle attività e del flusso della pipeline di analisi.
+    }
+    \label{fig:activity_diagram}
 \end{figure}
 
 Il flusso di esecuzione ha inizio quando l'utente fornisce in ingresso al sistema il \binary{}, oltre all'eventuale \kb{}. Quindi, il \classifier{} ne esegue un'analisi preliminare, finalizzata almeno a determinare se il campione sia malevolo oppure no. Quando è possibile stabilire con certezza che il campione non è malevolo oppure che, pur essendo malevolo, non è di interesse per il sistema, allora la pipeline di analisi viene interrotta. Negli altri casi il campione viene trasferito dal \classifier{} al \sreagent{}.
 
-Come prima cosa, l'agente carica le istruzioni dal \prompt{} e, quando possibile, utilizza le informazioni aggiuntive rese disponibili dal \classifier{} per selezionare dalla \kb{} il contesto supplementare pertinente al campione. A questo punto, il \sreagent{}, basandosi sulla presenza dei simboli, determina se il campione è stripped o not-stripped. Nel primo caso, l'agente potrebbe intraprendere immediatamente delle azioni finalizzate al recupero dei simboli, come nel caso della \Cref{fig:diagramma_attivita}, oppure potrà adattare il proprio comportamento successivamente.
+Come prima cosa, l'agente carica le istruzioni dal \prompt{} e, quando possibile, utilizza le informazioni aggiuntive rese disponibili dal \classifier{} per selezionare dalla \kb{} il contesto supplementare pertinente al campione. A questo punto, il \sreagent{}, basandosi sulla presenza dei simboli, determina se il campione è stripped o not-stripped. Nel primo caso, l'agente potrebbe intraprendere immediatamente delle azioni finalizzate al recupero dei simboli, come nel caso della \Cref{fig:activity_diagram}, oppure potrà adattare il proprio comportamento successivamente.
 
-La fase centrale è dunque costituita dalle attività di SRE svolte dal \sreagent{} attraverso il \llm{}, secondo un ciclo iterativo di ragionamento, azione e osservazione. Per fare ciò, il modello utilizza i tool messi a disposizione dagli ambienti \sreframework{} e \sandbox{}, interagendoci attraverso il protocollo MCP. Nel caso del \sandbox{}, il \llm{} potrà anche produrre e salvare dei \file{}. Quando l'agente dispone di informazioni sufficienti, conclude l'analisi, producendo i \report{}, mentre le attività svolte vengono registrate nei \logs{}. Per semplicità, nella \Cref{fig:diagramma_attivita} l'insieme di queste attività e interazioni è rappresentato da un \emph{activity node} singolo, \emph{SRE Activities}, seguito dal nodo \emph{Final Report Generation}.
+La fase centrale è dunque costituita dalle attività di SRE svolte dal \sreagent{} attraverso il \llm{}, secondo un ciclo iterativo di ragionamento, azione e osservazione. Per fare ciò, il modello utilizza i tool messi a disposizione dagli ambienti \sreframework{} e \sandbox{}, interagendoci attraverso il protocollo MCP. Nel caso del \sandbox{}, il \llm{} potrà anche produrre e salvare dei \file{}. Quando l'agente dispone di informazioni sufficienti, conclude l'analisi, producendo i \report{}, mentre le attività svolte vengono registrate nei \logs{}. Per semplicità, nella \Cref{fig:activity_diagram} l'insieme di queste attività e interazioni è rappresentato da un \emph{activity node} singolo, \emph{SRE Activities}, seguito dal nodo \emph{Final Report Generation}.
 
 Infine, i \report{} vengono passati al \codeagent{}, che carica i \templates{}, lo schema dei messaggi e le istruzioni operative dal \prompt{}. Il \llm{} dell'agente utilizza questa serie di informazioni per generare gli elementi necessari a costruire il \capture{} di cattura delle comunicazioni, che corrisponde all'output finale del sistema.
 
@@ -111,19 +114,23 @@ Infine, i \report{} vengono passati al \codeagent{}, che carica i \templates{}, 
 
 Considerata la rilevanza del meccanismo di \textit{tool calling} nell'architettura proposta e la frequenza con cui viene coinvolto durante l'attività di SRE, risulta utile fornire una rappresentazione più dettagliata delle interazioni che avvengono tra il \sreagent{} e gli ambienti di esecuzione mediante il protocollo MCP. I diagrammi dei componenti e di attività precedenti non rappresentano in efficace la natura di tali interazioni, per cui si utilizza un diagramma UML di sequenza \cite{omg2017uml}, un diagramma comportamentale che rappresenta come diversi componenti interagiscono tra loro nel corso del tempo, descrivendo lo scambio di messaggi ed evidenziando l'ordine temporale degli eventi. % Capitolo 17, 17.8 (relativo a una determinata interazione)
 
-Il diagramma di sequenza realizzato è riportato in \Cref{fig:sequenza}. Esso rappresenta una sequenza esemplificativa, corrispondente solamente a un sottoinsieme delle interazioni che si verificano durante le attività di analisi da parte del \textsc{SRE Agent}.
+Il diagramma di sequenza realizzato è riportato in \Cref{fig:sequence_diagram}. Esso rappresenta una sequenza esemplificativa, corrispondente solamente a un sottoinsieme delle interazioni che si verificano durante le attività di analisi da parte del \textsc{SRE Agent}.
+
+% Nel diagramma, il \llmclient{} comprende anche il \llm{}, la cui esecuzione è rappresentata attraverso \emph{activation box}. L'\emph{activation box} del \sreframework{} indica l'esecuzione delle operazioni interne al componente, senza esplicitarne nel diagramma i singoli passaggi.
 
 \begin{figure}[t]
     \centering
     %\includegraphics[scale=.35]{img/sequenza.png}
     \includegraphics[width=0.95\textwidth]{img/sequence_diagram.pdf}
-    \caption{Diagramma UML di sequenza delle operazioni di tool calling}
-    \label{fig:sequenza}
+    \caption[Diagramma di sequenza del tool calling]{
+        Diagramma di sequenza delle operazioni coinvolte nel processo di tool calling.
+    }
+    \label{fig:sequence_diagram}
 \end{figure}
 
 Il diagramma illustra, nella fase iniziale della sequenza, le principali operazioni preliminari necessarie alla creazione e alla configurazione degli oggetti che prenderanno parte alle successive interazioni. In particolare, tale fase comprende l'istanziazione, da parte del \sreagent{}, dei client MCP, i quali instaurano la connessione con i rispettivi server MCP.
 
-La seconda parte della sequenza riguarda la scoperta dei tool disponibili per l'ambiente \sandbox{} da parte dell'agente. Il \sreagent{} richiede al \textsc{Sandbox MCP Client} la lista dei tool tramite la funzione $list\_tools()$ e il client invoca quindi l'endpoint \texttt{tools/list} del \textsc{Sandbox MCP Server}, che restituisce la lista dei tool al client. Tale lista viene successivamente inoltrata al \sreagent{}, che può quindi esporre al \llm{}, per ciascuna richiesta, i tool disponibili, eventualmente limitandoli a un sottoinsieme.
+La seconda parte riguarda la scoperta dei tool disponibili per l'ambiente \sandbox{} da parte dell'agente. Il \sreagent{} richiede al \textsc{Sandbox MCP Client} la lista dei tool tramite la funzione $list\_tools()$ e il client invoca l'endpoint \texttt{tools/list} del \textsc{Sandbox MCP Server}, che restituisce la lista dei tool al client. Tale lista viene successivamente inoltrata al \sreagent{}, che può quindi esporre al \llm{}, per ciascuna richiesta, i tool disponibili, eventualmente limitandoli a un sottoinsieme.
 
 % Il \sreagent{} richiede al \textsc{Sandbox MCP Client} la lista dei tool tramite la funzione $list\_tools()$ e il client invoca quindi l'endpoint \texttt{tools/list} del \textsc{Sandbox MCP Server}, che restituisce la lista dei tool secondo il formato previsto dal protocollo MCP. Il client può quindi convertire il formato della risposta in quello richiesto dal \llm{}, restituendo quindi la lista al \sreagent{}.
 

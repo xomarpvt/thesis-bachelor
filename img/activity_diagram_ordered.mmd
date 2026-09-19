@@ -35,7 +35,7 @@ config:
     diagramPadding: 5
 ---
 
-flowchart TD
+flowchart LR
 
     start((<span style='font-weight:bold;'>Start</span>))
     finish((<span style='font-weight:bold;'>End</span>))
@@ -47,11 +47,11 @@ flowchart TD
 
     start --> binary
     start --> kb
+    %%binary --> A
     capture --> finish
 
-    %%<span style='font-size:20px; font-weight:bold;'>Classifier</span>
     subgraph M1["Classifier"]
-         direction LR
+        direction TB
 
         A[Preliminary<br>Analysis]
         D1{Malicious<br>Sample?}
@@ -89,7 +89,11 @@ flowchart TD
         D --> F
     end
 
+    M1 --> M2 --> M3
+
     subgraph M3["Code Agent"]
+        direction TB
+
         G[Report<br>Retrieval]
         H[Code Templates<br>Retrieval]
         I[Message Schema<br>Retrieval]
@@ -102,10 +106,10 @@ flowchart TD
         J --> K
     end
     
-    binary --> A
-    kb --> C
+    %%binary --> A
+    %%kb --> C
 
-    D2 -->|True| B
-    F --> report
-    report --> G
-    K --> capture
+    %%D2 -->|True| B
+    %%F --> report
+    %%report --> G
+    %%K --> capture

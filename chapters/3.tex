@@ -138,7 +138,9 @@ class BotnetInterface(ABC):
   def sniff(self):
     pass
         \end{lstlisting}
-        \captionof{figure}{Interfaccia astratta \interface{}\\ \hspace{1em}}
+        \captionof{figure}[Definizione iniziale dell'interfaccia astratta \interface{}]{
+            Definizione iniziale dell'interfaccia astratta \interface{}. \\ \hspace{1em}
+        }
         \label{fig:botnet_interface}
     \end{minipage}%
     \hspace{0.05\textwidth}
@@ -155,7 +157,9 @@ while True:
   except:
     pass
         \end{lstlisting}
-    \captionof{figure}{Esempio di uso di un generico modulo \botnet{} che implementa \interface{}}
+        \captionof{figure}[Esempio di uso di un generico \capture{}]{
+            Esempio di uso di un generico \capture{}, con classe principale \botnet{} che implementa \interface{}.
+        }
         \label{fig:botnet_main}
     \end{minipage}%
 \end{figure}

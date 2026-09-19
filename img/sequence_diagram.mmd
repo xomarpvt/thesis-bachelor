@@ -5,23 +5,24 @@ config:
     background: "#ffffff"
 
     # Actors
-    actorBkg: "#E8E7F5"
-    actorBorder: "#9692C4"
-    actorTextColor: "#2F2E46"
-    actorLineColor: "#CBD5E1"
+    actorBkg: "#ECECFF"
+    actorBorder: "#9370DB"
+    actorTextColor: "#333333"
+    actorLineColor: "#B4C0CF"
 
     # Messages
     signalColor: "#475569"
-    signalTextColor: "#334155"
+    signalTextColor: "#333333"
     lineColor: "#CBD5E1"
 
     # Notes
-    noteBkgColor: "#FFF7D6"
-    noteBorderColor: "#E5C96A"
-    noteTextColor: "#3F3F46"
+    noteBkgColor: "#FFF4D6"
+    noteBorderColor: "#D8B85A"
+    noteTextColor: "#333333"
 
-    activationBkgColor: "#CBD5E1"
-    activationBorderColor: "#94A3B8"
+    # Activation
+    activationBkgColor: "#E8EEF5"
+    activationBorderColor: "#8FA6BB"
 
   sequence:
     width: 100
@@ -38,14 +39,14 @@ config:
 sequenceDiagram
 
 participant SREAgent as SRE<br>Agent
-participant LLM
+participant LLM as LLM\nClient
 
 %% participant Sandbox as Sandbox<br>Environment
 
 %% =========================================================
 %% INITIALIZATION
 %% =========================================================
-rect rgba(148,163,184,0.05)
+rect rgba(148,163,184,0.075)
 
     Note over SREAgent: Initialization
 
@@ -69,7 +70,7 @@ participant SREFramework as SRE<br>Framework
 %% =========================================================
 %% TOOL DISCOVERY
 %% =========================================================
-rect rgba(59,130,246,0.05)
+rect rgba(59,130,246,0.075)
 
     Note over SREAgent: Sandbox Env.<br>Tool Discovery
 
@@ -87,7 +88,7 @@ Note over SREAgent, SREFramework: ⋮　⋮　⋮　⋮　⋮　⋮　⋮
 %% =========================================================
 %% SRE FRAMEWORK TOOL INVOCATION
 %% =========================================================
-rect rgba(16,185,129,0.05)
+rect rgba(16,185,129,0.075)
 
     Note over SREAgent: SRE Framework<br>Tool Invocation
 
