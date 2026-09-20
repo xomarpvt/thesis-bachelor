@@ -7,15 +7,15 @@
 
 Lo scopo generale della valutazione del sistema è quello di determinare il grado di maturità raggiunto, così da valutarne l'effettiva applicabilità nel contesto reale per cui è stato progettato e stabilire se il suo impiego possa risultare concretamente vantaggioso. La valutazione del sistema \system{} condotta in questa tesi si concentrerà su due obiettivi principali.
 
-Il primo obiettivo, di carattere preliminare e meno rilevante, consiste nel verificare la correttezza funzionale del sistema, accertandosi che i tre moduli principali (\classifier{}, \sreagent{} e \codeagent{}) producano il comportamento atteso nello scenario operativo. In particolare, saranno verificati il corretto funzionamento della pipeline, il suo grado di autonomia e la produzione degli output previsti.
+Il primo obiettivo, di carattere preliminare e meno rilevante, consiste nel verificare la correttezza funzionale del sistema, accertandosi che i tre moduli principali producano il comportamento atteso nello scenario operativo. In particolare, saranno verificati il corretto funzionamento della pipeline, il suo grado di autonomia e la produzione degli output previsti. Il secondo obiettivo, di maggiore rilevanza e su cui ci si concentrerà maggiormente durante la sperimentazione, consiste nel valutare l'accuratezza dei due output più importanti, i \report{} e il \capture{}, rispetto ai requisiti definiti.
 
-Il secondo obiettivo, di maggiore rilevanza e sul quale ci si concentrerà maggiormente durante la sperimentazione, consiste nel valutare l'accuratezza dei due output più importanti, ovvero i \report{} e il \capture{}, rispetto ai requisiti definiti.
+% (\classifier{}, \sreagent{} e \codeagent{})
 
-A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni di malware significativi, selezionando quelli maggiormente rappresentativi dello scenario operativo di riferimento e garantendo allo stesso tempo un'adeguata varietà. Per poter interpretare efficacemente e confrontare i risultati ottenuti sarà inoltre necessario definire una metodologia di classificazione che consenta di valutare oggettivamente il grado di difficoltà dei campioni.
+A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni di malware sufficientemente vario e rappresentativo dello scenario operativo di riferimento. Per poter interpretare efficacemente e confrontare i risultati ottenuti sarà inoltre necessario definire una metodologia di classificazione che consenta di valutare oggettivamente il grado di complessità dei campioni.
 
 % A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni malevoli, selezionando quelli maggiormente rappresentativi dello scenario operativo di riferimento. I campioni dovranno essere sufficientemente significativi e presentare un'adeguata varietà, considerando, ad esempio, architetture differenti e campioni sottoposti o meno al processo di stripping. 
 
-In più, dovranno essere utilizzati più LLM, così da dimostrare l'indipendenza del sistema da uno specifico modello e, soprattutto, analizzare l'influenza delle loro differenti caratteristiche sui risultati ottenuti. Infine, le prestazioni in termini di risorse computazionali e tempi di esecuzione non costituiscono una dimensione rilevante per questa valutazione, poiché il sistema non è stato progettato per un utilizzo ad alta frequenza né per operare in presenza di limiti stringenti sulle risorse disponibili.
+In più, dovranno essere utilizzati più LLM, dimostrando l'indipendenza del sistema da uno specifico modello e, soprattutto, analizzando l'influenza delle loro differenti caratteristiche sui risultati ottenuti. Infine, le prestazioni in termini di risorse computazionali e tempi di esecuzione non costituiscono una dimensione di interesse per la seguente valutazione, poiché il sistema non è stato progettato per un utilizzo ad alta frequenza né per operare sotto stringenti vincoli sul consumo di token del LLM.
 
 La strategia di testing proposta prevede una valutazione \emph{end-to-end} progressiva, condotta al termine di ciascun modulo principale della pipeline. Ad eccezione del \classifier{}, la cui valutazione risulta immediata una volta scelti i campioni, per gli altri due moduli è necessario effettuare un confronto con una \emph{ground truth}. Quest'ultima è costituita dalla documentazione relativa al funzionamento e al comportamento dei malware analizzati, insieme ai moduli di cattura effettivamente funzionanti, ed è stata definita con il supporto di un esperto di cybersecurity, SRE e malware analysis.
 
@@ -36,17 +36,13 @@ Come già evidenziato per la difficoltà dei campioni, anche le valutazioni dell
 
 Tutti gli esperimenti sono stati condotti utilizzando un computer personale dotato di hardware convenzionale, eseguendo il software sul sistema locale. L'inferenza dei LLM è stata invece eseguita sul \emph{GPU cluster} dell'Università degli Studi di Udine, mediante il software vLLM \cite{vllm2026vllm}.
 
-Per la sperimentazione sono stati selezionati due LLM diversi, \emph{Qwen 3.6 27B} \cite{alibaba2026qwen3.6-27b} e \emph{DeepSeek V4-Flash Preview} \cite{deepseekai2026deepseekv4}. Al fine di rendere più concisi i riferimenti ai LLM, si adotterà l'abbreviazione \emph{Q3627} per il primo e \emph{DS4FP} per il secondo.
+Per la sperimentazione sono stati selezionati due LLM diversi, \emph{Qwen 3.6 27B} \cite{alibaba2026qwen3.6-27b} e \emph{DeepSeek V4-Flash Preview} \cite{deepseekai2026deepseekv4}. Al fine di rendere più concisi i riferimenti ai LLM, si adotterà l'abbreviazione \emph{Q3627} per il primo e \emph{DS4FP} per il secondo. Nell'\Cref{app:llm} sono descritte in dettaglio le caratteristiche dei LLM utilizzati, le risorse hardware impiegate, le configurazioni di deployment adottate per vLLM e i sampling parameters usati per la presente sperimentazione.
 
 La scelta dei modelli è stata effettuata principalmente sulla base delle risorse computazionali disponibili, tenendo conto delle diverse dimensioni e caratteristiche architetturali dei modelli, nonché delle prestazioni da essi riportate nei principali benchmark pubblici di valutazione, tra cui \cite{artificialanalysis2026aaii}. 
 
-Nell'\Cref{app:llm} sono descritte in dettaglio le caratteristiche dei LLM utilizzati, le risorse hardware impiegate, le configurazioni di deployment adottate per vLLM e i sampling parameters usati per la presente sperimentazione.
-
 \subsection{Protocollo sperimentale} % 6.2.2
 
-Ciascun campione di malware è stato sottoposto a una singola esecuzione secondo un protocollo sperimentale uniforme che, grazie all'autonomia del sistema durante l'esecuzione, è stato applicato in modo coerente a tutti i campioni.
-
-L'analisi è stata avviata manualmente fornendo in input il \binary{} e la \kb{}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output i \report{} e il \capture{}, successivamente utilizzati per la valutazione dei risultati.
+Ciascun campione di malware è stato sottoposto a una singola esecuzione secondo un protocollo sperimentale uniforme che, grazie all'autonomia del sistema durante l'esecuzione, è stato applicato in modo coerente a tutti i campioni. L'analisi è stata avviata manualmente fornendo in input il \binary{} e la \kb{}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output i \report{} e il \capture{}, successivamente utilizzati per la valutazione dei risultati.
 
 \section{Definizione dei criteri di valutazione} % 6.3
 
@@ -62,19 +58,19 @@ I criteri possono essere di tipo binario, con l'assegnazione del solo valore min
 
 % Le singole metriche possono assumere valori secondo due modalità. Alcune sono di tipo binario e prevedono esclusivamente l'assegnazione del punteggio minimo o massimo, come nel caso del fingerprinting del sistema compromesso. Altre, invece, possono assumere un valore qualsiasi all'interno dell'intervallo definito, in funzione del livello di complessità osservato nel campione, come per il protocollo di C\&C adottato. In tutti i casi, il punteggio minimo è pari a $0$, mentre il valore massimo dipende dalla specifica caratteristica considerata. La somma dei valori massimi determina un punteggio teorico complessivo pari a $165$, corrispondente al livello massimo di complessità considerato dalla scala proposta.
 
-\renewcommand{\topfraction}{0.80}  % Alloca al massimo l'80% della pagina per i float.
-\renewcommand{\textfraction}{0.20} % Alloca almeno il 20\% della pagina per il testo
+\renewcommand{\topfraction}{0.80}  % Alloca al massimo l'80/100 della pagina per i float.
+\renewcommand{\textfraction}{0.20} % Alloca almeno il 20/100 della pagina per il testo
 
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/T.tex]{complexity-criteria}
-    \caption[Criteri di valutazione della complessità dei campioni malevoli]{Criteri di valutazione della complessità dei campioni malevoli e relativi intervalli di punteggio. La notazione ${min,max}$ indica che sono ammessi esclusivamente i valori minimo e massimo, mentre $[min,max]$ indica che il punteggio può assumere qualsiasi valore nell'intervallo.}
+    \caption[Criteri di valutazione della complessità dei campioni malevoli]{Criteri di valutazione della complessità dei campioni malevoli e relativi intervalli di punteggio. La notazione $\{min,max\}$ indica che il punteggio può assumere esclusivamente i valori $min$ o $max$, mentre $[min,max]$ indica che può assumere qualsiasi valore compreso nell'intervallo.}
     \label{tab:complexity_criteria}
 \end{table}
 
 \subsection{Efficacia della \renaming{}} % 6.3.2
 
-Per la valutazione dell'efficacia della \renaming{} è necessario considerare due parametri principali. Il primo riguarda il numero di funzioni rinominate rispetto al totale delle funzioni presenti nel binario. Tale valore, espresso come percentuale e indicato nel seguito con ${RC}_{\%}$, viene definito \emph{Renaming Coverage}.
+Per la valutazione dell'efficacia della \renaming{} è necessario considerare due parametri principali. Il primo, indicato come ${RC}_{\%}$ e definito \emph{Renaming Coverage}, rappresenta la percentuale di funzioni rinominate rispetto al totale delle funzioni presenti nel binario.
 
 \begin{equation*}
     {RC}_{\%} = \frac{N_{fun. \text{ renamed}}}{N_{fun. \text{ total}}} \cdot 100
@@ -88,11 +84,13 @@ Il secondo parametro considera invece la qualità dei nomi assegnati e corrispon
     \label{eq:renaming_accuracy}
 \end{equation*}
 
-Considerando che la strategia adottata per la \reversing{} tende a coinvolgere principalmente le funzioni più rilevanti per l'analisi, escludendo quelle di minore interesse, e che il numero di funzioni presenti nei campioni è generalmente elevato, è difficile aspettarsi valori di ${RC}_{\%}$ prossimi al $100\%$. Inoltre, all'aumentare del numero di funzioni rinominate, si può ipotizzare un effetto di \emph{diminishing returns}, per cui il beneficio derivante da ulteriori ridenominazioni tende progressivamente a ridursi.
+Considerando che la strategia adottata per la \reversing{} tende a coinvolgere principalmente le funzioni più rilevanti per l'analisi, escludendo quelle di minore interesse, e che il numero di funzioni presenti nei campioni è generalmente elevato, è difficile aspettarsi valori di ${RC}_{\%}$ prossimi al $100\,\%$. Inoltre, all'aumentare del numero di funzioni rinominate, si può ipotizzare un effetto di \emph{diminishing returns}, per cui il beneficio derivante da ulteriori ridenominazioni tende progressivamente a ridursi.
 
-% Considerando la strategia adottata dal \textsc{SRE Agent} per la fase di rinomina, che procede ricorsivamente a partire dal \texttt{main}, e il numero generalmente elevato di funzioni presenti nei campioni, è difficile aspettarsi valori di ${RC}_{\%}$ prossimi al $100\%$. La strategia tende infatti a coinvolgere principalmente le funzioni più rilevanti per l'analisi, mentre le funzioni di importanza minore vengono progressivamente escluse. Ne deriva un effetto di \emph{diminishing returns}, per cui l'incremento del numero di funzioni rinominate produce un beneficio progressivamente minore.
+% Considerando la strategia adottata dal \textsc{SRE Agent} per la fase di rinomina, che procede ricorsivamente a partire dal \texttt{main}, e il numero generalmente elevato di funzioni presenti nei campioni, è difficile aspettarsi valori di ${RC}_{\%}$ prossimi al $100\,\%$. La strategia tende infatti a coinvolgere principalmente le funzioni più rilevanti per l'analisi, mentre le funzioni di importanza minore vengono progressivamente escluse. Ne deriva un effetto di \emph{diminishing returns}, per cui l'incremento del numero di funzioni rinominate produce un beneficio progressivamente minore.
 
-Risulta quindi logico proporre un punteggio composito che unisce i due parametri. Per tenere conto dei rendimenti decrescenti associati a ${RC}_{\%}$, viene applicata una trasformazione logaritmica attraverso la funzione $g$, dove $k>0$ controlla il grado di attenuazione del contributo di ${RC}_{\%}$. La funzione è normalizzata in modo tale che $g(0)=0$ e $g(100)=1$, mantenendo invariati gli estremi dell'intervallo considerato. Il punteggio finale, indicato con ${RS}_{\%}$ e chiamato \emph{Renaming Score}, è volto a premiare una combinazione elevata di copertura e correttezza semantica.
+Risulta quindi logico proporre un punteggio composito che unisce i due parametri. Per tenere conto dei rendimenti decrescenti associati a ${RC}_{\%}$, viene applicata una trasformazione logaritmica attraverso la funzione $g$, normalizzata nell'intervallo $[0,1]$ e dove $k>0$ controlla il grado di attenuazione del contributo di ${RC}_{\%}$. Il punteggio finale, indicato con ${RS}_{\%}$ e chiamato \emph{Renaming Score}, è volto a premiare una combinazione elevata di copertura e correttezza semantica.
+
+% La funzione è normalizzata in modo tale che $g(0)=0$ e $g(100)=1$, mantenendo invariati gli estremi dell'intervallo considerato.
 
 \begin{equation*}
     {RS}_{\%} = g({RC}_{\%}) \cdot {RA}_{\%}
@@ -110,90 +108,105 @@ In modo analogo alla valutazione della complessità del campione, è necessario 
 
 % Le metriche considerate fanno direttamente riferimento agli elementi recuperati durante l'analisi, ad eccezione dell'ultima, che invece si concentra maggiormente sull'organizzazione e sulla coerenza delle informazioni riportate nei documenti finali, penalizzando eventuali contraddizioni o incoerenze.
 
-I criteri scelti per la valutazione sono riportati nella \Cref{tab:reversing_criteria}, insieme a una descrizione della loro interpretazione. A ciascun criterio può essere assegnato un punteggio compreso tra $0$ e un valore massimo variabile in funzione della sua importanza. I punteggi parziali consentono di valorizzare anche ricostruzioni incomplete ma corrette, evitando che un errore finale annulli le informazioni recuperate, a condizione che queste siano sufficientemente corrette e non fuorvianti. L'accuratezza della \reversing, indicata come \emph{Reversing Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $100$. Per convenzione, a un valore più elevato corrisponde un'analisi più efficace.
+I criteri scelti per la valutazione sono riportati nella \Cref{tab:reversing_criteria}, insieme a una descrizione della loro interpretazione. A ogni criterio può essere assegnato un punteggio compreso tra $0$ e un valore massimo proporzionato alla sua importanza. I punteggi parziali consentono di valorizzare anche ricostruzioni incomplete ma corrette, evitando che un errore finale annulli le informazioni recuperate, a condizione che queste siano sufficientemente corrette e non fuorvianti. L'accuratezza della \reversing{}, indicata come \emph{Reversing Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $100$.
+
+% Per convenzione, a un valore più elevato corrisponde un'analisi più efficace.
 
 % La somma dei valori massimi determina un punteggio teorico complessivo pari a $100$, corrispondente a un'analisi completa e corretta.
 
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/T.tex]{reversing-criteria}
-    \caption{Criteri di valutazione della \textsc{Reversing Task}}
+    \caption[Criteri di valutazione della \reversing{}]{Criteri di valutazione della \reversing{}.}
     \label{tab:reversing_criteria}
 \end{table}
 
-\subsection{Funzionalità del \textsc{Capture Module}} % 6.3.4
+\subsection{Qualità del \capture{}} % 6.3.4
 
-La valutazione considera l'implementazione del \textsc{Capture Module} prodotta dal \textsc{Code Agent}, concentrandosi sulla qualità funzionale, sulla correttezza e sulla conformità alle specifiche, mentre non vengono considerati lo stile e la qualità formale. Inizialmente vengono valutati la correttezza sintattica, l'aderenza ai \textsc{Code Templates} forniti (\textsc{BotNet}, \textsc{BotNetInterface} e \textsc{MessageParser}) e la conformità della struttura dei messaggi al \textsc{MessageSchema} previsto. Questi primi tre criteri sono seguiti da due ulteriori valutazioni, maggiormente indicative dell'effettiva funzionalità pratica del modulo e alle quali viene pertanto assegnato un peso maggiore. La prima riguarda la conformità al protocollo descritto nello \textsc{SRE Report}, valutando la corretta estrazione delle informazioni e la loro implementazione secondo le istruzioni fornite. La seconda valuta invece la \emph{human independence}, intesa come il grado di autonomia del modulo rispetto agli interventi richiesti da parte dell'utilizzatore, con un punteggio inversamente proporzionale alla quantità di modifiche necessarie per renderlo funzionante.
+La valutazione del \capture{} prende in esame l'implementazione prodotta dal \codeagent{} in termini di funzionalità, correttezza e conformità alle specifiche, senza estendersi agli aspetti stilistici del codice. Inizialmente vengono considerati la correttezza sintattica del codice, l'aderenza ai \templates{} forniti e al \schema{}. A questi si aggiungono due ulteriori criteri, a cui è assegnato un peso maggiore in quanto più rappresentativi dell'effettiva funzionalità del modulo. Il primo riguarda il rispetto del protocollo descritto nei \report{}, mentre il secondo riguarda la \emph{human independence}, che valuta l'autonomia del modulo rispetto alla revisione umana, assegnando punteggi maggiori al diminuire delle modifiche necessarie per renderlo operativo.
 
-Le metriche considerate sono riportate in \Cref{tab:codice}, insieme alla relativa descrizione. Le prime tre assumono esclusivamente i valori $0$ o il massimo previsto, mentre le ultime due ammettono valori intermedi per rappresentare più gradualmente conformità e autonomia. Il punteggio complessivo è dato dalla somma dei singoli valori, con un massimo teorico di $100$, corrispondente a un'implementazione funzionante e conforme a struttura e comportamento attesi.
+I criteri considerati sono riportati nella \Cref{tab:module_criteria}, insieme alla relativa descrizione. I primi tre assumono esclusivamente il valore minimo o massimo previsto, mentre gli ultimi due possono assumere anche valori intermedi. La qualità del \capture{}, indicata come \emph{Module Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $100$.
+
+% Il punteggio complessivo è dato dalla somma dei singoli valori, con un massimo teorico di $100$, corrispondente a un'implementazione funzionante e conforme a struttura e comportamento attesi.
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/6/tables_1.tex]{tab3}
-    \caption{Criteri di valutazione del \textsc{Capture Module}}
-    \label{tab:codice}
+    \ExecuteMetaData[chapters/T.tex]{module-criteria}
+    \caption[Criteri di valutazione del \capture]{Criteri di valutazione del \capture{}.}
+    \label{tab:module_criteria}
 \end{table}
 
 \section{Campagna sperimentale} % 6.4
 
-Per la campagna sperimentale condotta nell'ambito di questa tesi, si è deciso di concentrare l'analisi su una singola famiglia di botnet IoT, la famiglia Mirai, selezionando cinque campioni che rispettano i principi precedentemente definiti. La scelta di questa famiglia non è casuale, come già descritto nella \Cref{sec:mirai}, Mirai rappresenta uno dei principali riferimenti nel panorama delle botnet IoT, anche a distanza di dieci anni dalla sua comparsa.
+Per la campagna sperimentale condotta nell'ambito di questa tesi, si è deciso di concentrare l'analisi su una singola famiglia di botnet IoT, \emph{Mirai}, selezionando cinque campioni significativi. La scelta non è casuale, visto che, come descritto nella \Cref{sec:mirai}, anche a distanza di dieci anni dalla sua comparsa la famiglia Mirai continua a essere uno dei principali riferimenti nel panorama delle botnet IoT.
+
+% che rispettano i principi precedentemente definiti
 
 % A distanza di circa dieci anni dalla sua comparsa, i malware derivati da Mirai continuano a dominare il panorama del malware IoT, come evidenziato da due fonti indipendenti.
 
-Tale rilevanza è confermata da due fonti indipendenti. Il report 2025 di Zscaler ThreatLabz \cite{zscaler2025threatiot} indica Mirai come la minaccia prevalente, con una quota del 40\%, seguita da Mozi e Gafgyt, rispettivamente al secondo e al terzo posto, entrambe con una quota inferiore al 20\%. Dati simili, basati sulle osservazioni raccolte tramite gli honeypot proprietari di Kaspersky, sono confermati anche dal report \emph{IT Threat Evolution} \cite{kaspersky2026itthreat} relativo al Q2 2026, che evidenzia parallelamente la crescita dell'attività di un'altra botnet rinomata, Prometei.
+Tale rilevanza è confermata da due fonti indipendenti. Il \emph{Threat Report 2025} di Zscaler ThreatLabz \cite{zscaler2025threatiot} identifica Mirai come la minaccia prevalente, con una quota del 40\,\%, seguita da Mozi e Gafgyt, entrambe con una quota inferiore al 20\,\%. Anche il report \emph{IT Threat Evolution in Q2 2026} \cite{kaspersky2026itthreat}, basato in parte sulle osservazioni raccolte tramite gli IoT honeypot proprietari di Kaspersky, evidenzia la rilevanza di Mirai e segnala al contempo la crescente attività di un'altra botnet nota, Prometei.
+
+% Tale rilevanza è confermata da due fonti indipendenti. Il rapporto del 2025 di Zscaler ThreatLabz \cite{zscaler2025threatiot} indica Mirai come la minaccia prevalente, con una quota del 40\,\%, seguita al secondo e al terzo posto da Mozi e Gafgyt, entrambe con una quota inferiore al 20\,\%. Dati simili, basati sulle osservazioni raccolte tramite gli ioT honeypot proprietari di Kaspersky, sono confermati anche dal report \emph{IT Threat Evolution} \cite{kaspersky2026itthreat} relativo al Q2 2026, che evidenzia parallelamente la crescita dell'attività di un'altra botnet rinomata, Prometei.
 
 % Complessivamente, queste tre famiglie rappresentano la maggior parte dell'attività osservata, superando i due terzi del totale. (Mirai + Mozi + Gafgyt)
 
-\subsection{Dataset campioni} % 6.4.2
+\subsection{Dataset dei campioni} % 6.4.1
 % \subsubsection{Provenienza}
 % \subsection{Descrizione testuale}
 
-Nella tabella \Cref{tab:campioni} sono riportate le principali informazioni relative ai campioni selezionati, tra cui un nome univoco, utilizzato per identificarli, e l'hash SHA-256 del file binario. Come anticipato, tutti appartengono alla famiglia Mirai, sono in formato ELF e risultano \emph{statically linked}; i primi due sono non-stripped, mentre gli ultimi tre sono stripped.
+Nella tabella \Cref{tab:malware-samples} sono riportate le principali informazioni relative ai campioni selezionati, tra cui i nomi univoci utilizzati per identificarli, e gli hash SHA-256 dei file binari. Come anticipato, tutti appartengono alla famiglia Mirai, sono in formato ELF e risultano \emph{statically linked}; i primi due sono non-stripped, mentre gli ultimi tre sono stripped.
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/6/tables_2.tex]{tab4}
-    \caption{Campioni}
-    \label{tab:campioni}
+    \ExecuteMetaData[chapters/T.tex]{malware-samples}
+    \caption[Informazioni principali sui campioni di malware selezionati]{Informazioni principali sui campioni di malware selezionati per la campagna sperimentale.}
+    \label{tab:malware-samples}
 \end{table}
 
-Per quanto riguarda la provenienza, i primi tre campioni sono stati catturati tramite l'honeypot del Laboratorio di Cybersecurity dell'Università degli Studi di Udine, mentre gli ultimi due sono stati reperiti dal database MalwareBazaar \cite{malwarebazaar2026browse}. Attualmente, tutti i campioni sono disponibili su MalwareBazaar e possono essere recuperati direttamente utilizzando il relativo hash.
+Per quanto riguarda la provenienza dei campioni, i primi tre sono stati catturati tramite l'honeypot proprietario del gruppo di ricerca in cybersecurity dell'Università degli Studi di Udine, mentre gli ultimi due sono stati reperiti dal database \emph{MalwareBazaar} \cite{malwarebazaar2026browse}. Attualmente, tutti i campioni sono disponibili su MalwareBazaar e possono essere recuperati direttamente mediante il relativo hash.
 
-\subsection{Difficoltà campioni} % 6.4.3
+\subsection{\emph{Complexity Score} dei campioni} % 6.4.2
 
-Sulla base dei parametri riportati nella tabella \Cref{tab:complexity_criteria}, la tabella \Cref{tab:complessita_campioni} riporta il livello di difficoltà associato a ciascuno dei campioni scelto. Il punteggio complessivo, espresso su un massimo teorico di $165$, viene successivamente normalizzato in termini percentuali.
-
-I risultati evidenziano una difficoltà piuttosto eterogenea tra i campioni: \textsc{hopto} risulta il più difficile da analizzare (62\%), seguito da \textsc{deepsorrow} (56\%) e \textsc{marvisxoxo} (50\%); \textsc{onboardboat} presenta una difficoltà intermedia (43\%), mentre \textsc{ghost} è nettamente il più semplice (23\%).
-
-Risulta particolarmente interessante osservare il contributo delle singole difficoltà alla costruzione del punteggio complessivo. Alcune, come la cifratura della tabella delle stringhe (\emph{enc\_str}), l'offuscamento dell'endpoint di C\&C (\emph{obfuscated\_cc}) e il parsing non standard dei comandi (\emph{non\_std\_parsing}), risultano particolarmente frequenti e sono presenti in almeno quattro dei cinque campioni. Al contrario, la gestione delle risposte (\emph{has\_response}) e la cifratura della connessione (\emph{enc\_conn}) risultano meno frequenti, essendo presenti in un solo campione ciascuna.
-
-\textsc{marvisxoxo} si distingue per la combinazione della maggior parte delle difficoltà considerate, risultando privo soltanto della registrazione degli attacchi e di meccanismi di risposta, oltre a essere non-stripped. Considerando esclusivamente le difficoltà legate al comportamento e alle funzionalità del malware (cioè escludendo i parametri \emph{ghidra\_dbf}, \emph{statically\_linked} e \emph{stripped}), \textsc{marvisxoxo} presenta un punteggio superiore a quello di \textsc{deepsorrow} e \textsc{hopto}. L'elevata difficoltà attribuita a questi ultimi due campioni è dovuta principalmente alla presenza della registrazione dinamica degli attacchi, mentre, per ciascuna delle restanti caratteristiche, \textsc{marvisxoxo} presenta un livello di difficoltà maggiore o uguale.
+Sulla base dei criteri riportati nella tabella \Cref{tab:complexity_criteria}, la tabella \Cref{tab:complexity_scores} riporta la \emph{Complexity Score} associata a ciascuno dei campioni scelto. I punteggi totali, espressi su un massimo teorico di $165$, vengono anche normalizzati in termini percentuali.
 
 \begin{table}[t]
     \centering
-    \resizebox{\textwidth}{!}{%
-        \ExecuteMetaData[chapters/6/tables_2.tex]{tab5}
-    %
-    }
-    \caption{Difficoltà}
-    \label{tab:complessita_campioni}
+    \ExecuteMetaData[chapters/T.tex]{complexity-scores}
+    \caption[\emph{Complexity Score} dei campioni del dataset]{\emph{Complexity Score} dei campioni del dataset, assegnate secondo i criteri della \Cref{tab:complexity_criteria}.}
+    \label{tab:complexity_scores}
 \end{table}
+
+La complessità dei campioni è piuttosto eterogenea, \textsc{hopto} è il più difficile da analizzare (62\,\%), seguito da \textsc{deepsorrow} (56\,\%) e \textsc{marvisxoxo} (50\,\%); \textsc{onboardboat} presenta una difficoltà intermedia (43\,\%), mentre \textsc{ghost} è nettamente il più semplice (23\,\%).
+
+Risulta particolarmente interessante osservare il contributo dei singoli criteri alla costruzione del punteggio complessivo. Alcuni criteri, come la cifratura della tabella delle stringhe  e il parsing non standard dei comandi , sono presenti nella maggioranza dei campioni, mentre altri, ad esempio la gestione delle risposte e la cifratura della connessione, compaiono in uno soltanto. Il campione \textsc{marvisxoxo} combina la maggior parte delle difficoltà considerate, risultando privo solo della registrazione degli attacchi e dei meccanismi di risposta, oltre a essere non-stripped. Escludendo i criteri non legati alle funzionalità e al comportamento del malware, ossia \emph{ghidra\_dbf}, \emph{statically\_linked} e \emph{stripped}, \textsc{marvisxoxo} presenta un punteggio superiore a \textsc{deepsorrow} e \textsc{hopto}, la cui maggiore difficoltà è dovuta principalmente alla registrazione dinamica degli attacchi.
+
+% (\emph{enc\_str}), (\emph{non\_std\_parsing}) + offuscamento dell'endpoint di C\&C (\emph{obfuscated\_cc}) / (\emph{has\_response}), (\emph{enc\_conn})
+
+% Alcuni, come la cifratura della tabella delle stringhe (\emph{enc\_str}) e il parsing non standard dei comandi (\emph{non\_std\_parsing}), sono particolarmente frequenti e sono presenti in almeno quattro dei cinque campioni. Al contrario, la gestione delle risposte (\emph{has\_response}) e la cifratura della connessione (\emph{enc\_conn}) risultano meno frequenti, essendo presenti in un solo campione ciascuna. Il campione \textsc{marvisxoxo} si distingue per la combinazione della maggior parte delle difficoltà considerate, risultando privo soltanto della registrazione degli attacchi e di meccanismi di risposta, oltre a essere non-stripped. Considerando esclusivamente le difficoltà legate al comportamento e alle funzionalità del malware (cioè escludendo i parametri \emph{ghidra\_dbf}, \emph{statically\_linked} e \emph{stripped}), \textsc{marvisxoxo} presenta un punteggio superiore a quello di \textsc{deepsorrow} e \textsc{hopto}. L'elevata difficoltà attribuita a questi ultimi due campioni è dovuta principalmente alla presenza della registrazione dinamica degli attacchi, mentre, per ciascuna delle restanti caratteristiche, \textsc{marvisxoxo} presenta un livello di difficoltà maggiore o uguale.
 
 \section{Risultati sperimentali}  % 6.5
 
-Di seguito sono presentati i principali risultati ottenuti dalla campagna sperimentale condotta, in accordo con il protocollo e le metriche precedentemente definite.
+Nella seguente sezione vengono riportati i principali risultati della campagna sperimentale, condotta secondo il protocollo definito e basata sulle valutazioni effettuate attraverso i criteri selezionati.
 
-I risultati sono riportati mediante tabelle caratterizzate da una struttura comune. Le colonne sono organizzate secondo un indice gerarchico a due livelli, dove il primo identifica il campione considerato e il secondo specifica il modello LLM impiegato per l'esecuzione. Le righe riportano i criteri di volta in volta considerati, con i relativi valori, mentre la parte finale della tabella è dedicata ai punteggi complessivi calcolati a partire da questi.
+Ad eccezione della \Cref{tab:classifier-scores}, i risultati sono organizzati in tabelle caratterizzate da una struttura comune. Le colonne seguono un indice gerarchico a due livelli, in cui il primo identifica il campione considerato, mentre il secondo indica il modello LLM utilizzato; le righe riportano invece i criteri di valutazione e i relativi punteggi.
+
+% I risultati sono riportati mediante tabelle caratterizzate da una struttura comune. Le colonne sono organizzate secondo un indice gerarchico a due livelli, dove il primo identifica il campione considerato e il secondo specifica il modello LLM impiegato per l'esecuzione. Le righe riportano i criteri di volta in volta considerati, con i relativi valori, mentre la parte finale della tabella è dedicata ai punteggi complessivi calcolati a partire da questi.
 
 \subsection{Statistiche di esecuzione} % 6.5.1
 
-La \Cref{tab:stats} presenta alcune statistiche relative all'esecuzione della campagna sperimentale. Tali informazioni non rientrano nella valutazione, ma vengono incluse a scopo informativo.
+La \Cref{tab:execution-stats} presenta alcune statistiche relative alle esecuzioni effettuate sui campioni, riportate a scopo puramente informativo e non considerate nella valutazione del sistema.
 
-La metà superiore della tabella riporta il numero complessivo di token utilizzati dalle attività previste dalle \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e da quelle dello \textsc{Code Agent}, oltre al totale. Il conteggio è riferito all'intera esecuzione e non distingue tra token di input, che comprendono prompt iniziali e risposte dei tool, e token di output, che includono reasoning, risposte e tool calls.
-
-% La 1a riga ingloba \textsc{Start Mode} e \textsc{Continue Mode}. La 2a riga ingloba \textsc{Renaming Task} e \textsc{Reversing Task}. La 3a riga include \textsc{BotNet} module e \textsc{MessageParser} module.
+La metà superiore della tabella riporta il numero complessivo di token utilizzati dalle attività previste dalle \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e da quelle dello \textsc{Code Agent}, oltre al totale. Il conteggio è riferito all'intera esecuzione e non distingue tra token di input, che comprendono prompt iniziali e risposte dei tool, e token di output, che includono reasoning, risposte e tool call.
 
 La metà inferiore mostra invece i tempi di esecuzione relativi alle medesime attività. Rispetto al numero di token, la misura dei tempi è maggiormente soggetta a variabilità e quindi meno precisa, pur fornendo una buona indicazione dell'impegno richiesto dalle diverse attività.
+
+\begin{table}[t]
+    \centering
+    \ExecuteMetaData[chapters/T.tex]{execution-stats}
+    \caption{Statistiche2}
+    \label{tab:execution-stats2}
+\end{table}
+
 
 \begin{table}[t]
     \centering
@@ -203,12 +216,14 @@ La metà inferiore mostra invece i tempi di esecuzione relativi alle medesime at
     }
     % \\ \vspace{5pt} {\scriptsize \textsuperscript{*} I tempi di esecuzione sono approssimati ($\approx$).} % \footnotesize
     \caption{Statistiche}
-    \label{tab:stats}
+    \label{tab:execution-stats}
 \end{table}
+
+% La 1a riga ingloba \textsc{Start Mode} e \textsc{Continue Mode}. La 2a riga ingloba \textsc{Renaming Task} e \textsc{Reversing Task}. La 3a riga include \textsc{BotNet} module e \textsc{MessageParser} module.
 
 \subsection{Raccolta dei risultati} % 6.5.2
 
-La \Cref{tab:res1} riporta i risultati relativi alla verifica dell'individuazione della natura malevola dei campioni e del riconoscimento della corrispondente famiglia di botnet.
+La \Cref{tab:classifier-scores} riporta i risultati relativi alla verifica dell'individuazione della natura malevola dei campioni e del riconoscimento della corrispondente famiglia di botnet.
 
 \begin{table}[t]
     \centering
@@ -217,7 +232,7 @@ La \Cref{tab:res1} riporta i risultati relativi alla verifica dell'individuazion
     %
     }
     \caption{Classifying performance}
-    \label{tab:res1}
+    \label{tab:classifier-scores}
 \end{table}
 
 La \Cref{tab:res2} riporta i risultati relativi alla \textsc{Renaming Task} dello \textsc{SRE Agent}. Le prime righe riportano il numero totale di funzioni, di funzioni rinominate e di funzioni correttamente identificate. A partire da questi valori vengono quindi calcolati i tre punteggi definiti nella \Cref{tab:res2}, espressi in percentuale.
@@ -260,7 +275,7 @@ La \Cref{tab:res4} riporta i risultati relativi alla produzione del \textsc{Capt
 
 \section{Discussione dei risultati} % 6.6
 
-La fase di identificazione preliminare si è dimostrata sufficientemente affidabile nei casi considerati, consentendo di proseguire con le fasi successive della pipeline senza incontrare errori di classificazione. Per ottenere una valutazione più completa e rappresentativa, sarebbe necessario considerare anche casi limite, utili a verificare la presenza di eventuali falsi positivi e falsi negativi e a valutare la capacità di distinguere correttamente tra più famiglie di botnet, in particolare nei casi in cui un campione presenti caratteristiche riconducibili a più di una famiglia. % mediante metriche di accuratezza
+La fase di identificazione preliminare si è dimostrata sufficientemente affidabile nei casi considerati, consentendo di proseguire con le fasi successive della pipeline senza incontrare errori di classificazione. Per ottenere una valutazione più completa e rappresentativa, sarebbe necessario considerare anche casi limite, utili a verificare la presenza di eventuali falsi positivi e falsi negativi e a valutare la capacità di distinguere correttamente tra più famiglie di botnet, in particolare nei casi in cui un campione presenti caratteristiche riconducibili a più di una famiglia. % mediante criteri di accuratezza
 
 Per fornire una visione sintetica e facilitare il confronto tra i diversi LLM e campioni, è stato quindi realizzato un grafico a barre, mostrato in \Cref{fig:bar_plot}, che mette a confronto i punteggi complessivi ottenuti nelle tre attività considerate: \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e produzione del \textsc{Capture Module} da parte del \textsc{Code Agent}.
 
@@ -287,9 +302,9 @@ https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/late
 
 L'andamento osservato, pur essendo limitato al sistema considerato e al metodo di valutazione adottato, risulta coerente con quello evidenziato da alcuni benchmark pubblici. In particolare, l'Artificial Analysis Intelligence Index v4.2, che aggrega dieci valutazioni delle capacità dei LLM in ambito generale, scientifico, di coding e agentico, assegna a DS4FP un punteggio di $33$, superiore al $29$ ottenuto da Q3627 \cite{artificialanalysis2026aaii}. Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1 \cite{merrill2026terminalbench}, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627.
 
-Tornando alle singole attività, per la \textsc{Renaming Task} la \Cref{tab:res2} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\% e l'85\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\% e il 55\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\% e il 65\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni rimane senza nome, riducendo le informazioni semantiche disponibili. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \textsc{Renaming Task} tendenzialmente conservativo, nonostante l'impiego dei due cicli di rinomina. Tuttavia, un limite della valutazione è rappresentato dall'assenza di un indice di importanza delle singole funzioni, che permetta di considerare la loro diversa rilevanza all'interno del programma durante la valutazione della copertura.
+Tornando alle singole attività, per la \textsc{Renaming Task} la \Cref{tab:res2} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\,\% e l'85\,\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\,\% e il 55\,\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\,\% e il 65\,\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni rimane senza nome, riducendo le informazioni semantiche disponibili. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \textsc{Renaming Task} tendenzialmente conservativo, nonostante l'impiego dei due cicli di rinomina. Tuttavia, un limite della valutazione è rappresentato dall'assenza di un indice di importanza delle singole funzioni, che permetta di considerare la loro diversa rilevanza all'interno del programma durante la valutazione della copertura.
 
-La \textsc{Reversing Task} ha ottenuto punteggi medi intorno all'80\%, confermando l'utilità dei report prodotti dal LLM come sintesi dell'attività di SRE e come output del sistema. Dalla revisione dei report emerge infatti un livello di completezza e correttezza sufficiente a renderli una valida base di partenza per il reverse engineer, che può utilizzarli per proseguire autonomamente il lavoro, correggendoli e integrandoli con la propria analisi. Tuttavia, il principale fattore penalizzante, comune a tutte le esecuzioni sui diversi campioni, è la scarsa consistenza dei \textsc{SRE Reports}, nei quali sono spesso presenti sovrapposizioni e alcune contraddizioni, riconducibili in gran parte alla natura parallela delle modalità \textsc{Transport Mode} e \textsc{Communication Mode}. Ciò evidenzia una variabilità non trascurabile tra esecuzioni agentiche indipendenti per le attività di SRE del sistema, dovuta ai diversi percorsi seguiti dagli agenti durante l'analisi dello stesso campione. Per l'appunto, nei \textsc{SRE Reports} questa variabilità emerge nella diversa presentazione di uno stesso risultato o, nei casi più critici, nella presenza di risultati discordanti. Le altre penalizzazioni del punteggio risultano invece abbastanza uniformemente distribuite tra i diversi parametri di valutazione della \Cref{tab:res3}; tra questi, il riconoscimento delle capacità del payload è l'attività di SRE che ha ottenuto i risultati meno favorevoli. Inoltre, è interessante notare il risultato della combinazione \textsc{onboardboat}-Q3627: a fronte del buon risultato ottenuto da DS4FP sullo stesso campione, Q3627 mostra una prestazione sensibilmente peggiore, nonostante un'alta \emph{Renaming Score} e un livello intermedio di difficoltà del campione. Questo comportamento verrà ripreso durante la successiva analisi in relazione alla difficoltà dei campioni.
+La \textsc{Reversing Task} ha ottenuto punteggi medi intorno all'80\,\%, confermando l'utilità dei report prodotti dal LLM come sintesi dell'attività di SRE e come output del sistema. Dalla revisione dei report emerge infatti un livello di completezza e correttezza sufficiente a renderli una valida base di partenza per il reverse engineer, che può utilizzarli per proseguire autonomamente il lavoro, correggendoli e integrandoli con la propria analisi. Tuttavia, il principale fattore penalizzante, comune a tutte le esecuzioni sui diversi campioni, è la scarsa consistenza dei \textsc{SRE Reports}, nei quali sono spesso presenti sovrapposizioni e alcune contraddizioni, riconducibili in gran parte alla natura parallela delle modalità \textsc{Transport Mode} e \textsc{Communication Mode}. Ciò evidenzia una variabilità non trascurabile tra esecuzioni agentiche indipendenti per le attività di SRE del sistema, dovuta ai diversi percorsi seguiti dagli agenti durante l'analisi dello stesso campione. Per l'appunto, nei \textsc{SRE Reports} questa variabilità emerge nella diversa presentazione di uno stesso risultato o, nei casi più critici, nella presenza di risultati discordanti. Le altre penalizzazioni del punteggio risultano invece abbastanza uniformemente distribuite tra i diversi parametri di valutazione della \Cref{tab:res3}; tra questi, il riconoscimento delle capacità del payload è l'attività di SRE che ha ottenuto i risultati meno favorevoli. Inoltre, è interessante notare il risultato della combinazione \textsc{onboardboat}-Q3627: a fronte del buon risultato ottenuto da DS4FP sullo stesso campione, Q3627 mostra una prestazione sensibilmente peggiore, nonostante un'alta \emph{Renaming Score} e un livello intermedio di difficoltà del campione. Questo comportamento verrà ripreso durante la successiva analisi in relazione alla difficoltà dei campioni.
 
 % Questa è dovuta alle scelte effettuate nei diversi passaggi del processo, sulla base delle informazioni raccolte e delle conclusioni raggiunte, che possono condurre gli agenti a seguire percorsi differenti durante l'analisi di uno stesso campione.
 

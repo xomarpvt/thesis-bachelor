@@ -32,7 +32,7 @@
 \setlength{\tabcolsep}{10pt}
 \begin{tabular}{lccccc}
     \toprule
-    \textbf{Parametro} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
+    \textbf{Criterio} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
     \midrule
     \emph{ghidra\_dbf}        & $2$  & $6$  & $13$ & $14$ & $13$ \\
     \emph{statically\_linked} & $10$ & $10$ & $10$ & $10$ & $10$ \\
@@ -61,26 +61,29 @@
 \begin{tabular}{llcccccccccc}
     \toprule
     % \textbf{Statistica} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
-    \multicolumn{2}{l}{\textbf{Statistica}} & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}}
+    \multicolumn{2}{l}{\multirow{2}{*}[-0.525ex]{\textbf{Statistica}}}
+    & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}}
     & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
     \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
-    \multicolumn{2}{l}{\emph{LLM}}
-    & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
+    %\multicolumn{2}{l}{\emph{LLM}}
+    & & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
     \midrule
-    \multirow{4}{*}{\makecell{Token\\$[{10}^3 \; tk]$}}
-    & \emph{Renaming}
+    \multirow{4}{*}[-0.525ex]{
+        \makecell[l]{Token\\$[{10}^3 \; tk]$}
+    }
+    & \textsc{Ren.}
     & N/A & N/A
     & N/A & N/A
     & $251 \text{ k}$ & $322 \text{ k}$
     & $270 \text{ k}$ & $221 \text{ k}$
     & $242 \text{ k}$ & $359 \text{ k}$ \\
-    & \emph{SRE}
+    & \textsc{Rev.}
     & $250 \text{ k}$ & $174 \text{ k}$
     & $296 \text{ k}$ & $289 \text{ k}$
     & $207 \text{ k}$ & $210 \text{ k}$
     & $241 \text{ k}$ & $234 \text{ k}$
     & $292 \text{ k}$ & $231 \text{ k}$ \\
-    & \emph{Code}
+    & \textsc{Code}
     & $27 \text{ k}$ & $22 \text{ k}$
     & $39 \text{ k}$ & $27 \text{ k}$
     & $52 \text{ k}$ & $27 \text{ k}$
@@ -94,20 +97,22 @@
     & $557 \text{ k}$ & $485 \text{ k}$
     & $568 \text{ k}$ & $613 \text{ k}$ \\
     \midrule
-    \multirow{4}{*}{\makecell{Tempo\\$[min:s]$}} % \textsuperscript{*}
-    & \emph{Renaming}
+    \multirow{4}{*}[-0.525ex]{
+        \makecell[l]{Tempo\\$[min:s]$}
+    }
+    & \textsc{Ren.}
     & N/A & N/A
     & N/A & N/A
     & $19:46$ & $09:06$
     & $14:38$ & $09:30$
     & $19:05$ & $09:53$ \\
-    & \emph{SRE}
+    & \textsc{Rev.}
     & $13:10$ & $04:55$
     & $31:23$ & $16:00$
     & $14:37$ & $11:58$
     & $15:46$ & $14:03$
     & $26:22$ & $14:55$ \\
-    & \emph{Code}
+    & \textsc{Code}
     & $01:06$ & $00:51$
     & $04:27$ & $01:14$
     & $06:35$ & $01:04$
