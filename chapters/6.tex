@@ -68,7 +68,7 @@ I criteri possono essere di tipo binario, con l'assegnazione del solo valore min
     \label{tab:complexity_criteria}
 \end{table}
 
-\subsection{Efficacia della \renaming{}} % 6.3.2
+\subsection{Efficacia della \renaming{}} \label{sec:renaming_criteria} % 6.3.2
 
 Per la valutazione dell'efficacia della \renaming{} è necessario considerare due parametri principali. Il primo, indicato come ${RC}_{\%}$ e definito \emph{Renaming Coverage}, rappresenta la percentuale di funzioni rinominate rispetto al totale delle funzioni presenti nel binario.
 
@@ -154,13 +154,13 @@ Tale rilevanza è confermata da due fonti indipendenti. Il \emph{Threat Report 2
 % \subsubsection{Provenienza}
 % \subsection{Descrizione testuale}
 
-Nella tabella \Cref{tab:malware-samples} sono riportate le principali informazioni relative ai campioni selezionati, tra cui i nomi univoci utilizzati per identificarli, e gli hash SHA-256 dei file binari. Come anticipato, tutti appartengono alla famiglia Mirai, sono in formato ELF e risultano \emph{statically linked}; i primi due sono non-stripped, mentre gli ultimi tre sono stripped.
+Nella tabella \Cref{tab:malware_samples} sono riportate le principali informazioni relative ai campioni selezionati, tra cui i nomi univoci utilizzati per identificarli, e gli hash SHA-256 dei file binari. Come anticipato, tutti appartengono alla famiglia Mirai, sono in formato ELF e risultano \emph{statically linked}; i primi due sono non-stripped, mentre gli ultimi tre sono stripped.
 
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/T.tex]{malware-samples}
     \caption[Informazioni principali sui campioni di malware selezionati]{Informazioni principali sui campioni di malware selezionati per la campagna sperimentale.}
-    \label{tab:malware-samples}
+    \label{tab:malware_samples}
 \end{table}
 
 Per quanto riguarda la provenienza dei campioni, i primi tre sono stati catturati tramite l'honeypot proprietario del gruppo di ricerca in cybersecurity dell'Università degli Studi di Udine, mentre gli ultimi due sono stati reperiti dal database \emph{MalwareBazaar} \cite{malwarebazaar2026browse}. Attualmente, tutti i campioni sono disponibili su MalwareBazaar e possono essere recuperati direttamente mediante il relativo hash.
@@ -188,107 +188,93 @@ Risulta particolarmente interessante osservare il contributo dei singoli criteri
 
 Nella seguente sezione vengono riportati i principali risultati della campagna sperimentale, condotta secondo il protocollo definito e basata sulle valutazioni effettuate attraverso i criteri selezionati.
 
-Ad eccezione della \Cref{tab:classifier-scores}, i risultati sono organizzati in tabelle caratterizzate da una struttura comune. Le colonne seguono un indice gerarchico a due livelli, in cui il primo identifica il campione considerato, mentre il secondo indica il modello LLM utilizzato; le righe riportano invece i criteri di valutazione e i relativi punteggi.
+Ad eccezione della \Cref{tab:classifier_scores}, i risultati sono organizzati in tabelle caratterizzate da una struttura comune. Le colonne seguono un indice gerarchico a due livelli, in cui il primo identifica il campione considerato, mentre il secondo indica il modello LLM utilizzato; le righe riportano invece i criteri di valutazione e i relativi punteggi.
 
 % I risultati sono riportati mediante tabelle caratterizzate da una struttura comune. Le colonne sono organizzate secondo un indice gerarchico a due livelli, dove il primo identifica il campione considerato e il secondo specifica il modello LLM impiegato per l'esecuzione. Le righe riportano i criteri di volta in volta considerati, con i relativi valori, mentre la parte finale della tabella è dedicata ai punteggi complessivi calcolati a partire da questi.
 
 \subsection{Statistiche di esecuzione} % 6.5.1
 
-La \Cref{tab:execution-stats} presenta alcune statistiche relative alle esecuzioni effettuate sui campioni, riportate a scopo puramente informativo e non considerate nella valutazione del sistema.
+La \Cref{tab:execution_stats} presenta alcune statistiche relative alle esecuzioni effettuate sui campioni, riportate a scopo puramente informativo e non considerate nella valutazione del sistema.
 
-La metà superiore della tabella riporta il numero complessivo di token utilizzati dalle attività previste dalle \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e da quelle dello \textsc{Code Agent}, oltre al totale. Il conteggio è riferito all'intera esecuzione e non distingue tra token di input, che comprendono prompt iniziali e risposte dei tool, e token di output, che includono reasoning, risposte e tool call.
+La metà superiore della tabella riporta il numero complessivo di token utilizzati dalle attività previste dalle \renaming{} e \reversing{} del \sreagent{} e da quelle del \codeagent{}, oltre al totale. Il conteggio è riferito all'intera esecuzione e non distingue tra token di input, che comprendono prompt iniziali e risposte dei tool, e token di output, che includono reasoning, risposte e tool call.
 
 La metà inferiore mostra invece i tempi di esecuzione relativi alle medesime attività. Rispetto al numero di token, la misura dei tempi è maggiormente soggetta a variabilità e quindi meno precisa, pur fornendo una buona indicazione dell'impegno richiesto dalle diverse attività.
 
 \begin{table}[t]
     \centering
     \ExecuteMetaData[chapters/T.tex]{execution-stats}
-    \caption{Statistiche2}
-    \label{tab:execution-stats2}
-\end{table}
-
-
-\begin{table}[t]
-    \centering
-    \resizebox{\textwidth}{!}{%
-        \ExecuteMetaData[chapters/6/tables_2.tex]{tab6}
-    %
+    \caption[Statistiche di esecuzione del sistema]{
+        Statistiche relative ai token utilizzati e ai tempi di esecuzione delle macro-attività del sistema, con distinzione tra quelle previste dalla \renaming{} (\emph{Ren.}), dalla \reversing{} (\emph{Rev.}) e dal \codeagent{} (\emph{Code}).
+        % Statistiche relative ai token utilizzati e ai tempi di esecuzione delle macro-attività del sistema. \emph{Ren.}, \emph{Rev.} e \emph{Code} indicano rispettivamente \renaming{}, \reversing{} e \codeagent{}.
     }
-    % \\ \vspace{5pt} {\scriptsize \textsuperscript{*} I tempi di esecuzione sono approssimati ($\approx$).} % \footnotesize
-    \caption{Statistiche}
-    \label{tab:execution-stats}
+    \label{tab:execution_stats}
 \end{table}
 
 % La 1a riga ingloba \textsc{Start Mode} e \textsc{Continue Mode}. La 2a riga ingloba \textsc{Renaming Task} e \textsc{Reversing Task}. La 3a riga include \textsc{BotNet} module e \textsc{MessageParser} module.
 
 \subsection{Raccolta dei risultati} % 6.5.2
 
-La \Cref{tab:classifier-scores} riporta i risultati relativi alla verifica dell'individuazione della natura malevola dei campioni e del riconoscimento della corrispondente famiglia di botnet.
+La \Cref{tab:classifier_scores} riporta i risultati della valutazione del \classifier{}, nella quale è stato verificato che il modulo riconosca la natura malevola dei campioni e ne identifichi correttamente la famiglia di botnet di appartenenza.
 
 \begin{table}[t]
     \centering
-    \resizebox{\textwidth}{!}{%
-        \ExecuteMetaData[chapters/6/tables_2.tex]{tab7}
-    %
-    }
-    \caption{Classifying performance}
-    \label{tab:classifier-scores}
+    \ExecuteMetaData[chapters/T.tex]{classifier-scores}
+    \caption[Risultati della valutazione del \classifier{}]{Risultati della valutazione del \classifier{}.}
+    \label{tab:classifier_scores}
 \end{table}
 
-La \Cref{tab:res2} riporta i risultati relativi alla \textsc{Renaming Task} dello \textsc{SRE Agent}. Le prime righe riportano il numero totale di funzioni, di funzioni rinominate e di funzioni correttamente identificate. A partire da questi valori vengono quindi calcolati i tre punteggi definiti nella \Cref{tab:res2}, espressi in percentuale.
-
-La valutazione è stata naturalmente condotta esclusivamente sui campioni stripped, ossia \textsc{deepsorrow}, \textsc{hopto} e \textsc{onboardboat}, mentre i campioni non-stripped sono esclusi. Per completezza, \textsc{ghost} e \textsc{marvisxoxo} contengono rispettivamente 329 e 368 funzioni.
+La \Cref{tab:renaming_scores} riporta i risultati della valutazione della \renaming{} del \sreagent{}. La valutazione riguarda esclusivamente i campioni stripped, ossia \textsc{deepsorrow}, \textsc{hopto} e \textsc{onboardboat}, mentre \textsc{ghost} e \textsc{marvisxoxo}, essendo not-stripped, sono esclusi. Per completezza, questi ultimi contengono rispettivamente $329$ e $368$ funzioni. Le prime righe della tabella riportano il numero totale di funzioni, il numero di funzioni rinominate e quello delle funzioni a cui è stato assegnato un nome corretto. Da questi valori sono stati quindi calcolati la \emph{Renaming Coverage}, la \emph{Renaming Accuracy} e il \emph{Renaming Score}, secondo quanto definito nella \Cref{sec:renaming_criteria}. Nel calcolo del \emph{Renaming Score}, la funzione $g$ è stata parametrizzata con $k=10$.
 
 \begin{table}[t]
     \centering
-    \resizebox{\textwidth}{!}{%
-        \ExecuteMetaData[chapters/6/tables_2.tex]{tab8}
-        %
-    }
-    \caption{Renaming performance}
-    \label{tab:res2}
+    \ExecuteMetaData[chapters/T.tex]{renaming-scores}
+    \caption[Risultati della valutazione della \renaming{}]{Risultati della valutazione della \renaming{} del \sreagent{}.}
+    \label{tab:renaming_scores}
 \end{table}
 
-La \Cref{tab:res3} riporta i risultati relativi alla \textsc{Reversing Task} dello \textsc{SRE Agent}. La valutazione è stata effettuata sulla base dei parametri definiti nella \Cref{tab:res3} e l'ultima riga mostra il punteggio complessivo, ottenuto come somma dei singoli valori e compreso all'interno dell'intervallo $[0,100]$.
+La \Cref{tab:reversing_scores} riporta i risultati della valutazione della \reversing{} del \sreagent{}. La valutazione è stata effettuata sulla base dei criteri definiti nella \Cref{tab:reversing_criteria}, da cui è stato calcolato il \emph{Reversing Score}.
 
 \begin{table}[t]
     \centering
-    \resizebox{\textwidth}{!}{%
-        \ExecuteMetaData[chapters/6/tables_2.tex]{tab9}
-        %
-    }
-    \caption{Reversing performance}
-    \label{tab:res3}
+    \ExecuteMetaData[chapters/T.tex]{reversing-scores}
+    \caption[Risultati della valutazione della \reversing{}]{Risultati della valutazione della \reversing{} del \sreagent{}.}
+    \label{tab:reversing_scores}
 \end{table}
 
-La \Cref{tab:res4} riporta i risultati relativi alla produzione del \textsc{Capture Module} da parte del \textsc{SRE Agent}. La valutazione è stata effettuata sulla base dei parametri definiti nella \Cref{tab:res4} e l'ultima riga mostra il punteggio complessivo, ottenuto come somma dei singoli valori e compreso all'interno dell'intervallo $[0,100]$.
+La \Cref{tab:module_scores} riporta i risultati della valutazione dei \capture{} prodotti dal \codeagent{}. La valutazione è stata effettuata sulla base dei criteri definiti nella \Cref{tab:module_criteria}, calcolando infine il \emph{Module Score}.
 
 \begin{table}[t]
     \centering
-    \resizebox{\textwidth}{!}{%
-        \ExecuteMetaData[chapters/6/tables_2.tex]{tab10}
-    %
-    }
+    \ExecuteMetaData[chapters/T.tex]{module-scores}
     \caption{Coding performance}
-    \label{tab:res4}
+    \label{tab:module_scores}
 \end{table}
 
 \section{Discussione dei risultati} % 6.6
 
-La fase di identificazione preliminare si è dimostrata sufficientemente affidabile nei casi considerati, consentendo di proseguire con le fasi successive della pipeline senza incontrare errori di classificazione. Per ottenere una valutazione più completa e rappresentativa, sarebbe necessario considerare anche casi limite, utili a verificare la presenza di eventuali falsi positivi e falsi negativi e a valutare la capacità di distinguere correttamente tra più famiglie di botnet, in particolare nei casi in cui un campione presenti caratteristiche riconducibili a più di una famiglia. % mediante criteri di accuratezza
+Per tutte le esecuzioni effettuate, il sistema ha operato in maniera autonoma secondo il flusso previsto, completando le diverse fasi della pipeline senza richiedere interventi manuali. Tale risultato conferma la corretta integrazione dei diversi componenti e consente quindi di passare alla discussione dei risultati ottenuti per i singoli moduli.
 
-Per fornire una visione sintetica e facilitare il confronto tra i diversi LLM e campioni, è stato quindi realizzato un grafico a barre, mostrato in \Cref{fig:bar_plot}, che mette a confronto i punteggi complessivi ottenuti nelle tre attività considerate: \textsc{Renaming Task} e \textsc{Reversing Task} dello \textsc{SRE Agent} e produzione del \textsc{Capture Module} da parte del \textsc{Code Agent}.
+La valutazione del \classifier{}, riportata in \Cref{tab:classifier_scores}, è stata necessariamente limitata ai campioni scelti. In tali casi, il \classifier{} si è dimostrato sufficientemente affidabile, visto che non sono stati incontrati errori di classificazione. Una valutazione più completa richiederebbe tuttavia di considerare anche casi limite, utili a verificare il rilevamento di eventuali falsi positivi e falsi negativi e la capacità di distinguere correttamente tra più famiglie di botnet, in particolare con campioni che presentano caratteristiche riconducibili a più di una famiglia. % mediante criteri di accuratezza
+
+A questo punto, per fornire una visione sintetica dei risultati e facilitare il confronto tra i diversi LLM e i campioni, è stato realizzato il grafico a barre mostrato in \Cref{fig:bar_plot}, che a confronto i punteggi complessivi ottenuti nelle tre valutazioni principali.
+
+% \renaming{} e \reversing{} del \sreagent{} e produzione del \capture{} da parte del \codeagent{}.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.60]{img/barplot.png}
-    \caption{Confronto renaming, reversing, coding}
+    \includegraphics[width=0.95\textwidth]{img/bar_plot.pdf}
+    \caption[Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score} ottenuti]{
+        Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score} ottenuti dai due LLM considerati nelle valutazioni di \renaming{}, \reversing{} e \capture{} su tutti i campioni selezionati. Le linee orizzontali rappresentano la media delle rispettive serie.
+    }
     \label{fig:bar_plot}
 \end{figure}
 
-Per quanto riguarda il consumo di token, i due LLM presentano valori generalmente simili, sebbene con alcune differenze tra le attività: DS4FP utilizza più token nella \textsc{Renaming Task}, valori simili a Q3627 nella \textsc{Reversing Task} e meno token nel \textsc{Code Agent}. Una differenza più marcata emerge nei tempi di esecuzione: DS4FP risulta costantemente più rapido di Q3627, con tempi globalmente pari a circa la metà. Tale risultato è compatibile con le differenze architetturali tra i due modelli, in particolare con l'architettura MoE di DS4FP, che attiva circa la metà dei parametri rispetto al LLM denso Q3627 \cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}.
+A partire dalle statistiche riportate nella \Cref{tab:execution_stats} e dai risultati riassunti nella \Cref{fig:bar_plot}, è possibile confrontare ad alto livello i due LLM nelle attività considerate. Q3627 e DS4FP presentano prestazioni generalmente comparabili, con differenze più evidenti nella produzione del codice, in cui DS4FP mostra un vantaggio più marcato. Anche il consumo di token risulta nel complesso simile, sebbene DS4FP ne utilizzi di più per la \renaming{} e di meno nel \codeagent{}. Per quanto riguarda i tempi di esecuzione, DS4FP risulta costantemente più rapido, con tempi circa dimezzati rispetto a Q3627. Tale differenza è compatibile con le caratteristiche architetturali dei due modelli, in particolare con l'architettura sparsa di DS4FP, che attiva circa la metà dei parametri rispetto a Q3627 \cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}. La vicinanza dei punteggi ottenuti risulta inoltre coerente con alcuni benchmark pubblici. Nell'Artificial Analysis Intelligence Index v4.3.2 \cite{artificialanalysis2026aaii}, che aggrega dieci valutazioni delle capacità dei LLM in vari ambiti, DS4FP ottiene $24$ punti contro i $21$ di Q3627. Nel Terminal-Bench v2.1 \cite{merrill2026terminalbench}, che comprende anche attività simili a quelle di SRE e cybersecurity implementate in questo sistema, DS4FP raggiunge $61.8$ punti contro i $60.7$ di Q3627. I risultati esterni considerati risultano quindi coerenti con gli andamento osservati nel sistema, pur appartenendo a contesti di valutazione differenti.
 
-La \Cref{fig:bar_plot} consente di effettuare un confronto prestazionale diretto tra i due LLM. Q3627 e DS4FP risultano complessivamente comparabili nelle \textsc{Renaming Task} e \textsc{Reversing Task}, mentre DS4FP evidenzia un vantaggio più marcato nella produzione del codice.
+% Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1 \cite{merrill2026terminalbench}, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627.
+
+% A A I I v4.2: 33 vs 29
+% A A I I v4.3.2: 24 vs 21
 
 \iffalse
 https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index
@@ -300,15 +286,63 @@ https://hub.harborframework.com/tasks/terminal-bench/path-tracing-reverse/latest
 https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/latest
 \fi
 
-L'andamento osservato, pur essendo limitato al sistema considerato e al metodo di valutazione adottato, risulta coerente con quello evidenziato da alcuni benchmark pubblici. In particolare, l'Artificial Analysis Intelligence Index v4.2, che aggrega dieci valutazioni delle capacità dei LLM in ambito generale, scientifico, di coding e agentico, assegna a DS4FP un punteggio di $33$, superiore al $29$ ottenuto da Q3627 \cite{artificialanalysis2026aaii}. Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1 \cite{merrill2026terminalbench}, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627.
+Tornando all'analisi delle singole attività, per la \renaming{} la \Cref{tab:renaming_scores} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\,\% e l'85\,\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\,\% e il 55\,\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\,\% e il 65\,\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni non viene rinominata. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \reversing{} tendenzialmente conservativo, anche in presenza di due cicli agentici di rinomina. Tuttavia, la valutazione presenta due principali limitazioni: da un lato, la \emph{Renaming Coverage} non tiene conto della diversa importanza delle funzioni all'interno del programma, attribuendo a tutte lo stesso peso; dall'altro, la \emph{Renaming Accuracy} non riflette i diversi gradi di correttezza dei nomi assegnati, senza distinguere tra nomi pienamente corretti, parzialmente corretti o fuorvianti.
 
-Tornando alle singole attività, per la \textsc{Renaming Task} la \Cref{tab:res2} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\,\% e l'85\,\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\,\% e il 55\,\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\,\% e il 65\,\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni rimane senza nome, riducendo le informazioni semantiche disponibili. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \textsc{Renaming Task} tendenzialmente conservativo, nonostante l'impiego dei due cicli di rinomina. Tuttavia, un limite della valutazione è rappresentato dall'assenza di un indice di importanza delle singole funzioni, che permetta di considerare la loro diversa rilevanza all'interno del programma durante la valutazione della copertura.
+% senza nome -> riducendo le informazioni semantiche disponibili
 
-La \textsc{Reversing Task} ha ottenuto punteggi medi intorno all'80\,\%, confermando l'utilità dei report prodotti dal LLM come sintesi dell'attività di SRE e come output del sistema. Dalla revisione dei report emerge infatti un livello di completezza e correttezza sufficiente a renderli una valida base di partenza per il reverse engineer, che può utilizzarli per proseguire autonomamente il lavoro, correggendoli e integrandoli con la propria analisi. Tuttavia, il principale fattore penalizzante, comune a tutte le esecuzioni sui diversi campioni, è la scarsa consistenza dei \textsc{SRE Reports}, nei quali sono spesso presenti sovrapposizioni e alcune contraddizioni, riconducibili in gran parte alla natura parallela delle modalità \textsc{Transport Mode} e \textsc{Communication Mode}. Ciò evidenzia una variabilità non trascurabile tra esecuzioni agentiche indipendenti per le attività di SRE del sistema, dovuta ai diversi percorsi seguiti dagli agenti durante l'analisi dello stesso campione. Per l'appunto, nei \textsc{SRE Reports} questa variabilità emerge nella diversa presentazione di uno stesso risultato o, nei casi più critici, nella presenza di risultati discordanti. Le altre penalizzazioni del punteggio risultano invece abbastanza uniformemente distribuite tra i diversi parametri di valutazione della \Cref{tab:res3}; tra questi, il riconoscimento delle capacità del payload è l'attività di SRE che ha ottenuto i risultati meno favorevoli. Inoltre, è interessante notare il risultato della combinazione \textsc{onboardboat}-Q3627: a fronte del buon risultato ottenuto da DS4FP sullo stesso campione, Q3627 mostra una prestazione sensibilmente peggiore, nonostante un'alta \emph{Renaming Score} e un livello intermedio di difficoltà del campione. Questo comportamento verrà ripreso durante la successiva analisi in relazione alla difficoltà dei campioni.
+La \reversing{} ha ottenuto punteggi medi intorno all'80\,\%, evidenziando l'utilità dei \report{} come sintesi dell'attività di SRE e come output finale del modulo. Dalla revisione dei report emerge infatti un livello di completezza e correttezza sufficiente a fornire al reverse engineer una valida base di partenza per proseguire autonomamente con l'analisi e la successiva revisione del \capture{}. Tuttavia, il principale fattore penalizzante, comune alle diverse esecuzioni, è la scarsa consistenza dei \textsc{SRE Reports}, caratterizzati da sovrapposizioni e contraddizioni riconducibili in gran parte alla natura parallela delle modalità di analisi \textsc{Transport Mode} e \textsc{Communication Mode} nella \reversing{}. Ciò mette in luce una variabilità tra esecuzioni agentiche indipendenti non trascurabile, che può tradursi in una diversa presentazione degli stessi risultati o, nei casi più critici, in risultati discordanti. Le altre deduzioni di punti che emergono dalla \Cref{tab:reversing_scores} risultano invece abbastanza uniformemente distribuite tra i diversi criteri; tra questi, il riconoscimento delle capacità del payload è l'attività di SRE con i risultati meno favorevoli. Inoltre, è interessante notare il risultato della combinazione \textsc{onboardboat}-Q3627: a fronte del buon risultato ottenuto da DS4FP sullo stesso campione, Q3627 mostra una prestazione sensibilmente peggiore, nonostante un alto \emph{Renaming Score} e un livello di difficoltà del campione intermedio. Questo comportamento verrà ripreso durante la successiva analisi del \emph{Reversing Score} in relazione alla difficoltà dei campioni.
 
 % Questa è dovuta alle scelte effettuate nei diversi passaggi del processo, sulla base delle informazioni raccolte e delle conclusioni raggiunte, che possono condurre gli agenti a seguire percorsi differenti durante l'analisi di uno stesso campione.
 
-Per quanto riguarda la valutazione del \textsc{Capture Module}, i punteggi risultano complessivamente elevati, ma con una varianza maggiore rispetto alla \textsc{Reversing Task}. I parametri relativi agli aspetti sintattici, architetturali e di integrazione raggiungono i punteggi massimi, innalzando così il punteggio complessivo. Questo risultato è tuttavia coerente con uno degli obiettivi del sistema, che mira a favorire una semplice integrazione della pipeline in altri workflow. Come evidenziato nella \Cref{tab:res4}, è soprattutto \emph{human\_independence} a determinare le differenze osservate tra esecuzione di campioni, poiché risente più direttamente degli errori accumulati nelle diverse fasi della pipeline. Si osserva infatti una certa associazione con il punteggio ottenuto nella \textsc{Reversing Task}, tenendo conto dei diversi gradi di successo nella conseguente implementazione delle funzionalità del modulo.
+Per quanto riguarda la valutazione del \capture{}, i \emph{Module Score} risultano complessivamente elevati, grazie al contributo dei punteggi massimi ottenuti per i criteri relativi agli aspetti sintattici, architetturali e di integrazione. Tale risultato è coerente con uno degli obiettivi alla base del sistema, ossia quello di garantire un'integrazione semplice in altri workflow. Rispetto ai \emph{Reversing Score}, non si osservano differenze particolarmente marcate, anche considerando i diversi gradi di successo nell'implementazione delle funzionalità del modulo. Come evidenziato nella \Cref{tab:module_scores}, le differenze osservate tra i moduli dipendono principalmente dal criterio \emph{human\_independence}, che risente maggiormente degli errori accumulati nelle diverse fasi della pipeline.
+
+\iffalse
+Serie 1:
+ghost
+38, 84.5
+marvisxoxo
+82, 80.0
+deepsorrow
+92, 87.0
+hopto
+102, 87.0
+onboardboat
+71, 60.5
+Serie 2:
+ghost
+38, 86.5
+marvisxoxo
+82, 71.0
+deepsorrow
+92, 79.0
+hopto
+102, 84.0
+onboardboat
+71, 92.0
+\fi
+
+% Hypothesis: Malware analysis accuracy is expected to be negatively related to malware complexity. As malware complexity increases, analysis accuracy is expected to decrease. The relationship may be either linear or nonlinear, depending on how the increase in complexity affects the effectiveness of the analysis.
+
+% Formalizzazione ipotesi:
+
+\(H_0 : \rho \geq 0\)
+\(H_1 : \rho < 0\)
+
+- Livello di significatività \(\alpha=0.05\)
+- scelgo pearson per lineare, kendall per monotono.
+
+\begin{tabular}{ccc}
+    LLM & Qwen & Deepseek \\
+    Pearson $r$ & $0.113$ & $-0.364$ \\
+    Pearson p-val & $0.856$ & $0.547$ \\
+    Kendall $\tau$ & $0.316$ & $-0.2$ \\
+    Kendall p-val & $0.448$ & $0.817$ \\
+\end{tabular}
+
+%
+
+interessante 
+Come anticipato, rimane da caratterizzare la relazione tra la difficoltà del campione e il punteggio ottenuto nella \textsc{Reversing Task}, ossia l'attività di sistema più rilevante, sia dal punto di vista computazionale sia per la sua incidenza sulla correttezza complessiva dell'analisi. A questo scopo, è stato realizzato un grafico a dispersione, riportato in \Cref{fig:scatter_plot}, che mette in relazione le due variabili per entrambi i LLM considerati e riporta la relativa linea di regressione. L'analisi mira a verificare l'ipotesi dell'esistenza di una correlazione negativa tra la difficoltà del campione e il successo nella \textsc{Reversing Task}. Assumendo che la difficoltà costituisca un fattore rilevante nel determinare le prestazioni, ci si attenderebbe infatti una riduzione del punteggio all'aumentare del \textsc{Difficulty Score}. Tale andamento, tuttavia, non emerge in modo evidente dai dati, che mostrano invece una dispersione considerevole e una correlazione lineare praticamente inesistente, con coefficiente di correlazione prossimo allo zero. Questo suggerisce che la difficoltà del campione, considerata isolatamente, non sia sufficiente a spiegare l'esito della \textsc{Reversing Task}. La percentuale di successo sembra infatti risentire anche dell'interazione tra le caratteristiche specifiche del campione e il LLM impiegato, oltre che della variabilità intrinseca delle singole esecuzioni del LLM, già osservata e discussa nelle analisi precedenti. Alla luce di queste osservazioni, il \emph{Difficulty Score} dovrebbe pertanto essere interpretato principalmente come una misura della complessità intrinseca del campione, piuttosto che come un predittore del successo dell'attività di SRE. In termini concettuali, una descrizione più completa della probabilità di successo potrebbe quindi essere ricondotta a una funzione che considera congiuntamente diversi fattori, secondo uno schema ad alto livello del tipo:
 
 \begin{figure}[t]
     \centering
@@ -317,11 +351,9 @@ Per quanto riguarda la valutazione del \textsc{Capture Module}, i punteggi risul
     \label{fig:scatter_plot}
 \end{figure}
 
-Come anticipato, rimane da caratterizzare la relazione tra la difficoltà del campione e il punteggio ottenuto nella \textsc{Reversing Task}, ossia l'attività di sistema più rilevante, sia dal punto di vista computazionale sia per la sua incidenza sulla correttezza complessiva dell'analisi. A questo scopo, è stato realizzato un grafico a dispersione, riportato in \Cref{fig:scatter_plot}, che mette in relazione le due variabili per entrambi i LLM considerati e riporta la relativa linea di regressione. L'analisi mira a verificare l'ipotesi dell'esistenza di una correlazione negativa tra la difficoltà del campione e il successo nella \textsc{Reversing Task}. Assumendo che la difficoltà costituisca un fattore rilevante nel determinare le prestazioni, ci si attenderebbe infatti una riduzione del punteggio all'aumentare del \textsc{Difficulty Score}. Tale andamento, tuttavia, non emerge in modo evidente dai dati, che mostrano invece una dispersione considerevole e una correlazione lineare praticamente inesistente, con coefficiente di correlazione prossimo allo zero. Questo suggerisce che la difficoltà del campione, considerata isolatamente, non sia sufficiente a spiegare l'esito della \textsc{Reversing Task}. La percentuale di successo sembra infatti risentire anche dell'interazione tra le caratteristiche specifiche del campione e il LLM impiegato, oltre che della variabilità intrinseca delle singole esecuzioni del LLM, già osservata e discussa nelle analisi precedenti. Alla luce di queste osservazioni, il \emph{Difficulty Score} dovrebbe pertanto essere interpretato principalmente come una misura della complessità intrinseca del campione, piuttosto che come un predittore del successo dell'attività di SRE. In termini concettuali, una descrizione più completa della probabilità di successo potrebbe quindi essere ricondotta a una funzione che considera congiuntamente diversi fattori, secondo uno schema ad alto livello del tipo:
-
-\begin{equation}
+\begin{equation*}
     SRE \; Success = f(Campione, Difficulty \; Score, LLM, Esecuzione)
     \label{eq:success_hypo}
-\end{equation}
+\end{equation*}
 
 Infine, è opportuno considerare le implicazioni che i risultati ottenuti hanno rispetto al livello di autonomia previsto per la pipeline di analisi. In particolare, è stato mostrato che il sistema è in grado di operare senza input umano diretto, svolgendo le attività di SRE, producendo i relativi report e proseguendo con la generazione del codice. Sebbene sia quindi tecnicamente in grado di produrre, in maniera consistente, \textsc{Capture Module} compatibili con le interfacce previste e integrabili in altri workflow, è ancora difficile e poco frequente ottenere un modulo immediatamente funzionante senza prevedere almeno un piccolo intervento iniziale di revisione o aggiustamento. I risultati suggeriscono però che l'impiego del sistema secondo un approccio \emph{human-on-the-loop} sia già concretamente praticabile, poiché il contributo richiesto all'operatore per portare a termine il processo appare contenuto. Il raggiungimento di una piena autonomia richiederebbe invece ulteriori miglioramenti, soprattutto in termini di affidabilità nell'estrazione delle informazioni e di robustezza e consistenza delle singole esecuzioni.

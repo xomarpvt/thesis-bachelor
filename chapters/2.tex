@@ -26,21 +26,51 @@ Per realizzare tale comunicazione possono essere impiegati diversi protocolli di
 
 L'architettura dell'infrastruttura C\&C influenza direttamente la robustezza e la capacità di sopravvivenza della botnet. Le architetture possono essere ricondotte principalmente a tre modelli: centralizzato, distribuito e ibrido \cite{silva2013botnets, hachem2011topology}. % Capitolo 2.6, Pagina 3
 
-Nel \emph{centralized C\&C model}, il botmaster individua uno o più host che fungono da server C\&C e costituiscono il punto di contatto per i bot compromessi, secondo tre principali configurazioni topologiche. La topologia a \emph{stella singola} prevede un unico server C\&C al quale si collegano tutti i bot, secondo un'organizzazione analoga al modello \emph{client-server} (\Cref{fig:botnet_topology} (a)). La topologia a \emph{stella multi-server} utilizza invece più server C\&C, tra loro interconnessi e tra i quali vengono distribuiti i bot, aumentando ridondanza e scalabilità dell'infrastruttura (\Cref{fig:botnet_topology} (b)). Infine, la topologia \emph{gerarchica} prevede che alcuni bot assumano la funzione di \emph{proxy server}, fungendo da intermediari tra gli altri bot e i server C\&C, riducendo il numero di bot che conosce direttamente l'indirizzo del server C\&C (\Cref{fig:botnet_topology} (c)).
+Nel \emph{centralized C\&C model}, il botmaster individua uno o più host che fungono da server C\&C e costituiscono il punto di contatto per i bot compromessi, secondo tre principali configurazioni topologiche. La topologia a \emph{stella singola} prevede un unico server C\&C al quale si collegano tutti i bot, secondo un'organizzazione analoga al modello \emph{client-server} (\Cref{fig:botnet_topologies_a}). La topologia a \emph{stella multi-server} utilizza invece più server C\&C, tra loro interconnessi e tra i quali vengono distribuiti i bot, aumentando ridondanza e scalabilità dell'infrastruttura (\Cref{fig:botnet_topologies_b}). Infine, la topologia \emph{gerarchica} prevede che alcuni bot assumano la funzione di \emph{proxy server}, fungendo da intermediari tra gli altri bot e i server C\&C, riducendo il numero di bot che conosce direttamente l'indirizzo del server C\&C (\Cref{fig:botnet_topologies_c}).
 
 % Il C\&C server può essere una macchina compromessa o un provider legittimo. Ovviamente i protocolli sui canali di comunicazioni sono protetti per evitare l'eavesdropping. Il modello centralizzato è quello più utilizzato grazie alla sua semplicità di implementazione e ridotta latenza, con gli svantaggi di facilità di detection e compromissione.
 
-Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, tipicamente basata su reti \emph{peer-to-peer} (P2P), dove non esiste un server C\&C centrale, i bot comunicano tra loro e il botmaster impartisce i comandi collegandosi a un nodo qualsiasi della rete (\Cref{fig:botnet_topology} (d)). Sebbene questo modello sia generalmente più complesso da realizzare, l'infrastruttura è più resistente alle attività di rilevamento e smantellamento. Infine, l'\emph{hybrid C\&C model} combina, secondo diversi approcci, elementi dei modelli centralizzato e distribuito, spesso assegnando ruoli differenti ai nodi. % l'assenza di un punto centrale di controllo elimina un singolo punto di fallimento. 
+Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, tipicamente basata su reti \emph{peer-to-peer} (P2P), dove non esiste un server C\&C centrale, i bot comunicano tra loro e il botmaster impartisce i comandi collegandosi a un nodo qualsiasi della rete (\Cref{fig:botnet_topologies_d}). Sebbene questo modello sia generalmente più complesso da realizzare, l'infrastruttura è più resistente alle attività di rilevamento e smantellamento. Infine, l'\emph{hybrid C\&C model} combina, secondo diversi approcci, elementi dei modelli centralizzato e distribuito, spesso assegnando ruoli differenti ai nodi. % l'assenza di un punto centrale di controllo elimina un singolo punto di fallimento. 
 
 % Le principali topologie associate ai modelli centralizzato e distribuito sono illustrate nella \Cref{fig:botnet_topology}.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.75\textwidth]{img/botnet_topology.pdf}
+
+    \begin{subfigure}{0.30\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/botnet_topology_a.pdf}
+        \caption{Centralizzato -- Stella singola}
+        \label{fig:botnet_topologies_a}
+    \end{subfigure}
+    \hspace{0.10\textwidth}
+    \begin{subfigure}{0.30\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/botnet_topology_b.pdf}
+        \caption{Centralizzato -- Multi-server}
+        \label{fig:botnet_topologies_b}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+
+    \begin{subfigure}{0.30\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/botnet_topology_c.pdf}
+        \caption{Centralizzato -- Gerarchica}
+        \label{fig:botnet_topologies_c}
+    \end{subfigure}
+    \hspace{0.10\textwidth}
+    \begin{subfigure}{0.30\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/botnet_topology_d.pdf}
+        \caption{Distribuito -- Casuale}
+        \label{fig:botnet_topologies_d}
+    \end{subfigure}
+
     \caption[Topologie delle botnet]{
         Modelli e topologie delle botnet. Adattata da \cite{hachem2011topology}.
     }
-    \label{fig:botnet_topology}
+    \label{fig:botnet_topologies}
 \end{figure}
 
 \subsection{Ciclo di vita} % 2.1.2

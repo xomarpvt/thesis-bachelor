@@ -196,26 +196,26 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
         \multirow{4}{*}[-0.525ex]{
             \makecell[l]{\emph{Token}\\$[{10}^3 \; tk]$}
         }
-        & \textsc{Ren.}
+        & \emph{Ren.}
         & N/A & N/A
         & N/A & N/A
         & $251 \text{ k}$ & $322 \text{ k}$
         & $270 \text{ k}$ & $221 \text{ k}$
         & $242 \text{ k}$ & $359 \text{ k}$ \\
-        & \textsc{Rev.}
+        & \emph{Rev.}
         & $250 \text{ k}$ & $174 \text{ k}$
         & $296 \text{ k}$ & $289 \text{ k}$
         & $207 \text{ k}$ & $210 \text{ k}$
         & $241 \text{ k}$ & $234 \text{ k}$
         & $292 \text{ k}$ & $231 \text{ k}$ \\
-        & \textsc{Code}
+        & \emph{Code}
         & $27 \text{ k}$ & $22 \text{ k}$
         & $39 \text{ k}$ & $27 \text{ k}$
         & $52 \text{ k}$ & $27 \text{ k}$
         & $46 \text{ k}$ & $29 \text{ k}$
         & $34 \text{ k}$ & $24 \text{ k}$ \\
         \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
-        & Totale
+        & \emph{Totale}
         & $277 \text{ k}$ & $196 \text{ k}$
         & $335 \text{ k}$ & $315 \text{ k}$
         & $510 \text{ k}$ & $559 \text{ k}$
@@ -225,26 +225,26 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
         \multirow{4}{*}[-0.525ex]{
             \makecell[l]{\emph{Tempo}\\$[min:s]$}
         }
-        & \textsc{Ren.}
+        & \emph{Ren.}
         & N/A & N/A
         & N/A & N/A
         & $19:46$ & $09:06$
         & $14:38$ & $09:30$
         & $19:05$ & $09:53$ \\
-        & \textsc{Rev.}
+        & \emph{Rev.}
         & $13:10$ & $04:55$
         & $31:23$ & $16:00$
         & $14:37$ & $11:58$
         & $15:46$ & $14:03$
         & $26:22$ & $14:55$ \\
-        & \textsc{Code}
+        & \emph{Code}
         & $01:06$ & $00:51$
         & $04:27$ & $01:14$
         & $06:35$ & $01:04$
         & $05:05$ & $01:14$
         & $03:19$ & $00:52$ \\
         \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
-        & Totale
+        & \emph{Totale}
         & $14:16$ & $05:46$
         & $35:50$ & $17:14$
         & $40:58$ & $22:08$
@@ -254,3 +254,133 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
     \end{tabular}
 }
 %</execution-stats>
+
+%<*classifier-scores>
+\setlength{\tabcolsep}{9pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\tablewidth}{
+    % lXXXXX
+    @{\hspace{6pt}}
+    >{\raggedright\arraybackslash}X
+    *{5}{>{\centering\arraybackslash}c}
+    @{\hspace{6pt}}
+}
+    \toprule
+    \textbf{Controllo} & \textsc{ghost} & \textsc{marvisxoxo} & \textsc{deepsorrow} & \textsc{hopto} & \textsc{onboardboat} \\
+    \midrule
+    \noalign{\vskip 3pt}
+    \makecell[l]{\emph{Riconoscimento}\\\emph{Natura Malevola}}       & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    \noalign{\vskip 3pt}
+    \midrule
+    \noalign{\vskip 3pt}
+    \makecell[l]{\emph{Riconoscimento}\\\emph{Famiglia Mirai}} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+    \noalign{\vskip 3pt}
+    \bottomrule
+\end{tabularx}
+%</classifier-scores>
+
+%<*renaming-scores>
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{12pt}
+\newcolumntype{A}{c@{\hspace{4pt}}}
+\newcolumntype{B}{@{\hspace{4pt}}c}
+\begin{tabularx}{\tablewidth}{
+    % lXXXXX
+    %@{\hspace{6pt}}
+    >{\raggedright\arraybackslash}X
+    AB
+    AB
+    AB
+    %*{6}{>{\centering\arraybackslash}c}
+    %@{\hspace{6pt}}
+}
+    \toprule
+    \multirow{2}{*}[-0.525ex]{\textbf{Criterio}} & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    & Q3627 & DS4FP & Q3627 & DS4FP & Q3627 & DS4FP \\
+    \midrule
+    \emph{Funzioni Totali} & 450 & 450 & 240 & 240 & 247 & 247 \\
+    \emph{Funzioni Rinominate} & 169 & 172 & 133 & 129 & 169 & 141 \\
+    \emph{Funzioni Non Rinominate} & 281 & 278 & 107 & 111 & 78 & 106 \\
+    \emph{Nomi Corretti} & 147 & 137 & 98 & 102 & 152 & 129 \\
+    \emph{Nomi Errati} & 22 & 35 & 35 & 27 & 17 & 12 \\
+    \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    \emph{Renaming Coverage} \hspace{6pt} (${RC}_{\%}$) & 37.6 & 38.2 & 55.4 & 53.8 & 68.4 & 57.1 \\
+    \emph{Renaming Accuracy} \hspace{6pt} (${RA}_{\%}$) & 87.0 & 79.7 & 73.7 & 79.1 & 89.9 & 91.5 \\
+    \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    \textbf{\emph{Renaming Score}} \; \hspace{6pt} (${RS}_{\%}$) & 56.6 & 52.3 & 57.7 & 61.1 & 77.2 & 72.6 \\
+    \bottomrule
+\end{tabularx}
+%</renaming-scores>
+
+%<*reversing-scores>
+\renewcommand{\arraystretch}{1.35}
+\newcolumntype{L}{>{\raggedright\arraybackslash}l}
+\setlength{\tabcolsep}{9pt}
+\newcolumntype{A}{c@{\hspace{3pt}}}
+\newcolumntype{B}{@{\hspace{3pt}}c}
+\resizebox{\tablewidth}{!}{%
+    \begin{tabular}{
+        L
+        AB
+        AB
+        AB
+        AB
+        AB
+    }
+        \toprule
+        \multirow{2}{*}[-0.525ex]{\textbf{Criterio}} & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}} & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
+        & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} \\
+        \midrule
+        \emph{host\_info} & 10.0 & 10.0 & 7.0 & 8.0 & 10.0 & 10.0 & 8.0 & 10.0 & 10.0 & 10.0 \\
+        \emph{crypto\_obfuscation} & 14.5 & 13.5 & 13.0 & 13.0 & 15.0 & 14.0 & 15.0 & 15.0 & 11.0 & 15.0 \\
+        \emph{protocol\_parsing} & 19.0 & 19.0 & 18.0 & 14.0 & 20.0 & 20.0 & 20.0 & 20.0 & 12.5 & 20.0 \\
+        \emph{login\_heartbeat} & 12.0 & 13.0 & 11.0 & 11.0 & 15.0 & 15.0 & 15.0 & 15.0 & 9.0 & 12.0 \\
+        \emph{payload\_capabilities} & 17.0 & 19.0 & 18.0 & 16.0 & 6.0 & 6.0 & 14.0 & 9.0 & 6.0 & 20.0 \\
+        \emph{cc\_lifecycle} & 7.0 & 7.0 & 8.0 & 4.0 & 9.0 & 9.0 & 10.0 & 10.0 & 7.0 & 10.0 \\
+        \emph{consistency\_reliability} & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 & 5.0 \\
+        \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
+        \textbf{\emph{Reversing Score}} & 84.5 & 86.5 & 80.0 & 71.0 & 80.0 & 79.0 & 87.0 & 84.0 & 60.5 & 92.0 \\
+        \bottomrule
+    \end{tabular}
+}%
+%</reversing-scores>
+
+%<*module-scores>
+\renewcommand{\arraystretch}{1.35}
+\newcolumntype{L}{>{\raggedright\arraybackslash}l}
+\setlength{\tabcolsep}{9pt}
+\newcolumntype{A}{c@{\hspace{3pt}}}
+\newcolumntype{B}{@{\hspace{3pt}}c}
+\resizebox{\tablewidth}{!}{%
+    \begin{tabular}{
+        L
+        AB
+        AB
+        AB
+        AB
+        AB
+    }
+        \toprule
+        \multirow{2}{*}[-0.525ex]{\textbf{Criterio}} & \multicolumn{2}{c}{\textsc{ghost}} & \multicolumn{2}{c}{\textsc{marvisxoxo}} & \multicolumn{2}{c}{\textsc{deepsorrow}} & \multicolumn{2}{c}{\textsc{hopto}} & \multicolumn{2}{c}{\textsc{onboardboat}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
+        & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} & {\small Q3627} & {\small DS4FP} \\
+        \midrule
+        \emph{syntax\_correctness}
+        & 10.0 & 10.0 & 10.0 & 10.0 & 10.0 & 10.0 & 10.0 & 10.0 & 10.0  & 10.0 \\
+        \emph{architectural\_adherence}
+        & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 \\
+        \emph{schema\_validation}
+        & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 & 15.0 \\
+        \emph{protocol\_conformance}
+        & 20.0 & 20.0 & 18.0 & 14.0 & 16.0 & 18.0 & 14.0 & 16.0 & 14.0 & 16.0 \\
+        \emph{human\_independence}
+        & 38.0 & 38.0 & 22.0 & 20.0 & 18.0 & 32.0 & 22.0 & 28.0 & 18.0 & 28.0 \\
+        \cmidrule(lr){1-1} \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} \cmidrule(lr){10-11}
+        \textbf{\emph{Module Score}}
+        & 98.0 & 98.0 & 80.0 & 74.0 & 74.0 & 90.0 & 76.0 & 84.0 & 72.0 & 84.0 \\
+        \bottomrule
+    \end{tabular}
+}%
+%</module-scores>
