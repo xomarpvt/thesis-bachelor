@@ -36,13 +36,13 @@ Come già evidenziato per la difficoltà dei campioni, anche le valutazioni dell
 
 Tutti gli esperimenti sono stati condotti utilizzando un computer personale dotato di hardware convenzionale, eseguendo il software sul sistema locale. L'inferenza dei LLM è stata invece eseguita sul \emph{GPU cluster} dell'Università degli Studi di Udine, mediante il software vLLM \cite{vllm2026vllm}.
 
-Per la sperimentazione sono stati selezionati due LLM diversi, \emph{Qwen 3.6 27B} \cite{alibaba2026qwen3.6-27b} e \emph{DeepSeek V4-Flash Preview} \cite{deepseekai2026deepseekv4}. Al fine di rendere più concisi i riferimenti ai LLM, si adotterà l'abbreviazione \emph{Q3627} per il primo e \emph{DS4FP} per il secondo. Nell'\Cref{app:llm} sono descritte in dettaglio le caratteristiche dei LLM utilizzati, le risorse hardware impiegate, le configurazioni di deployment adottate per vLLM e i sampling parameters usati per la presente sperimentazione.
+Per la sperimentazione sono stati selezionati due LLM diversi, \emph{Qwen 3.6-27B} \cite{alibaba2026qwen3.6-27b} e \emph{DeepSeek-V4-Flash Preview} \cite{deepseekai2026deepseekv4}. Al fine di rendere più concisi i riferimenti ai LLM, si adotterà l'abbreviazione \emph{Q3627} per il primo e \emph{DS4FP} per il secondo. Nell'\Cref{app:llm} sono descritte in dettaglio le caratteristiche dei LLM utilizzati, le risorse hardware impiegate, le configurazioni di deployment adottate per vLLM e i sampling parameters usati per la presente sperimentazione.
 
 La scelta dei modelli è stata effettuata principalmente sulla base delle risorse computazionali disponibili, tenendo conto delle diverse dimensioni e caratteristiche architetturali dei modelli, nonché delle prestazioni da essi riportate nei principali benchmark pubblici di valutazione, tra cui \cite{artificialanalysis2026aaii}. 
 
 \subsection{Protocollo sperimentale} % 6.2.2
 
-Ciascun campione di malware è stato sottoposto a una singola esecuzione secondo un protocollo sperimentale uniforme che, grazie all'autonomia del sistema durante l'esecuzione, è stato applicato in modo coerente a tutti i campioni. L'analisi è stata avviata manualmente fornendo in input il \binary{} e la \kb{}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito autonomamente le operazioni previste fino al completamento del processo, producendo tra gli output i \report{} e il \capture{}, successivamente utilizzati per la valutazione dei risultati.
+Ciascun campione di malware è stato sottoposto a una singola esecuzione secondo un protocollo sperimentale uniforme che, grazie all'autonomia del sistema durante l'esecuzione, è stato applicato in modo coerente a tutti i campioni. L'analisi è stata avviata manualmente fornendo in input il \binary{} e la \kb{}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito le operazioni previste fino al completamento del processo, producendo tra gli output i \report{} e il \capture{}, successivamente utilizzati per la valutazione dei risultati.
 
 \section{Definizione dei criteri di valutazione} % 6.3
 
@@ -59,11 +59,11 @@ I criteri possono essere di tipo binario, con l'assegnazione del solo valore min
 % Le singole metriche possono assumere valori secondo due modalità. Alcune sono di tipo binario e prevedono esclusivamente l'assegnazione del punteggio minimo o massimo, come nel caso del fingerprinting del sistema compromesso. Altre, invece, possono assumere un valore qualsiasi all'interno dell'intervallo definito, in funzione del livello di complessità osservato nel campione, come per il protocollo di C\&C adottato. In tutti i casi, il punteggio minimo è pari a $0$, mentre il valore massimo dipende dalla specifica caratteristica considerata. La somma dei valori massimi determina un punteggio teorico complessivo pari a $165$, corrispondente al livello massimo di complessità considerato dalla scala proposta.
 
 \renewcommand{\topfraction}{0.80}  % Alloca al massimo l'80/100 della pagina per i float.
-\renewcommand{\textfraction}{0.20} % Alloca almeno il 20/100 della pagina per il testo
+\renewcommand{\textfraction}{0.20} % Alloca almeno il 20/100 della pagina per il testo.
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{complexity-criteria}
+    \ExecuteMetaData[chapters/TAB.tex]{complexity-criteria}
     \caption[Criteri di valutazione della complessità dei campioni malevoli]{Criteri di valutazione della complessità dei campioni malevoli e relativi intervalli di punteggio. La notazione $\{min,max\}$ indica che il punteggio può assumere esclusivamente i valori $min$ o $max$, mentre $[min,max]$ indica che può assumere qualsiasi valore compreso nell'intervallo.}
     \label{tab:complexity_criteria}
 \end{table}
@@ -116,7 +116,7 @@ I criteri scelti per la valutazione sono riportati nella \Cref{tab:reversing_cri
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{reversing-criteria}
+    \ExecuteMetaData[chapters/TAB.tex]{reversing-criteria}
     \caption[Criteri di valutazione della \reversing{}]{Criteri di valutazione della \reversing{}.}
     \label{tab:reversing_criteria}
 \end{table}
@@ -131,7 +131,7 @@ I criteri considerati sono riportati nella \Cref{tab:module_criteria}, insieme a
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{module-criteria}
+    \ExecuteMetaData[chapters/TAB.tex]{module-criteria}
     \caption[Criteri di valutazione del \capture]{Criteri di valutazione del \capture{}.}
     \label{tab:module_criteria}
 \end{table}
@@ -158,8 +158,8 @@ Nella tabella \Cref{tab:malware_samples} sono riportate le principali informazio
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{malware-samples}
-    \caption[Informazioni principali sui campioni di malware selezionati]{Informazioni principali sui campioni di malware selezionati per la campagna sperimentale.}
+    \ExecuteMetaData[chapters/TAB.tex]{malware-samples}
+    \caption[Caratteristiche principali dei campioni selezionati]{Caratteristiche principali dei campioni di malware selezionati per la campagna sperimentale.}
     \label{tab:malware_samples}
 \end{table}
 
@@ -171,8 +171,8 @@ Sulla base dei criteri riportati nella tabella \Cref{tab:complexity_criteria}, l
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{complexity-scores}
-    \caption[\emph{Complexity Score} dei campioni del dataset]{\emph{Complexity Score} dei campioni del dataset, assegnate secondo i criteri della \Cref{tab:complexity_criteria}.}
+    \ExecuteMetaData[chapters/TAB.tex]{complexity-scores}
+    \caption[\emph{Complexity Score} dei campioni selezionati]{\emph{Complexity Score} dei campioni di malware selezionati per la campagna sperimentale.}
     \label{tab:complexity_scores}
 \end{table}
 
@@ -202,7 +202,7 @@ La metà inferiore mostra invece i tempi di esecuzione relativi alle medesime at
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{execution-stats}
+    \ExecuteMetaData[chapters/TAB.tex]{execution-stats}
     \caption[Statistiche di esecuzione del sistema]{
         Statistiche relative ai token utilizzati e ai tempi di esecuzione delle macro-attività del sistema, con distinzione tra quelle previste dalla \renaming{} (\emph{Ren.}), dalla \reversing{} (\emph{Rev.}) e dal \codeagent{} (\emph{Code}).
         % Statistiche relative ai token utilizzati e ai tempi di esecuzione delle macro-attività del sistema. \emph{Ren.}, \emph{Rev.} e \emph{Code} indicano rispettivamente \renaming{}, \reversing{} e \codeagent{}.
@@ -218,7 +218,7 @@ La \Cref{tab:classifier_scores} riporta i risultati della valutazione del \class
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{classifier-scores}
+    \ExecuteMetaData[chapters/TAB.tex]{classifier-scores}
     \caption[Risultati della valutazione del \classifier{}]{Risultati della valutazione del \classifier{}.}
     \label{tab:classifier_scores}
 \end{table}
@@ -227,8 +227,8 @@ La \Cref{tab:renaming_scores} riporta i risultati della valutazione della \renam
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{renaming-scores}
-    \caption[Risultati della valutazione della \renaming{}]{Risultati della valutazione della \renaming{} del \sreagent{}.}
+    \ExecuteMetaData[chapters/TAB.tex]{renaming-scores}
+    \caption[Risultati della valutazione della \renaming{}]{Risultati della valutazione della \renaming{}.}
     \label{tab:renaming_scores}
 \end{table}
 
@@ -236,8 +236,8 @@ La \Cref{tab:reversing_scores} riporta i risultati della valutazione della \reve
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{reversing-scores}
-    \caption[Risultati della valutazione della \reversing{}]{Risultati della valutazione della \reversing{} del \sreagent{}.}
+    \ExecuteMetaData[chapters/TAB.tex]{reversing-scores}
+    \caption[Risultati della valutazione della \reversing{}]{Risultati della valutazione della \reversing{}.}
     \label{tab:reversing_scores}
 \end{table}
 
@@ -245,8 +245,8 @@ La \Cref{tab:module_scores} riporta i risultati della valutazione dei \capture{}
 
 \begin{table}[t]
     \centering
-    \ExecuteMetaData[chapters/T.tex]{module-scores}
-    \caption{Coding performance}
+    \ExecuteMetaData[chapters/TAB.tex]{module-scores}
+    \caption[Risultati della valutazione dei \capture{}]{Risultati della valutazione dei \capture{}.}
     \label{tab:module_scores}
 \end{table}
 
@@ -263,7 +263,7 @@ A questo punto, per fornire una visione sintetica dei risultati e facilitare il 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{img/bar_plot.pdf}
-    \caption[Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score} ottenuti]{
+    \caption[Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score}]{
         Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score} ottenuti dai due LLM considerati nelle valutazioni di \renaming{}, \reversing{} e \capture{} su tutti i campioni selezionati. Le linee orizzontali rappresentano la media delle rispettive serie.
     }
     \label{fig:bar_plot}
@@ -290,70 +290,51 @@ Tornando all'analisi delle singole attività, per la \renaming{} la \Cref{tab:re
 
 % senza nome -> riducendo le informazioni semantiche disponibili
 
-La \reversing{} ha ottenuto punteggi medi intorno all'80\,\%, evidenziando l'utilità dei \report{} come sintesi dell'attività di SRE e come output finale del modulo. Dalla revisione dei report emerge infatti un livello di completezza e correttezza sufficiente a fornire al reverse engineer una valida base di partenza per proseguire autonomamente con l'analisi e la successiva revisione del \capture{}. Tuttavia, il principale fattore penalizzante, comune alle diverse esecuzioni, è la scarsa consistenza dei \textsc{SRE Reports}, caratterizzati da sovrapposizioni e contraddizioni riconducibili in gran parte alla natura parallela delle modalità di analisi \textsc{Transport Mode} e \textsc{Communication Mode} nella \reversing{}. Ciò mette in luce una variabilità tra esecuzioni agentiche indipendenti non trascurabile, che può tradursi in una diversa presentazione degli stessi risultati o, nei casi più critici, in risultati discordanti. Le altre deduzioni di punti che emergono dalla \Cref{tab:reversing_scores} risultano invece abbastanza uniformemente distribuite tra i diversi criteri; tra questi, il riconoscimento delle capacità del payload è l'attività di SRE con i risultati meno favorevoli. Inoltre, è interessante notare il risultato della combinazione \textsc{onboardboat}-Q3627: a fronte del buon risultato ottenuto da DS4FP sullo stesso campione, Q3627 mostra una prestazione sensibilmente peggiore, nonostante un alto \emph{Renaming Score} e un livello di difficoltà del campione intermedio. Questo comportamento verrà ripreso durante la successiva analisi del \emph{Reversing Score} in relazione alla difficoltà dei campioni.
+La \reversing{} ha ottenuto punteggi medi intorno all'80\,\%, evidenziando l'utilità dei \report{} come sintesi dell'attività di SRE e come output finale del modulo. Dalla revisione dei report emerge infatti un livello di completezza e correttezza sufficiente a fornire al reverse engineer una valida base di partenza per proseguire autonomamente con l'analisi e la successiva revisione del \capture{}. Tuttavia, il principale fattore penalizzante, comune alle diverse esecuzioni, è la scarsa consistenza dei \textsc{SRE Reports}, caratterizzati da sovrapposizioni e contraddizioni riconducibili in gran parte alla natura parallela delle modalità di analisi \textsc{Transport Mode} e \textsc{Communication Mode} nella \reversing{}. Ciò mette in luce una variabilità tra esecuzioni agentiche indipendenti non trascurabile, che può tradursi in una diversa presentazione degli stessi risultati o, nei casi più critici, in risultati discordanti. Le altre deduzioni di punti che emergono dalla \Cref{tab:reversing_scores} risultano invece abbastanza uniformemente distribuite tra i diversi criteri; tra questi, il riconoscimento delle capacità del payload è l'attività di SRE con i risultati meno favorevoli. Inoltre, è interessante notare il risultato della combinazione \textsc{onboardboat}-Q3627: a fronte del buon risultato ottenuto da DS4FP sullo stesso campione, Q3627 mostra una prestazione sensibilmente peggiore, nonostante un alto \emph{Renaming Score} e un livello di complessità del campione intermedio. Questo comportamento verrà ripreso durante la successiva analisi del \emph{Reversing Score} in relazione al \emph{Complexity Score}.
 
 % Questa è dovuta alle scelte effettuate nei diversi passaggi del processo, sulla base delle informazioni raccolte e delle conclusioni raggiunte, che possono condurre gli agenti a seguire percorsi differenti durante l'analisi di uno stesso campione.
 
-Per quanto riguarda la valutazione del \capture{}, i \emph{Module Score} risultano complessivamente elevati, grazie al contributo dei punteggi massimi ottenuti per i criteri relativi agli aspetti sintattici, architetturali e di integrazione. Tale risultato è coerente con uno degli obiettivi alla base del sistema, ossia quello di garantire un'integrazione semplice in altri workflow. Rispetto ai \emph{Reversing Score}, non si osservano differenze particolarmente marcate, anche considerando i diversi gradi di successo nell'implementazione delle funzionalità del modulo. Come evidenziato nella \Cref{tab:module_scores}, le differenze osservate tra i moduli dipendono principalmente dal criterio \emph{human\_independence}, che risente maggiormente degli errori accumulati nelle diverse fasi della pipeline.
+Per quanto riguarda la valutazione del \capture{}, i \emph{Module Score} risultano complessivamente elevati, grazie al contributo dei punteggi massimi ottenuti per i criteri relativi agli aspetti sintattici, architetturali e di integrazione. Tale risultato è coerente con l'obiettivo del sistema di garantire un'integrazione semplice in altri workflow e con il requisito di limitare le implementazioni dei moduli alle sole funzionalità di infiltrazione e cattura, escludendo quelle di natura offensiva. Rispetto ai \emph{Reversing Score}, non si osservano differenze particolarmente marcate, anche considerando i diversi gradi di successo nell'implementazione delle funzionalità del modulo. Come evidenziato nella \Cref{tab:module_scores}, le differenze osservate tra i moduli dipendono principalmente dal criterio \emph{human\_independence}, che risente maggiormente degli errori accumulati nelle diverse fasi della pipeline.
 
-\iffalse
-Serie 1:
-ghost
-38, 84.5
-marvisxoxo
-82, 80.0
-deepsorrow
-92, 87.0
-hopto
-102, 87.0
-onboardboat
-71, 60.5
-Serie 2:
-ghost
-38, 86.5
-marvisxoxo
-82, 71.0
-deepsorrow
-92, 79.0
-hopto
-102, 84.0
-onboardboat
-71, 92.0
-\fi
+% Questo è interessante soprattutto perché la \reversing{} è l'attività del sistema più rilevante, sia dal punto di vista computazionale, con il tempo e le risorse richieste, sia perché influenza l'accuratezza dell'intero sistema.
+%  Si ipotizza che le due variabili siano caratterizzate da una relazione negativa. Tale relazione può essere lineare oppure, più in generale, monotona, a seconda di come gli incrementi della complessità influenzino la capacità del LLM di svolgere con accuratezza la \reversing{}.
 
-% Hypothesis: Malware analysis accuracy is expected to be negatively related to malware complexity. As malware complexity increases, analysis accuracy is expected to decrease. The relationship may be either linear or nonlinear, depending on how the increase in complexity affects the effectiveness of the analysis.
+Come anticipato, i dati raccolti consentono di analizzare la relazione tra la complessità del campione, misurata mediante il \emph{Complexity Score}, e il punteggio ottenuto nella valutazione della \reversing{}, espresso dal \emph{Reversing Score}. Si ipotizza che le due variabili siano negativamente associate, ovvero che all'aumentare del \emph{Complexity Score} corrisponda una diminuzione del \emph{Reversing Score}. Tale relazione potrebbe essere lineare oppure, più in generale, monotona, senza assumere una specifica forma funzionale.
 
-% Formalizzazione ipotesi:
+% Formalizzazione delle ipotesi: \(H_0 : \rho \geq 0\) \(H_1 : \rho < 0\)
+% Livello di significatività: \(\alpha=0.05\)
 
-\(H_0 : \rho \geq 0\)
-\(H_1 : \rho < 0\)
-
-- Livello di significatività \(\alpha=0.05\)
-- scelgo pearson per lineare, kendall per monotono.
-
-\begin{tabular}{ccc}
-    LLM & Qwen & Deepseek \\
-    Pearson $r$ & $0.113$ & $-0.364$ \\
-    Pearson p-val & $0.856$ & $0.547$ \\
-    Kendall $\tau$ & $0.316$ & $-0.2$ \\
-    Kendall p-val & $0.448$ & $0.817$ \\
-\end{tabular}
-
-%
-
-interessante 
-Come anticipato, rimane da caratterizzare la relazione tra la difficoltà del campione e il punteggio ottenuto nella \textsc{Reversing Task}, ossia l'attività di sistema più rilevante, sia dal punto di vista computazionale sia per la sua incidenza sulla correttezza complessiva dell'analisi. A questo scopo, è stato realizzato un grafico a dispersione, riportato in \Cref{fig:scatter_plot}, che mette in relazione le due variabili per entrambi i LLM considerati e riporta la relativa linea di regressione. L'analisi mira a verificare l'ipotesi dell'esistenza di una correlazione negativa tra la difficoltà del campione e il successo nella \textsc{Reversing Task}. Assumendo che la difficoltà costituisca un fattore rilevante nel determinare le prestazioni, ci si attenderebbe infatti una riduzione del punteggio all'aumentare del \textsc{Difficulty Score}. Tale andamento, tuttavia, non emerge in modo evidente dai dati, che mostrano invece una dispersione considerevole e una correlazione lineare praticamente inesistente, con coefficiente di correlazione prossimo allo zero. Questo suggerisce che la difficoltà del campione, considerata isolatamente, non sia sufficiente a spiegare l'esito della \textsc{Reversing Task}. La percentuale di successo sembra infatti risentire anche dell'interazione tra le caratteristiche specifiche del campione e il LLM impiegato, oltre che della variabilità intrinseca delle singole esecuzioni del LLM, già osservata e discussa nelle analisi precedenti. Alla luce di queste osservazioni, il \emph{Difficulty Score} dovrebbe pertanto essere interpretato principalmente come una misura della complessità intrinseca del campione, piuttosto che come un predittore del successo dell'attività di SRE. In termini concettuali, una descrizione più completa della probabilità di successo potrebbe quindi essere ricondotta a una funzione che considera congiuntamente diversi fattori, secondo uno schema ad alto livello del tipo:
+Per la valutazione dell'ipotesi, l'analisi viene condotta separatamente per ciascun LLM. In primo luogo, viene realizzato un grafico a dispersione, riportato in \Cref{fig:scatter_plot}, al fine di rappresentare graficamente la relazione tra il \emph{Complexity Score} e il \emph{Reversing Score}. Successivamente, per verificare la presenza di una relazione lineare, viene calcolato il coefficiente di correlazione di Pearson, mentre per verificare l'esistenza di una relazione monotona, si utilizza il coefficiente di correlazione di Kendall. Poiché l'ipotesi formulata è direzionale e prevede un'associazione negativa, per entrambi i coefficienti viene testata un'ipotesi alternativa unilaterale, assumendo un livello di significatività pari a $\alpha=0.05$. I valori dei coefficienti e dei relativi \emph{p-value} sono riportati in \Cref{tab:correlation_scores}.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[scale=.75]{img/scatterplot.png}
-    \caption{Dipendenza tra difficoltà e reversing}
+    \includegraphics[width=0.75\textwidth]{img/scatter_plot.pdf}
+    \caption[Relazione tra i punteggi \emph{Complexity Score} e \emph{Reversing Score}]{
+        Relazione tra i punteggi \emph{Complexity Score} e \emph{Reversing Score} per i diversi LLM.
+    }
     \label{fig:scatter_plot}
 \end{figure}
 
+\begin{table}[t]
+    \centering
+    \ExecuteMetaData[chapters/TAB.tex]{correlation-scores}
+    \caption[Correlazione tra \emph{Complexity Score} e \emph{Reversing Score}]{
+        Risultati delle correlazioni di Pearson e Kendall tra \emph{Complexity Score} e \emph{Reversing Score}.
+    }
+    \label{tab:correlation_scores}
+\end{table}
+
+L'osservazione della \Cref{fig:scatter_plot} e, soprattutto, dei risultati presentati nella \Cref{tab:correlation_scores} non fornisce evidenza statistica sufficiente a supportare l'ipotesi dell'esistenza di un'associazione negativa tra \emph{Complexity Score} e \emph{Reversing Score}. Sebbene per DS4FP entrambi i coefficienti assumano valori negativi, i relativi \emph{p-value} non raggiungono la soglia di significatività $\alpha$. Per Q3627, invece, entrambi i coefficienti assumono valori positivi, in contrasto con la direzione prevista dall'ipotesi. Tali risultati devono tuttavia essere interpretati con cautela, considerando la numerosità estremamente ridotta del campione (\(n=5\)), che limita fortemente la potenza statistica dei test e la possibilità di generalizzare le osservazioni.
+
+Nel complesso, i risultati suggeriscono che il \emph{Complexity Score}, considerato isolatamente, non sia sufficiente a spiegare la performance nella \reversing{}. In linea con quanto già emerso dalle precedenti analisi, che hanno evidenziato una certa variabilità tra le diverse esecuzioni del LLM e la presenza di un outlier, il successo nella \reversing{} può essere interpretato come il prodotto dell'interazione tra più fattori, riconducibili al campione considerato, al LLM impiegato e alla singola esecuzione. In questa prospettiva, il \emph{Reversing Score} può essere concettualmente rappresentato come una funzione di questi tre fattori, senza che sia possibile quantificarne separatamente il contributo o valutarne le eventuali interazioni.
+
 \begin{equation*}
-    SRE \; Success = f(Campione, Difficulty \; Score, LLM, Esecuzione)
-    \label{eq:success_hypo}
+    Reversing\ Score = f(\mathrm{Campione}, \mathrm{LLM}, \mathrm{Esecuzione})
+    \label{eq:reversing_score}
 \end{equation*}
 
-Infine, è opportuno considerare le implicazioni che i risultati ottenuti hanno rispetto al livello di autonomia previsto per la pipeline di analisi. In particolare, è stato mostrato che il sistema è in grado di operare senza input umano diretto, svolgendo le attività di SRE, producendo i relativi report e proseguendo con la generazione del codice. Sebbene sia quindi tecnicamente in grado di produrre, in maniera consistente, \textsc{Capture Module} compatibili con le interfacce previste e integrabili in altri workflow, è ancora difficile e poco frequente ottenere un modulo immediatamente funzionante senza prevedere almeno un piccolo intervento iniziale di revisione o aggiustamento. I risultati suggeriscono però che l'impiego del sistema secondo un approccio \emph{human-on-the-loop} sia già concretamente praticabile, poiché il contributo richiesto all'operatore per portare a termine il processo appare contenuto. Il raggiungimento di una piena autonomia richiederebbe invece ulteriori miglioramenti, soprattutto in termini di affidabilità nell'estrazione delle informazioni e di robustezza e consistenza delle singole esecuzioni.
+Infine, è opportuno considerare le implicazioni dei risultati ottenuti rispetto al rapporto tra il sistema e l'intervento umano. Come già discusso, il sistema è in grado di operare autonomamente fino alla costruzione di \capture{} compatibili con le interfacce previste e potenzialmente integrabili all'interno di workflow più ampi, senza richiedere interventi durante l'esecuzione. Questo comportamento soddisfa il requisito di indipendenza del sistema dall'umano, pur lasciando spazio a una supervisione utile per monitorare le azioni intraprese e le strategie di analisi adottate.
+
+D'altra parte, l'utilizzo operativo dei \capture{} senza alcuna revisione umana risulta più difficile da ipotizzare, poiché nella maggior parte dei casi è necessario apportare alcune modifiche e correzioni prima del loro impiego. Il sistema appare pertanto maggiormente maturo per scenari in cui gli output prodotti vengano sottoposti a una verifica finale da parte dell'umano, considerando che il contributo richiesto risulta contenuto. Il raggiungimento di una piena autonomia richiederebbe invece ulteriori miglioramenti, soprattutto nella \reversing{}, in termini di affidabilità nell'estrazione delle informazioni e di consistenza tra le diverse esecuzioni.
+
+% Il sistema appare pertanto maggiormente maturo per scenari in cui l'intervento umano sia limitato a una fase finale di verifica e aggiustamento degli output prodotti, considerando che il contributo richiesto risulta contenuto.

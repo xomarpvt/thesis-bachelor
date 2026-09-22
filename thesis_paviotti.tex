@@ -14,10 +14,8 @@
 %\course{Matematica}
 %\course{Comunicazione Multimediale e Tecnologie dell'Informazione}
 %\title{Generazione automatica di moduli \\ per la cattura delle comunicazioni \\ Command-and-Control delle botnet}
-%Generazione agentica di moduli per la cattura dei comandi delle botnet
-%\title{Generazione agentica di \\ moduli per la cattura \\ dei comandi delle botnet}
 \title{Generazione agentica di moduli \\ per la cattura dei comandi delle botnet}
-% Automatic Generation of Modules for Capturing Malware Command-and-Control Communications
+% Agentic Generation of Modules \\ for Capturing Botnet Commands
 \author{Omar Paviotti}
 \supervisor{Prof.\ Marino Miculan}
 \cosupervisor{Dr.\ Matteo Paier \and Dott. Elia Cal}
@@ -65,42 +63,18 @@
 %% cleveref: gestisce in modo intelligente riferimenti a figure e tabelle.
 \usepackage[italian]{cleveref}
 
-%test
+%% test
 \usepackage{pgfplotstable}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{catchfilebetweentags}
 \usepackage{threeparttable}
-\usepackage{xcolor}
 \usepackage{tcolorbox}
 \usepackage{caption}
 \usepackage{subcaption}
-
-\usepackage{tikz} % to remove (better mermaid)
-\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, backgrounds}
-
-\lstset{  % listings
-    language=Python,
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{blue}\bfseries,
-    stringstyle=\color{red},
-    commentstyle=\color{green!60!black}\itshape,
-    showstringspaces=false,
-    frame=single,
-    numbers=left,
-    numberstyle=\tiny\color{gray},
-    breaklines=true
-}
-
-
-\usepackage{tabularx} % <--- FONDAMENTALE: calcola lo spazio automaticamente
-
-% Crea una colonna di tipo X (flessibile) ma con testo centrato
-\newcolumntype{Y}{>{\centering\arraybackslash}X}
-
-\usepackage{multicol}
 \usepackage{dirtree}
 \usepackage{qrcode}
+
 
 \newcommand{\system}{\textsc{BotScope}}
 \newcommand{\capture}{\textsc{Capture Module}}
@@ -127,54 +101,7 @@
 
 \newcommand{\tablewidth}{0.95\textwidth}
 
-% ============================================================
-% Palette Colori "Python Modern"
-% ============================================================
-\definecolor{pykeyword}{HTML}{CF222E}   % Rosso per keyword (def, class, import, return)
-\definecolor{pybuiltin}{HTML}{953097}   % Viola per funzioni built-in (print, len, range)
-\definecolor{pystring}{HTML}{0A3069}    % Blu scuro per le stringhe
-\definecolor{pycomment}{HTML}{57606A}   % Grigio per i commenti
-\definecolor{pynumber}{HTML}{005A9C}    % Blu brillante per i numeri
-\definecolor{pybg}{HTML}{F6F8FA}        % Sfondo grigio chiarissimo
-\definecolor{pyline}{HTML}{D0D7DE}      % Bordo sottile elegante
-\definecolor{pyclass}{HTML}{8250DF}     % Viola per le classi
-\definecolor{pymethod}{HTML}{0550AE}    % Blu per i metodi
-\definecolor{pydecorator}{HTML}{B08800} % Giallo/arancio per i decoratori
-
-% ============================================================
-% Definizione dello Stile Python
-% ============================================================
-\lstdefinestyle{pystyle}{
-    language=Python,
-    basicstyle=\small\ttfamily\color{black},
-    keywordstyle=\color{pykeyword}\bfseries,
-    stringstyle=\color{pystring},
-    commentstyle=\color{pycomment}\itshape,
-    moredelim=**[is][\color{pynumber}]{£}{£},
-    backgroundcolor=\color{pybg},
-    frame=single,
-    rulecolor=\color{pyline},
-    framerule=0.8pt,
-    framesep=8pt,
-    xleftmargin=24pt,
-    xrightmargin=8pt,
-    emph=[1]{print,len,range,str,int,float,dict,list,set,enumerate,zip},
-    emphstyle=[1]\color{pymethod}, % Evidenziazione avanzata per numeri, built-in e decoratori
-    emph=[2]{BotnetInterface,Botnet},
-    emphstyle=[2]\color{pymethod}\bfseries, % Evidenziazione avanzata per classi
-    emph=[3]{connect,sniff},
-    emphstyle=[3]\color{pymethod}\bfseries, % Evidenziazione avanzata per metodi
-    % emph=[4]{@abstractmethod},
-    % emphstyle=[4]\color{pydecorator}\bfseries, % Evidenziazione avanzata per decoratori
-    numbers=left,
-    numberstyle=\tiny\ttfamily\color{pycomment},
-    numbersep=12pt,
-    breaklines=true,
-    breakatwhitespace=true,
-    showstringspaces=false,
-    upquote=true,
-    tabsize=1
-}
+\input{chapters/LST.tex}
 
 \begin{document}
 \maketitle
@@ -186,11 +113,11 @@
 
 %% Ringraziamenti (opzionali)
 \acknowledgements
-\lipsum[1]
+\subfile{chapters/ACK.tex}
 
 %% Sommario (opzionale)
 % \abstract
-% \lipsum[2]
+% \lipsum[1]
 
 %% Indice
 \tableofcontents
@@ -232,21 +159,12 @@
 
 \subfile{chapters/7.tex}
 
-%\includeonly{chapter_2}
-%\includeonly{chapter_3}
-%\includeonly{chapter_4}
-%\include{chapter_2}
-%\include{chapter_3}
-%\include{chapter_4}
-%\include{chapters/5}
-%\include{chapters/6}
-
 %% Fine dei capitoli normali, inizio dei capitoli-appendice (opzionali)
 \appendix
 
-%\part{Appendici}
+%% \part{Appendici}
 
-\subfile{appendices/A.tex}
+\subfile{chapters/APP.tex}
 
 %% Parte conclusiva del documento; tipicamente per riassunto, bibliografia e/o indice analitico.
 \backmatter
@@ -260,6 +178,11 @@
 %% Nel caso in cui si usi un file .bib (consigliato)
 \bibliography{thud}
 %% Nel caso di bibliografia manuale, usare l'environment thebibliography.
+
+%% Bibliografia BibLatex
+% \usepackage[backend=biber]{biblatex}
+% \addbibresource{thud.bib}
+% \printbibliography
 
 %% Per l'indice analitico, usare il pacchetto makeidx (o analogo).
 

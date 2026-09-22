@@ -384,3 +384,22 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
     \end{tabular}
 }%
 %</module-scores>
+
+
+%<*correlation-scores>
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{12pt}
+\begin{tabular}{llcc}
+    \toprule
+    \multicolumn{2}{l}{\textbf{Test}} & \textbf{Q3627} & \textbf{DS4FP} \\
+    \midrule
+    \multirow{2}{*}{\emph{Pearson}}
+    & $r$ & $0.113$ & $-0.364$ \\
+    & $p$ & $0.572$ & $0.274$ \\
+    \midrule
+    \multirow{2}{*}{\emph{Kendall}}
+    & $\tau$ & $0.316$ & $-0.200$ \\
+    & $p$ & $0.776$ & $0.408$ \\
+    \bottomrule
+\end{tabular}
+%</correlation-scores>

@@ -306,12 +306,11 @@ In questo contesto si inseriscono i due lavori descritti di seguito.
 \begin{description}
     \item[LLM4Decompile \cite{tan2024llm4decompile}.] Propone una famiglia di LLM open-source, con dimensioni comprese tra $1.3$ e $33$ miliardi di parametri, \textit{fine-tuned} per la decompilazione di codice binario in linguaggio C. L'obiettivo è produrre codice sorgente più leggibile e semanticamente corretto rispetto ai decompilatori tradizionali.
     
-    Lo studio introduce due classi di modelli, che seguono approcci complementari, schematizzati nella \Cref{fig:llm_decompile}:
+    Lo studio introduce due classi di modelli, impiegate in due framework che seguono approcci complementari:
 
     \begin{itemize}
-        \item \textit{LLM4Decompile-End}. Dopo il disassemblaggio del codice binario in istruzioni assembly x86, il modello genera direttamente il corrispondente codice C, ottenendo risultati superiori sia al decompilatore di Ghidra sia a modelli general-purpose come GPT-4o.
-        
-        \item \textit{LLM4Decompile-Ref}. In questo caso, dopo il disassemblaggio, il codice viene inizialmente decompilato mediante Ghidra; successivamente, il modello utilizza il codice decompilato come punto di partenza per migliorarne leggibilità e correttezza semantica. L'intervento non si limita alla semplice revisione dei nomi e dei tipi delle variabili, ma mira a una rielaborazione più generale del codice, aumentando la potenziale eseguibilità rispetto alla sola decompilazione automatica.
+        \item \emph{End2end-Decompile} (\Cref{fig:llm_decompile_end}): dopo il disassemblaggio del codice binario in istruzioni assembly x86, il LLM genera direttamente il corrispondente codice C, ottenendo risultati superiori sia al decompilatore di Ghidra sia a modelli general-purpose come GPT-4o.
+        \item \emph{Refined-Decompile} (\Cref{fig:llm_decompile_ref}): dopo il disassemblaggio, il codice viene inizialmente decompilato mediante Ghidra; successivamente, il LLM utilizza il codice decompilato come punto di partenza per migliorarne leggibilità e correttezza semantica. L'intervento non si limita alla semplice revisione dei nomi e dei tipi delle variabili, ma mira a una rielaborazione più generale del codice, aumentando la potenziale eseguibilità rispetto alla sola decompilazione automatica.
     \end{itemize}
 
     \begin{figure}[t]
@@ -319,14 +318,14 @@ In questo contesto si inseriscono i due lavori descritti di seguito.
         \begin{subfigure}{0.45\textwidth}
             \centering
             \includegraphics[width=\textwidth]{img/llm_decompile_end.pdf}
-            \caption{\hspace{1em} Framework \emph{End2end-Decompile} basato su \emph{LLM4Decompile-End}}
+            \caption{Framework \emph{End2end-Decompile} basato sul LLM \emph{LLM4Decompile-End}}
             \label{fig:llm_decompile_end}
         \end{subfigure}
         \hspace{0.05\textwidth}
         \begin{subfigure}{0.45\textwidth}
             \centering
             \includegraphics[width=\textwidth]{img/llm_decompile_ref.pdf}
-            \caption{\hspace{1em} Framework \emph{Refined-Decompile} basato su \emph{LLM4Decompile-Ref}}
+            \caption{Framework \emph{Refined-Decompile} basato sul LLM \emph{LLM4Decompile-Ref}}
             \label{fig:llm_decompile_ref}
         \end{subfigure}
 

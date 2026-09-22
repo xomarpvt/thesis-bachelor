@@ -1,0 +1,151 @@
+\chapter{Prima appendice} \label{app:llm}
+
+Come anticipato nel \Cref{chap:valutazione} il LLM in esecuzione su cluster GPU di UNIUD, con a disposizione diverse GPU NVIDIA H100 Tensor Core, basate sull'architettura NVIDIA Hopper e ciascuna con $80 \; GB$ di High Bandwidth Memory 3.
+
+Per qwen check è stato usato checkpoint ufficiale quantizzazione FP8, che sta ampiamente in una GPU h100
+
+Per Deepseek LLM ufficiale che ha una rappresentazione mixed precision FP4/FP8, con pesi del LLM insieme a KV cache che occupa 4 GPU, si ha il full 1M context.
+
+\begin{description}
+    \item[Qwen 3.6-27B \cite{alibaba2026qwen3.6-27b}.] Sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con 27 miliardi di parametri. Presenta una finestra di contesto nativa di 262.144 token (256K), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
+
+    \item[DeepSeek V4-Flash Preview \cite{deepseekai2026deepseekv4}.] Sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali 13 miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
+\end{description}
+
+La \Cref{fig:vllm_recipes} riporta le configurazioni di vLLM usate per i due LLM. La \Cref{tab:sampling_parameters} riporta i parametri di campionamento scelti. Nota: deepseek, durante il thinking gli ignora, usando $1.00$ per la temperature e $1.00$ per top p. Per il thinking qwen solo attivato. deepseek ha none, low, high e max, usato max
+
+\renewcommand{\topfraction}{0.80}  % Alloca al massimo l'80/100 della pagina per i float.
+\renewcommand{\textfraction}{0.20} % Alloca almeno il 20/100 della pagina per il testo.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \begin{lstlisting}[frame=single, style=yamlstyle]
+model: Qwen/Qwen3.6-27B-FP8
+tensor-parallel-size: 1
+attention-backend: FLASHINFER
+performance-mode: interactivity
+max-model-len: auto
+gpu-memory-utilization: 0.90
+compilation-config:
+  mode: VLLM_COMPILE
+optimization-level: 3
+async-scheduling: true
+tool-call-parser: qwen3_coder
+reasoning-parser: qwen3
+enable-auto-tool-choice: true
+speculative-config:
+  method: mtp
+  num_speculative_tokens: 2
+default_chat_template_kwargs:
+  preserve_thinking: true
+mamba-cache-mode: all
+mamba-block-size: 8
+enable-prefix-caching: true
+enable-chunked-prefill: true 
+\end{lstlisting}
+        \caption{Configurazione di Qwen 3.6-27B}
+        \label{fig:vllm_recipe_q3627}
+    \end{subfigure}
+    \hspace{0.05\textwidth}
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \begin{lstlisting}[frame=single, style=yamlstyle]
+model: deepseek-ai/DeepSeek-V4-Flash
+tensor-parallel-size: 4
+performance-mode: interactivity
+max-model-len: auto
+gpu-memory-utilization: 0.90
+trust-remote-code: true
+kv-cache-dtype: fp8
+block-size: 256
+enable-expert-parallel: true
+tokenizer-mode: deepseek_v4
+tool-call-parser: deepseek_v4
+enable-auto-tool-choice: true
+reasoning-parser: deepseek_v4
+speculative-config:
+  method: mtp
+  num_speculative_tokens: 1
+default-chat-template-kwargs:
+  thinking: true,
+  reasoning_effort: high
+enable-prefix-caching: true
+enable-chunked-prefill: true
+        \end{lstlisting}
+        \caption{Configurazione di DeepSeek-V4-Flash Preview.}
+        \label{fig:vllm_recipe_ds4fp}
+    \end{subfigure}
+    \caption[Configurazioni vLLM utilizzate]{Configurazioni vLLM utilizzate per i LLM}
+    \label{fig:vllm_recipes}
+\end{figure}
+
+\begin{table}[t]
+    \centering
+    \renewcommand{\arraystretch}{1.25}
+    % \setlength{\tabcolsep}{18pt}
+    \begin{tabularx}{\tablewidth}{l>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+        \toprule
+        \textbf{Parametro di campionamento} & \sreagent{} & \codeagent{} \\
+        \midrule
+        \emph{temperature}          & $0.80$ & $0.60$ \\
+        \emph{top\_p}               & $0.95$ & $0.90$ \\
+        \emph{top\_k}               & $40$   & $20$   \\
+        \emph{min\_p}               & $0.00$ & $0.00$ \\
+        \emph{presence\_penalty}    & $0.00$ & $0.00$ \\
+        \emph{frequency\_penalty}   & $0.00$ & $0.00$ \\
+        \emph{repetition\_penalty}  & $1.00$ & $1.00$ \\
+        \bottomrule
+    \end{tabularx}
+    \caption[Parametri di campionamento dei \llm{}]{Parametri di campionamento utilizzati dai \llm{} nel \sreagent{} e nel \codeagent{}.}
+    \label{tab:sampling_parameters}
+\end{table}
+
+\chapter{Idea} \label{app:idea}
+
+\begin{minipage}{\textwidth}
+%\singlespacing % Opzionale: per stringere l'interlinea dell'albero se usi interlinea 1.5 nella tesi
+\dirtree{%
+.1 thesis-bachelor/.
+.2 thesis\_paviotti.pdf \dots{} \begin{tiny}PDF tesi\end{tiny}.
+.2 thesis/ \dots{} \begin{tiny}Cartella contenente i file sorgente della tesi in LaTeX\end{tiny}.
+.3 main.tex \dots{} \begin{tiny}File principale di compilazione\end{tiny}.
+.3 chapters/ \dots{} \begin{tiny}Cartella contenente i singoli capitoli (.tex)\end{tiny}.
+.3 bibliography.bib \dots{} \begin{tiny}File delle citazioni e fonti bibliografiche\end{tiny}.
+.2 project/ \dots{} \begin{tiny}Cartella contenente gli artefatti del sistema software\end{tiny}.
+.3 knowledge\_base/ \dots{} \begin{tiny}File documentali di contesto per il modello\end{tiny}.
+.3 prompt/ \dots{} \begin{tiny}Testi dei prompt ingegnerizzati\end{tiny}.
+.3 schema/ \dots{} \begin{tiny}Schema JSON per la validazione strutturale dell'output\end{tiny}.
+.3 templates/ \dots{} \begin{tiny}Modelli di codice e pipeline logica principale\end{tiny}.
+.3 risultati/ \dots{} \begin{tiny}File di log e output delle sessioni di test\end{tiny}.
+}
+\end{minipage}
+
+\iffalse
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+}
+\fi
+
+\vspace{3cm}
+
+\noindent
+\begin{minipage}{0.7\textwidth}
+    \textbf{Collegamento Web:} \\
+    \url{https://github.com/xomarpvt/thesis-bachelor}
+    
+    \vspace{0.3cm}
+    %\textit{Nota: La repository è strutturata pubblicamente per garantire la trasparenza metodologica degli artefatti e del testo sorgente.}
+\end{minipage}
+\begin{minipage}{0.3\textwidth}
+    \begin{center}
+        % Genera un QR code di 2.5 centimetri di lato
+        \qrcode[height=2.5cm]{https://github.com/xomarpvt/thesis-bachelor} \\
+        \vspace{0.1cm}
+        %\begin{tiny}\textsc{Scansiona per aprire}\end{tiny}
+    \end{center}
+\end{minipage}

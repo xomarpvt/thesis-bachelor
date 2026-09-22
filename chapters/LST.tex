@@ -1,0 +1,114 @@
+\iffalse
+\lstset{  % listings
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black}\itshape,
+    showstringspaces=false,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    breaklines=true
+}
+\fi
+
+\definecolor{yamlvalue}{HTML}{0550AE}
+\definecolor{yamlkey}{HTML}{24292F}
+\definecolor{yamlkeyword}{HTML}{CF222E}
+\definecolor{yamlcomment}{HTML}{57606A}
+\definecolor{yamlnumber}{HTML}{8C95A0}
+\definecolor{yamlbackground}{HTML}{F6F8FA}
+\definecolor{yamlline}{HTML}{D0D7DE}
+
+\newcommand\YAMLkeystyle{\color{yamlkey}\bfseries}
+\newcommand\YAMLvaluestyle{\color{yamlvalue}\mdseries}
+\newcommand\YAMLcolonstyle{\color{yamlvalue}\mdseries}
+
+\newcommand\ProcessThreeDashes{\textcolor{yamlcomment}{---}}
+
+\lstdefinelanguage{yaml}{
+    sensitive=true,
+    morecomment=[l]{\#},
+    morestring=[b]",
+    morestring=[b]',
+    moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},
+    literate={---}{{\ProcessThreeDashes}}3,
+    keywords={true, false, null, yes, no, on, off},
+    keywordstyle=\color{yamlkeyword}\bfseries
+}
+
+\lstdefinestyle{yamlstyle}{
+    language=yaml,
+    basicstyle=\small\ttfamily\YAMLkeystyle,
+    columns=fullflexible,
+    keepspaces=true,
+    numbers=left,
+    numberstyle=\tiny\ttfamily\color{yamlnumber},
+    stepnumber=1,
+    numbersep=12pt,
+    backgroundcolor=\color{yamlbackground},
+    frame=single,
+    rulecolor=\color{yamlline},
+    framerule=0.8pt,
+    framesep=8pt,
+    xleftmargin=24pt,
+    xrightmargin=8pt,
+    upquote=true,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    upquote=true,
+    tabsize=1,
+    showlines=false,
+    emptylines=0,
+}
+
+% ============================================================
+% Palette Colori "Python Modern"
+% ============================================================
+\definecolor{pykeyword}{HTML}{CF222E}   % Rosso per keyword (def, class, import, return)
+\definecolor{pybuiltin}{HTML}{953097}   % Viola per funzioni built-in (print, len, range)
+\definecolor{pystring}{HTML}{0A3069}    % Blu scuro per le stringhe
+\definecolor{pycomment}{HTML}{57606A}   % Grigio per i commenti
+\definecolor{pynumber}{HTML}{005A9C}    % Blu brillante per i numeri
+\definecolor{pybg}{HTML}{F6F8FA}        % Sfondo grigio chiarissimo
+\definecolor{pyline}{HTML}{D0D7DE}      % Bordo sottile elegante
+\definecolor{pyclass}{HTML}{8250DF}     % Viola per le classi
+\definecolor{pymethod}{HTML}{0550AE}    % Blu per i metodi
+\definecolor{pydecorator}{HTML}{B08800} % Giallo/arancio per i decoratori
+
+% ============================================================
+% Definizione dello Stile Python
+% ============================================================
+\lstdefinestyle{pystyle}{
+    language=Python,
+    basicstyle=\small\ttfamily\color{black},
+    keywordstyle=\color{pykeyword}\bfseries,
+    stringstyle=\color{pystring},
+    commentstyle=\color{pycomment}\itshape,
+    moredelim=**[is][\color{pynumber}]{£}{£},
+    backgroundcolor=\color{pybg},
+    frame=single,
+    rulecolor=\color{pyline},
+    framerule=0.8pt,
+    framesep=8pt,
+    xleftmargin=24pt,
+    xrightmargin=8pt,
+    emph=[1]{print,len,range,str,int,float,dict,list,set,enumerate,zip},
+    emphstyle=[1]\color{pymethod}, % Evidenziazione avanzata per numeri, built-in e decoratori
+    emph=[2]{BotnetInterface,Botnet},
+    emphstyle=[2]\color{pymethod}\bfseries, % Evidenziazione avanzata per classi
+    emph=[3]{connect,sniff},
+    emphstyle=[3]\color{pymethod}\bfseries, % Evidenziazione avanzata per metodi
+    % emph=[4]{@abstractmethod},
+    % emphstyle=[4]\color{pydecorator}\bfseries, % Evidenziazione avanzata per decoratori
+    numbers=left,
+    numberstyle=\tiny\ttfamily\color{pycomment},
+    numbersep=12pt,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    upquote=true,
+    tabsize=1
+}

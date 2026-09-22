@@ -1,4 +1,4 @@
-\Title{Your Thesis Title}
-\Author{Your Name}
-\Subject{Your Thesis Subject}
-\Keywords{Keyword1{, }Keyword2}
+\Title{Generazione agentica di moduli per la cattura dei comandi delle botnet}
+\Author{Omar Paviotti}
+\Subject{Generazione automatica tramite agentic AI di moduli per la cattura delle comunicazioni Command-and-Control delle botnet}
+\Keywords{botnet{, }malware{, }command and control{, }cybersecurity{, }network security{, }agentic AI}

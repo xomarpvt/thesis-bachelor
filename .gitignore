@@ -11,6 +11,7 @@ thesis*.lot
 thesis*.fls
 thesis*.fdb_latexmk
 thesis*.pdf
+thesis*.run.xml
 /bibliography/
 /workspace/
 /chapters/*.aux
