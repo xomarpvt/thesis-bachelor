@@ -8,9 +8,12 @@ Una modalità efficace per illustrare l'architettura proposta per \system{} e fo
 
 Il diagramma dei componenti realizzato è riportato in \Cref{fig:components_diagram} e permette di evidenziare le principali aree funzionali in cui è organizzato \system{}, che è progettato come una \emph{pipeline} di analisi automatizzata, suddivisa in moduli. All'interno dell'architettura si distinguono, da un lato, la logica decisionale e gli agenti basati su LLM e, dall'altro, gli ambienti di esecuzione esterni con cui questi interagiscono attraverso il Model Context Protocol. A questi componenti si affiancano inoltre gli artefatti di input e di output, che comprendono sia l'input e l'output complessivi del sistema, sia i contenuti forniti alle diverse fasi della pipeline e i risultati prodotti nel corso dell'elaborazione.
 
+\renewcommand{\topfraction}{1.00}  % Alloca al massimo il 100/100 della pagina per i float.
+\renewcommand{\textfraction}{0.05} % Alloca almeno lo 0/100 della pagina per il testo.
+
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.95\textwidth]{img/componenti.png}
+    \includegraphics[width=0.95\textwidth]{img/components_diagram.pdf}
     \caption[Diagramma dei componenti del sistema]{
         Diagramma dei componenti dell'architettura proposta per \system{}.
     }
@@ -96,8 +99,8 @@ Il diagramma delle attività realizzato è riportato in \Cref{fig:activity_diagr
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.95\textwidth]{img/activity_diagram.pdf}
-    \caption[Diagramma della attività di analisi]{
-        Diagramma delle attività e del flusso della pipeline di analisi.
+    \caption[Diagramma delle attività del sistema]{
+        Diagramma delle attività e del flusso operativo del sistema.
     }
     \label{fig:activity_diagram}
 \end{figure}
@@ -110,7 +113,7 @@ La fase centrale è dunque costituita dalle attività di SRE svolte dal \sreagen
 
 Infine, i \report{} vengono passati al \codeagent{}, che carica i \templates{}, lo schema dei messaggi e le istruzioni operative dal \prompt{}. Il \llm{} dell'agente utilizza questa serie di informazioni per generare gli elementi necessari a costruire il \capture{} di cattura delle comunicazioni, che corrisponde all'output finale del sistema.
 
-\section{Tool calling} % 4.4
+\section{Interazioni di \emph{tool calling}} % 4.4
 
 Considerata la rilevanza del meccanismo di \textit{tool calling} nell'architettura proposta e la frequenza con cui viene coinvolto durante l'attività di SRE, risulta utile fornire una rappresentazione più dettagliata delle interazioni che avvengono tra il \sreagent{} e gli ambienti di esecuzione mediante il protocollo MCP. I diagrammi dei componenti e di attività precedenti non rappresentano in efficace la natura di tali interazioni, per cui si utilizza un diagramma UML di sequenza \cite{omg2017uml}, un diagramma comportamentale che rappresenta come diversi componenti interagiscono tra loro nel corso del tempo, descrivendo lo scambio di messaggi ed evidenziando l'ordine temporale degli eventi. % Capitolo 17, 17.8 (relativo a una determinata interazione)
 
@@ -122,8 +125,8 @@ Il diagramma di sequenza realizzato è riportato in \Cref{fig:sequence_diagram}.
     \centering
     %\includegraphics[scale=.35]{img/sequenza.png}
     \includegraphics[width=0.95\textwidth]{img/sequence_diagram.pdf}
-    \caption[Diagramma di sequenza del tool calling]{
-        Diagramma di sequenza delle operazioni coinvolte nel processo di tool calling.
+    \caption[Diagramma di sequenza delle interazioni del \emph{tool calling}]{
+        Diagramma di sequenza delle interazioni che caratterizzano il processo di \emph{tool calling}.
     }
     \label{fig:sequence_diagram}
 \end{figure}

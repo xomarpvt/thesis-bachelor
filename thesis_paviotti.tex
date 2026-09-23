@@ -75,6 +75,17 @@
 \usepackage{dirtree}
 \usepackage{qrcode}
 
+\usepackage[
+    backend=biber,
+    style=numeric,
+    sorting=none
+]{biblatex}
+\addbibresource{thud.bib}
+\defbibheading{bibliography}[\bibname]{%
+    \chapter*{#1}%
+    \markboth{Bibliografia}{Bibliografia}%
+}
+\usepackage{xurl}
 
 \newcommand{\system}{\textsc{BotScope}}
 \newcommand{\capture}{\textsc{Capture Module}}
@@ -174,15 +185,13 @@
 %\lipsum[1]
 
 %% Bibliografia (praticamente obbligatoria)
-\bibliographystyle{plain_\languagename}%% Carica l'omonimo file .bst, dove \languagename è la lingua attiva.
+%\bibliographystyle{plain_\languagename}%% Carica l'omonimo file .bst, dove \languagename è la lingua attiva.
 %% Nel caso in cui si usi un file .bib (consigliato)
-\bibliography{thud}
+%\bibliography{thud}
 %% Nel caso di bibliografia manuale, usare l'environment thebibliography.
 
 %% Bibliografia BibLatex
-% \usepackage[backend=biber]{biblatex}
-% \addbibresource{thud.bib}
-% \printbibliography
+\printbibliography
 
 %% Per l'indice analitico, usare il pacchetto makeidx (o analogo).
 

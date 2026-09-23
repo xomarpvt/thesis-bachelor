@@ -1,6 +1,7 @@
 pdfa.xmpi
 thesis*.aux
 thesis*.bbl
+thesis*.bcf
 thesis*.blg
 thesis*.log
 thesis*.out

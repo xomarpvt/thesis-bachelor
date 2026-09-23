@@ -1,4 +1,8 @@
+\makeatletter
+\@openrightfalse
 \chapter{\system{}: implementazione} \label{chap:implementazione} % 5
+\@openrighttrue
+\makeatother
 
 % Questo capitolo è dedicato all'implementazione del sistema progettato. Verranno illustrate le principali scelte implementative adottate e descritte le modalità di realizzazione dei singoli componenti, con un livello di dettaglio variabile in funzione della complessità e della rilevanza dei diversi aspetti.
 
@@ -190,9 +194,9 @@ Il LLM utilizzato dall'applicazione viene eseguito tramite un'istanza esterna di
 
 % https://docs.vllm.ai/en/stable/serving/online_serving/openai_compatible_server/
 
-\subsection{Client} % 5.6.2
+\subsection{\llmclient{}} % 5.6.2
 
-Il \texttt{LLM Client} rappresenta il componente responsabile dell'interazione tra il LLM e i moduli \sreagent{} e \codeagent{}. Alla sua inizializzazione vengono specificati i client MCP con i quali il LLM può interagire, quindi gli strumenti da essi esposti vengono raccolti e salvati in una struttura di risoluzione. Questa associazione permetterà successivamente di individuare, a partire dal nome del tool richiesto dal LLM, il client MCP responsabile della sua gestione, così da poterlo invocare. 
+Il \llmclient{} rappresenta il componente responsabile dell'interazione tra il LLM e i moduli \sreagent{} e \codeagent{}. Alla sua inizializzazione vengono specificati i client MCP con i quali il LLM può interagire, quindi gli strumenti da essi esposti vengono raccolti e salvati in una struttura di risoluzione. Questa associazione permetterà successivamente di individuare, a partire dal nome del tool richiesto dal LLM, il client MCP responsabile della sua gestione, così da poterlo invocare. 
 
 % e recuperare il risultato dell'esecuzione.
 % integrando inoltre gli strumenti esposti attraverso i client MCP.
@@ -340,7 +344,7 @@ In questa sezione vengono presentati i prompt utilizzati nei due componenti prin
 
 Per aggiungere dinamicamente ai prompt le informazioni necessarie alle diverse attività viene utilizzato un meccanismo di \emph{context injection}, basato su placeholder che possono essere sostituiti con il contenuto richiesto. Questo meccanismo viene utilizzato sia per i materiali di riferimento forniti al \codeagent{}, sia, nel caso del \sreagent{}, così da poter includere nel prompt, quando disponibile, il contenuto della knowledge base.
 
-\subsection{Renaming Task} % 5.9.1
+\subsection{\renaming{}} % 5.9.1
 
 Il system prompt definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria, con particolare attenzione alla ricostruzione della logica di programmi stripped e al renaming delle funzioni. Richiede di identificare sistematicamente lo scopo delle funzioni, ricostruirne le relazioni e proporre nomi coerenti sulla base di evidenze verificabili. Il prompt stabilisce inoltre l'utilizzo delle funzionalità di analisi statica del \textsc{SRE Framework}, sfruttando informazioni quali disassembly, decompilazione e cross-reference per supportare le decisioni di ridenominazione.
 
@@ -358,7 +362,7 @@ L'user prompt della \textsc{Continue Mode} definisce il compito di verificare e 
 \end{description}
 \fi
 
-\subsection{Reversing Task} % 5.9.2
+\subsection{\reversing{}} % 5.9.2
 
 Il system prompt definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria. Richiede di produrre risultati tecnici rigorosi, precisi e verificabili, basando ogni conclusione su evidenze direttamente osservabili nel binario e indicando esplicitamente il livello di confidenza tra fatto verificato, ipotesi analitica e informazione sconosciuta. Il prompt stabilisce inoltre l'utilizzo combinato delle funzionalità di analisi statica del \textsc{SRE Framework} e degli strumenti disponibili all'interno della \textsc{Sandbox} per validare ipotesi, estrarre informazioni, analizzare dati offuscati e automatizzare attività ripetitive.
 
@@ -374,7 +378,7 @@ L'user prompt della \textsc{Communication Analysis} definisce il compito di anal
 \end{description}
 \fi
 
-\subsection{Code Agent} % 5.9.3
+\subsection{\codeagent{}} % 5.9.3
 
 Il system prompt definisce il ruolo del LLM come agente specializzato nella generazione di codice Python per moduli di sicurezza di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti. Il prompt descrive inoltre le modalità di estrazione delle informazioni a partire dalla documentazione fornita e stabilisce gli standard di implementazione e qualità del codice da seguire. In particolare, richiede l'utilizzo di Python 3.11+, l'adozione di buone pratiche di sviluppo, con la produzione di codice chiaro, oltre a una gestione adeguata delle eccezioni e del logging.
 
