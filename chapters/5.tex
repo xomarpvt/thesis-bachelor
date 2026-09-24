@@ -14,7 +14,7 @@
 
 L'implementazione del sistema è stata realizzata in Python 3.13 \cite{python2026py313}, mentre per la gestione dell'ambiente di sviluppo e delle dipendenze del progetto è stato utilizzato Conda \cite{conda2026env}.
 
-La scelta del linguaggio di implementazione è ricaduta su Python principalmente grazie all'ampio ecosistema di librerie disponibili per le funzionalità richieste dal sistema. Tra queste rientrano, in particolare, librerie dedicate all'analisi del malware, all'integrazione con LLM, agenti, MCP e all'interazione con gli ambienti di esecuzione. La disponibilità di strumenti già consolidati ha pertanto consentito di concentrare lo sviluppo sulla logica specifica dell'architettura proposta, riducendo la necessità di implementare direttamente funzionalità di supporto.
+La scelta del linguaggio di implementazione è ricaduta su Python principalmente grazie all'ampio ecosistema di librerie disponibili per le funzionalità richieste dal sistema. Tra queste rientrano, in particolare, librerie dedicate all'analisi del malware, all'integrazione con LLM, agenti, MCP e all'interazione con gli ambienti di analisi. La disponibilità di strumenti già consolidati ha pertanto consentito di concentrare lo sviluppo sulla logica specifica dell'architettura proposta, riducendo la necessità di implementare direttamente funzionalità di supporto.
 
 % https://www.python.org/downloads/release/python-3130/
 % https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-python.html
@@ -184,7 +184,7 @@ Entrambi i client specifici estendono quindi \texttt{LLMMCPClient}, ereditandone
 
 A completamento di questa struttura, una classe dedicata fornisce un meccanismo per la registrazione dei client MCP e dei relativi tool. Essa consente di applicare opzionalmente ai nomi dei tool un \textit{namespace}, costituito da un prefisso identificativo del client MCP, e di selezionare un sottoinsieme dei tool disponibili. In questo modo, i tool esclusi possono essere nascosti dall'insieme esposto al LLM. % LLMMCPRegistration
 
-% Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP, semplificando l'integrazione con il LLM. I tool forniti dagli ambienti di esecuzione possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \textit{tool calling} previsto.
+% Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP, semplificando l'integrazione con il LLM. I tool forniti dagli ambienti di analisi possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \textit{tool calling} previsto.
 
 \section{\llm{}} \label{sec:llm} % 5.6
 
