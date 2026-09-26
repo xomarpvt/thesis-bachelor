@@ -17,7 +17,9 @@ A tal fine, saranno analizzati i risultati ottenuti su un insieme di campioni di
 
 In più, dovranno essere utilizzati più LLM, dimostrando l'indipendenza del sistema da uno specifico modello e, soprattutto, analizzando l'influenza delle loro differenti caratteristiche sui risultati ottenuti. Infine, le prestazioni in termini di risorse computazionali e tempi di esecuzione non costituiscono una dimensione di interesse per la seguente valutazione, poiché il sistema non è stato progettato per un utilizzo ad alta frequenza né per operare sotto stringenti vincoli sul consumo di token del LLM.
 
-La strategia di testing proposta prevede una valutazione \emph{end-to-end} progressiva, condotta al termine di ciascun modulo principale della pipeline. Ad eccezione del \classifier{}, la cui valutazione risulta immediata una volta scelti i campioni, per gli altri due moduli è necessario effettuare un confronto con una \emph{ground truth}. Quest'ultima è costituita dalla documentazione relativa al funzionamento e al comportamento dei malware analizzati, insieme ai moduli di cattura effettivamente funzionanti, ed è stata definita con il supporto di un esperto di cybersecurity, SRE e malware analysis.
+La strategia di testing proposta prevede una valutazione \emph{end-to-end} progressiva, condotta al termine di ciascun modulo principale della pipeline. Ad eccezione del \classifier{}, la cui valutazione risulta immediata una volta scelti i campioni, per gli altri due moduli è necessario effettuare un confronto con una \emph{ground truth}. Quest'ultima è costituita dalla documentazione relativa al funzionamento e al comportamento dei malware analizzati, insieme ai moduli di cattura effettivamente funzionanti, ed è stata definita con il supporto di un esperto di cybersecurity e malware analysis.
+
+% L'esperto ha fornito anche la knowledge base.
 
 La valutazione del \classifier{} considera due aspetti distinti, il riconoscimento della natura malevola del campione e l'individuazione della famiglia di botnet a cui appartiene. % basandosi sulla corrispondenza più probabile.
 
@@ -42,7 +44,7 @@ La scelta dei modelli è stata effettuata principalmente sulla base delle risors
 
 \subsection{Protocollo sperimentale} % 6.2.2
 
-Ciascun campione di malware è stato sottoposto a una singola esecuzione secondo un protocollo sperimentale uniforme che, grazie all'autonomia del sistema durante l'esecuzione, è stato applicato in modo coerente a tutti i campioni. L'analisi è stata avviata manualmente fornendo in input il \binary{} e la \kb{}, mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito le operazioni previste fino al completamento del processo, producendo tra gli output i \report{} e il \capture{}, successivamente utilizzati per la valutazione dei risultati.
+Ciascun campione di malware è stato sottoposto a una singola esecuzione secondo un protocollo sperimentale uniforme che, grazie all'autonomia del sistema durante l'esecuzione, è stato applicato in modo coerente a tutti i campioni. L'analisi è stata avviata manualmente fornendo in input il \binary{} e la \kb{}, predisposta dall'esperto e mantenuta invariata per tutti gli esperimenti. Il sistema ha quindi eseguito le operazioni previste fino al completamento del processo, producendo come output i \report{} e il \capture{}, successivamente utilizzati per la valutazione dei risultati.
 
 \section{Definizione dei criteri di valutazione} % 6.3
 
@@ -52,7 +54,9 @@ Per caratterizzare la complessità di ciascun campione è necessario individuare
 
 A tal fine sono stati individuati i criteri riportati nella \Cref{tab:complexity_criteria}, insieme a una descrizione del loro ruolo e del relativo significato. Ad eccezione del primo criterio, che tiene conto del risultato della decompilazione prodotto dal framework di SRE adottato, tutti gli altri descrivono direttamente caratteristiche e proprietà del malware analizzato. % (malware o binario)
 
-I criteri possono essere di tipo binario, con l'assegnazione del solo valore minimo o massimo, secondo la notazione \(\{min,max\}\), oppure possono assumere valori variabili nell'intervallo \([min,max]\), in funzione della complessità osservata. In entrambi i casi, il punteggio minimo è pari a $0$, mentre quello massimo varia in base alla caratteristica considerata. La complessità del campione, indicata come \emph{Complexity Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $165$. Per convenzione, a un valore maggiore corrisponde una complessità superiore del campione.
+I criteri possono essere di tipo binario, con l'assegnazione del solo valore minimo o massimo, secondo la notazione \(\{min,max\}\), oppure possono assumere valori variabili nell'intervallo \([min,max]\), in funzione della complessità osservata. In entrambi i casi, il punteggio minimo è pari a $0$, mentre quello massimo varia in base alla caratteristica considerata. La complessità del campione, indicata come \emph{Complexity Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $165$.
+
+% Per convenzione, a un valore maggiore corrisponde una complessità superiore del campione.
 
 % La somma dei valori massimi dei singoli criteri determina un \emph{Complexity Score} teorico massimo pari a $165$.
 
@@ -73,14 +77,14 @@ I criteri possono essere di tipo binario, con l'assegnazione del solo valore min
 Per la valutazione dell'efficacia della \renaming{} è necessario considerare due parametri principali. Il primo, indicato come ${RC}_{\%}$ e definito \emph{Renaming Coverage}, rappresenta la percentuale di funzioni rinominate rispetto al totale delle funzioni presenti nel binario.
 
 \begin{equation*}
-    {RC}_{\%} = \frac{N_{fun. \text{ renamed}}}{N_{fun. \text{ total}}} \cdot 100
+    {RC}_{\%} = \frac{N_{renamed\ functions}}{N_{total\ functions}} \cdot 100
     \label{eq:renaming_coverage}
 \end{equation*}
 
 Il secondo parametro considera invece la qualità dei nomi assegnati e corrisponde alla percentuale di funzioni rinominate alle quali è stato associato un nome semanticamente corretto sulla base del comportamento osservato. Tale valore, indicato nel seguito con ${RA}_{\%}$, viene definito \emph{Renaming Accuracy}.
 
 \begin{equation*}
-    {RA}_{\%} = \frac{N_{fun. \text{ correct}}}{N_{fun. \text{ renamed}}} \cdot 100
+    {RA}_{\%} = \frac{N_{correctly\ named\ functions}}{N_{renamed\ functions}} \cdot 100
     \label{eq:renaming_accuracy}
 \end{equation*}
 
@@ -108,9 +112,9 @@ In modo analogo alla valutazione della complessità del campione, è necessario 
 
 % Le metriche considerate fanno direttamente riferimento agli elementi recuperati durante l'analisi, ad eccezione dell'ultima, che invece si concentra maggiormente sull'organizzazione e sulla coerenza delle informazioni riportate nei documenti finali, penalizzando eventuali contraddizioni o incoerenze.
 
-I criteri scelti per la valutazione sono riportati nella \Cref{tab:reversing_criteria}, insieme a una descrizione della loro interpretazione. A ogni criterio può essere assegnato un punteggio compreso tra $0$ e un valore massimo proporzionato alla sua importanza. I punteggi parziali consentono di valorizzare anche ricostruzioni incomplete ma corrette, evitando che un errore finale annulli le informazioni recuperate, a condizione che queste siano sufficientemente corrette e non fuorvianti. L'accuratezza della \reversing{}, indicata come \emph{Reversing Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $100$.
+I criteri scelti per la valutazione sono riportati nella \Cref{tab:reversing_criteria}, insieme a una descrizione della loro interpretazione. A ogni criterio può essere assegnato un punteggio compreso tra $0$ e un valore massimo proporzionato alla sua importanza. I punteggi parziali consentono di valorizzare anche ricostruzioni incomplete ma corrette, evitando che un errore finale annulli le informazioni recuperate, a condizione che queste siano sufficientemente corrette. L'accuratezza della \reversing{}, indicata come \emph{Reversing Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $100$.
 
-% Per convenzione, a un valore più elevato corrisponde un'analisi più efficace.
+% Per convenzione, a un valore più elevato corrisponde un'analisi più efficace. Informazioni sufficientemente corrette e non fuorvianti.
 
 % La somma dei valori massimi determina un punteggio teorico complessivo pari a $100$, corrispondente a un'analisi completa e corretta.
 
@@ -123,7 +127,9 @@ I criteri scelti per la valutazione sono riportati nella \Cref{tab:reversing_cri
 
 \subsection{Qualità del \capture{}} % 6.3.4
 
-La valutazione del \capture{} prende in esame l'implementazione prodotta dal \codeagent{} in termini di funzionalità, correttezza e conformità alle specifiche, senza estendersi agli aspetti stilistici del codice. Inizialmente vengono considerati la correttezza sintattica del codice, l'aderenza ai \templates{} forniti e al \schema{}. A questi si aggiungono due ulteriori criteri, a cui è assegnato un peso maggiore in quanto più rappresentativi dell'effettiva funzionalità del modulo. Il primo riguarda il rispetto del protocollo descritto nei \report{}, mentre il secondo riguarda la \emph{human independence}, che valuta l'autonomia del modulo rispetto alla revisione umana, assegnando punteggi maggiori al diminuire delle modifiche necessarie per renderlo operativo.
+La valutazione del \capture{} prende in esame l'implementazione prodotta dal \codeagent{} in termini di funzionalità, correttezza e conformità alle specifiche, senza estendersi agli aspetti stilistici del codice. Inizialmente vengono considerati la correttezza sintattica del codice, l'aderenza ai \templates{} forniti e al \schema{}. A questi si aggiungono due ulteriori criteri, a cui è assegnato un peso maggiore in quanto più rappresentativi dell'effettiva funzionalità del modulo. Il primo misura la conformità al protocollo descritto nei \report{}, mentre il secondo valuta la \emph{human independence}, ovvero il grado di autonomia del modulo rispetto alla revisione umana, con punteggi maggiori associati a un minor numero di modifiche necessarie per renderlo operativo.
+
+% Il primo riguarda il rispetto del protocollo descritto nei \report{}, mentre il secondo riguarda la \emph{human independence}, che valuta l'autonomia del modulo rispetto alla revisione umana, assegnando punteggi maggiori al diminuire delle modifiche necessarie per renderlo operativo.
 
 I criteri considerati sono riportati nella \Cref{tab:module_criteria}, insieme alla relativa descrizione. I primi tre assumono esclusivamente il valore minimo o massimo previsto, mentre gli ultimi due possono assumere anche valori intermedi. La qualità del \capture{}, indicata come \emph{Module Score}, è definita dalla somma dei singoli punteggi, su una scala da $0$ a $100$.
 
@@ -154,7 +160,7 @@ Tale rilevanza è confermata da due fonti indipendenti. Il \emph{Threat Report 2
 % \subsubsection{Provenienza}
 % \subsection{Descrizione testuale}
 
-Nella tabella \Cref{tab:malware_samples} sono riportate le principali informazioni relative ai campioni selezionati, tra cui i nomi univoci utilizzati per identificarli, e gli hash SHA-256 dei file binari. Come anticipato, tutti appartengono alla famiglia Mirai, sono in formato ELF e risultano \emph{statically linked}; i primi due sono non-stripped, mentre gli ultimi tre sono stripped.
+Nella tabella \Cref{tab:malware_samples} sono riportate le principali informazioni relative ai campioni selezionati, tra cui i nomi univoci utilizzati per identificarli e gli hash SHA-256 dei file binari. Come anticipato, tutti appartengono alla famiglia Mirai, sono in formato ELF e risultano \emph{statically linked}; i primi due sono not-stripped, mentre gli ultimi tre sono stripped.
 
 \begin{table}[t]
     \centering
@@ -167,7 +173,7 @@ Per quanto riguarda la provenienza dei campioni, i primi tre sono stati catturat
 
 \subsection{\emph{Complexity Score} dei campioni} % 6.4.2
 
-Sulla base dei criteri riportati nella tabella \Cref{tab:complexity_criteria}, la tabella \Cref{tab:complexity_scores} riporta la \emph{Complexity Score} associata a ciascuno dei campioni scelto. I punteggi totali, espressi su un massimo teorico di $165$, vengono anche normalizzati in termini percentuali.
+Sulla base dei criteri riportati nella tabella \Cref{tab:complexity_criteria}, la tabella \Cref{tab:complexity_scores} riporta il \emph{Complexity Score} associata a ciascuno dei campioni scelto. I punteggi totali, espressi su un massimo teorico di $165$, vengono anche normalizzati in termini percentuali.
 
 \begin{table}[t]
     \centering
@@ -178,7 +184,7 @@ Sulla base dei criteri riportati nella tabella \Cref{tab:complexity_criteria}, l
 
 La complessità dei campioni è piuttosto eterogenea, \textsc{hopto} è il più difficile da analizzare (62\,\%), seguito da \textsc{deepsorrow} (56\,\%) e \textsc{marvisxoxo} (50\,\%); \textsc{onboardboat} presenta una difficoltà intermedia (43\,\%), mentre \textsc{ghost} è nettamente il più semplice (23\,\%).
 
-Risulta particolarmente interessante osservare il contributo dei singoli criteri alla costruzione del punteggio complessivo. Alcuni criteri, come la cifratura della tabella delle stringhe  e il parsing non standard dei comandi , sono presenti nella maggioranza dei campioni, mentre altri, ad esempio la gestione delle risposte e la cifratura della connessione, compaiono in uno soltanto. Il campione \textsc{marvisxoxo} combina la maggior parte delle difficoltà considerate, risultando privo solo della registrazione degli attacchi e dei meccanismi di risposta, oltre a essere non-stripped. Escludendo i criteri non legati alle funzionalità e al comportamento del malware, ossia \emph{ghidra\_dbf}, \emph{statically\_linked} e \emph{stripped}, \textsc{marvisxoxo} presenta un punteggio superiore a \textsc{deepsorrow} e \textsc{hopto}, la cui maggiore difficoltà è dovuta principalmente alla registrazione dinamica degli attacchi.
+Risulta particolarmente interessante osservare il contributo dei singoli criteri alla costruzione del punteggio complessivo. Alcuni criteri, come la cifratura della tabella delle stringhe e il parsing non standard dei comandi, sono presenti nella maggioranza dei campioni, mentre altri, ad esempio la gestione delle risposte e la cifratura della connessione, compaiono in uno soltanto. Il campione \textsc{marvisxoxo} combina la maggior parte delle difficoltà considerate, risultando privo solo della registrazione degli attacchi e dei meccanismi di risposta, oltre a essere non-stripped. Escludendo i criteri non legati alle funzionalità e al comportamento del malware, ossia \emph{ghidra\_dbf}, \emph{statically\_linked} e \emph{stripped}, \textsc{marvisxoxo} presenta un punteggio superiore a \textsc{deepsorrow} e \textsc{hopto}, che hanno una difficoltà superiore principalmente a causa della registrazione dinamica degli attacchi.
 
 % (\emph{enc\_str}), (\emph{non\_std\_parsing}) + offuscamento dell'endpoint di C\&C (\emph{obfuscated\_cc}) / (\emph{has\_response}), (\emph{enc\_conn})
 
@@ -196,9 +202,9 @@ Ad eccezione della \Cref{tab:classifier_scores}, i risultati sono organizzati in
 
 La \Cref{tab:execution_stats} presenta alcune statistiche relative alle esecuzioni effettuate sui campioni, riportate a scopo puramente informativo e non considerate nella valutazione del sistema.
 
-La metà superiore della tabella riporta il numero complessivo di token utilizzati dalle attività previste dalle \renaming{} e \reversing{} del \sreagent{} e da quelle del \codeagent{}, oltre al totale. Il conteggio è riferito all'intera esecuzione e non distingue tra token di input, che comprendono prompt iniziali e risposte dei tool, e token di output, che includono reasoning, risposte e tool call.
+La metà superiore della tabella elenca il numero complessivo di token utilizzati dalle attività previste dalle \renaming{} e \reversing{} del \sreagent{} e da quelle del \codeagent{}, oltre al totale. Il conteggio è riferito all'intera esecuzione e non distingue tra token di input, che comprendono prompt iniziali e risposte dei tool, e token di output, che includono reasoning, risposte e tool call.
 
-La metà inferiore mostra invece i tempi di esecuzione relativi alle medesime attività. Rispetto al numero di token, la misura dei tempi è maggiormente soggetta a variabilità e quindi meno precisa, pur fornendo una buona indicazione dell'impegno richiesto dalle diverse attività.
+La metà inferiore mostra invece i tempi di esecuzione corrispondenti alle medesime attività. Rispetto al numero di token, la misura dei tempi è maggiormente soggetta a variabilità e quindi meno precisa, pur fornendo una buona indicazione dell'impegno richiesto dalle diverse attività.
 
 \begin{table}[t]
     \centering
@@ -254,9 +260,9 @@ La \Cref{tab:module_scores} riporta i risultati della valutazione dei \capture{}
 
 Per tutte le esecuzioni effettuate, il sistema ha operato in maniera autonoma secondo il flusso previsto, completando le diverse fasi della pipeline senza richiedere interventi manuali. Tale risultato conferma la corretta integrazione dei diversi componenti e consente quindi di passare alla discussione dei risultati ottenuti per i singoli moduli.
 
-La valutazione del \classifier{}, riportata in \Cref{tab:classifier_scores}, è stata necessariamente limitata ai campioni scelti. In tali casi, il \classifier{} si è dimostrato sufficientemente affidabile, visto che non sono stati incontrati errori di classificazione. Una valutazione più completa richiederebbe tuttavia di considerare anche casi limite, utili a verificare il rilevamento di eventuali falsi positivi e falsi negativi e la capacità di distinguere correttamente tra più famiglie di botnet, in particolare con campioni che presentano caratteristiche riconducibili a più di una famiglia. % mediante criteri di accuratezza
+La valutazione del \classifier{}, riportata in \Cref{tab:classifier_scores}, è stata necessariamente limitata ai campioni scelti. In tali casi, il \classifier{} si è dimostrato sufficientemente affidabile, visto che non sono stati incontrati errori di classificazione. Una valutazione più completa richiederebbe, tuttavia, di considerare anche casi limite, utili a verificare il rilevamento di eventuali falsi positivi e falsi negativi e la capacità di distinguere correttamente tra più famiglie di botnet, in particolare con campioni che presentano caratteristiche riconducibili a più di una famiglia. % mediante criteri di accuratezza
 
-A questo punto, per fornire una visione sintetica dei risultati e facilitare il confronto tra i diversi LLM e i campioni, è stato realizzato il grafico a barre mostrato in \Cref{fig:bar_plot}, che a confronto i punteggi complessivi ottenuti nelle tre valutazioni principali.
+A questo punto, per fornire una visione sintetica dei risultati e facilitare il confronto tra i diversi LLM e i campioni, sono stati realizzati i grafici a barre mostrati nella \Cref{fig:bar_plot}, che riportano i punteggi complessivi ottenuti nelle tre valutazioni principali.
 
 % \renaming{} e \reversing{} del \sreagent{} e produzione del \capture{} da parte del \codeagent{}.
 
@@ -264,12 +270,12 @@ A questo punto, per fornire una visione sintetica dei risultati e facilitare il 
     \centering
     \includegraphics[width=0.95\textwidth]{img/bar_plot.pdf}
     \caption[Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score}]{
-        Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score} ottenuti dai due LLM considerati nelle valutazioni di \renaming{}, \reversing{} e \capture{} su tutti i campioni selezionati. Le linee orizzontali rappresentano la media delle rispettive serie.
+        Confronto tra i punteggi \emph{Renaming Score}, \emph{Reversing Score} e \emph{Module Score} ottenuti dai due LLM considerati nelle valutazioni di \renaming{}, \reversing{} e \capture{} su tutti i campioni selezionati. Le linee orizzontali rappresentano le medie delle rispettive serie.
     }
     \label{fig:bar_plot}
 \end{figure}
 
-A partire dalle statistiche riportate nella \Cref{tab:execution_stats} e dai risultati riassunti nella \Cref{fig:bar_plot}, è possibile confrontare ad alto livello i due LLM nelle attività considerate. Q3627 e DS4FP presentano prestazioni generalmente comparabili, con differenze più evidenti nella produzione del codice, in cui DS4FP mostra un vantaggio più marcato. Anche il consumo di token risulta nel complesso simile, sebbene DS4FP ne utilizzi di più per la \renaming{} e di meno nel \codeagent{}. Per quanto riguarda i tempi di esecuzione, DS4FP risulta costantemente più rapido, con tempi circa dimezzati rispetto a Q3627. Tale differenza è compatibile con le caratteristiche architetturali dei due modelli, in particolare con l'architettura sparsa di DS4FP, che attiva circa la metà dei parametri rispetto a Q3627 \cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}. La vicinanza dei punteggi ottenuti risulta inoltre coerente con alcuni benchmark pubblici. Nell'Artificial Analysis Intelligence Index v4.3.2 \cite{artificialanalysis2026aaii}, che aggrega dieci valutazioni delle capacità dei LLM in vari ambiti, DS4FP ottiene $24$ punti contro i $21$ di Q3627. Nel Terminal-Bench v2.1 \cite{merrill2026terminalbench}, che comprende anche attività simili a quelle di SRE e cybersecurity implementate in questo sistema, DS4FP raggiunge $61.8$ punti contro i $60.7$ di Q3627. I risultati esterni considerati risultano quindi coerenti con gli andamento osservati nel sistema, pur appartenendo a contesti di valutazione differenti.
+A partire dalle statistiche raccolte nella \Cref{tab:execution_stats} e dai risultati riassunti nella \Cref{fig:bar_plot}, è possibile confrontare ad alto livello i due LLM nelle attività considerate. Q3627 e DS4FP presentano prestazioni generalmente comparabili, con differenze più evidenti nella produzione del codice, in cui DS4FP mostra un vantaggio più marcato. Anche il consumo di token risulta nel complesso simile, sebbene DS4FP ne utilizzi di più per la \renaming{} e di meno nel \codeagent{}. Per quanto riguarda i tempi di esecuzione, DS4FP risulta costantemente più rapido, con tempi circa dimezzati rispetto a Q3627. Tale differenza è compatibile con le caratteristiche architetturali dei due modelli, in particolare con l'architettura sparsa di DS4FP, che attiva circa la metà dei parametri rispetto a Q3627 \cite{alibaba2026qwen3.6-27b, deepseekai2026deepseekv4}. La vicinanza dei punteggi ottenuti risulta inoltre coerente con alcuni benchmark pubblici. Nell'Artificial Analysis Intelligence Index v4.3.2 \cite{artificialanalysis2026aaii}, che aggrega dieci valutazioni delle capacità dei LLM in vari ambiti, DS4FP ottiene $24$ punti contro i $21$ di Q3627. Nel Terminal-Bench v2.1 \cite{merrill2026terminalbench}, che comprende anche attività simili a quelle di SRE e cybersecurity implementate in questo sistema, DS4FP raggiunge $61.8$ punti contro i $60.7$ di Q3627. I risultati esterni considerati risultano quindi coerenti con gli andamenti osservati nel sistema, pur appartenendo a contesti di valutazione differenti.
 
 % Un riscontro analogo si osserva anche nel benchmark Terminal-Bench v2.1 \cite{merrill2026terminalbench}, composto da attività realistiche eseguite tramite terminale, tra cui \emph{extract-elf}, \emph{path-tracing-reverse} e \emph{fix-code-vulnerability}, che coinvolgono ambiti affini a quelli di SRE e cybersecurity considerati da questo sistema. In tale benchmark, DS4FP ottiene 61.8 punti contro i 60.7 di Q3627.
 
@@ -286,7 +292,7 @@ https://hub.harborframework.com/tasks/terminal-bench/path-tracing-reverse/latest
 https://hub.harborframework.com/tasks/terminal-bench/fix-code-vulnerability/latest
 \fi
 
-Tornando all'analisi delle singole attività, per la \renaming{} la \Cref{tab:renaming_scores} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\,\% e l'85\,\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\,\% e il 55\,\% e costituisce il principale fattore di riduzione della \emph{Renaming Score}, i cui valori medi si collocano tra il 60\,\% e il 65\,\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni non viene rinominata. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \reversing{} tendenzialmente conservativo, anche in presenza di due cicli agentici di rinomina. Tuttavia, la valutazione presenta due principali limitazioni: da un lato, la \emph{Renaming Coverage} non tiene conto della diversa importanza delle funzioni all'interno del programma, attribuendo a tutte lo stesso peso; dall'altro, la \emph{Renaming Accuracy} non riflette i diversi gradi di correttezza dei nomi assegnati, senza distinguere tra nomi pienamente corretti, parzialmente corretti o fuorvianti.
+Tornando all'analisi delle singole attività, per la \renaming{} la \Cref{tab:renaming_scores} evidenzia una buona \emph{Renaming Accuracy}, con valori medi compresi tra l'80\,\% e l'85\,\%. Più contenuta risulta invece la \emph{Renaming Coverage}, che si attesta mediamente tra il 50\,\% e il 55\,\% e costituisce il principale fattore di riduzione del \emph{Renaming Score}, i cui valori medi si collocano tra il 60\,\% e il 65\,\%. I risultati suggeriscono che, nella maggior parte dei casi in cui il modello decide di rinominare una funzione, assegna un nome corretto, ma al tempo stesso una parte significativa delle funzioni non viene rinominata. La combinazione di elevata accuratezza e copertura più limitata evidenzia quindi un comportamento della \reversing{} tendenzialmente conservativo, anche in presenza di due cicli agentici di rinomina. Tuttavia, la valutazione presenta due principali limitazioni: da un lato, la \emph{Renaming Coverage} non tiene conto della diversa importanza delle funzioni all'interno del programma, attribuendo a tutte lo stesso peso; dall'altro, la \emph{Renaming Accuracy} non riflette i diversi gradi di correttezza dei nomi assegnati, senza distinguere tra nomi pienamente corretti, parzialmente corretti o fuorvianti.
 
 % senza nome -> riducendo le informazioni semantiche disponibili
 

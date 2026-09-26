@@ -79,7 +79,7 @@ Sia per la \renaming{} che per la \reversing{} all'avvio di ogni ciclo agentico 
 % e le modalità di caricamento della conoscenza aggiuntiva
 
 % Alternativamente \textsc{Continue Mode} potrebbe essere saltata quando \textsc{Start Mode} ha rinominato tutte le funzioni.
-% Al termine della \textsc{Renaming Task} il file sul \textsc{SRE Framework} viene salvato attraverso l'API.
+% Al termine della \renaming{} il file sul \sreframework{} viene salvato attraverso l'API.
 
 \subsubsection{Selezione dei tool di analisi}
 
@@ -109,11 +109,11 @@ L'obiettivo di una \kb{} strutturata in questo modo è fornire al \sreagent{} la
 
 Al termine dell'analisi condotta dal \sreagent{}, il principale output prodotto è costituito dai \report{}. Teoricamente, sulla base delle informazioni in essi contenute, sarebbe possibile determinare se sussistano condizioni sufficienti per procedere alla generazione del \capture{} o se convenga interrompere anticipatamente l'analisi, ad esempio in presenza di numerose informazioni mancanti oppure di un campione di scarsa rilevanza. Nonostante ciò, in questa implementazione si è scelto di procedere sempre con tale fase, principalmente per il suo costo marginale rispetto a quello complessivo della pipeline, determinato in larga parte dall'esecuzione del \sreagent{}.
 
-Come descritto successivamente nella \Cref{sec:code}, il \capture{} finale è composto da due moduli distinti, \botnet{} e \parser{}, ai quali sono assegnate responsabilità differenti. La generazione effettiva del codice viene affidata al \llm{} e viene coordinata dal \codeagent{} attraverso un'unica conversazione basata sul \emph{multi-turn prompting}, all'interno della quale viene prima generato il modulo \botnet{} e successivamente il \parser{}, fornendo di volta in volta gli artefatti di input rilevanti. La \Cref{sec:schema} presenta il \schema{} di riferimento per il parsing dei messaggi; i \templates{} impiegati nella generazione sono invece descritti nella \Cref{sec:code}, mentre le istruzioni fornite al \codeagent{} vengono riassunte nella \Cref{sec:prompt}.
+Come descritto successivamente nella \Cref{sec:code}, il \capture{} finale è composto da due moduli distinti, \botnet{} e \parser{}, ai quali sono assegnate responsabilità differenti. La generazione effettiva del codice viene affidata al \llm{} e viene coordinata dal \codeagent{} attraverso un'unica conversazione basata sul \emph{multi-turn prompting}, all'interno della quale viene prima generato il modulo \botnet{} e successivamente il modulo \parser{}, fornendo di volta in volta gli artefatti di input rilevanti. La \Cref{sec:schema} presenta il \schema{} di riferimento per il parsing dei messaggi; i \templates{} impiegati nella generazione sono invece descritti nella \Cref{sec:code}, mentre le istruzioni fornite al \codeagent{} vengono riassunte nella \Cref{sec:prompt}.
 
 \section{\sreframework{}} \label{sec:ghidra} % 5.3
 
-Il framework di SRE adottato è Ghidra \cite{nsa2026docs}, sviluppato e mantenuto dal Research Directorate della National Security Agency (NSA) e distribuito come progetto open source secondo la Apache License 2.0. L'ambiente Ghidra, offre una suite ricca di strumenti per l'analisi binaria del codice compilato, tra cui disassembly, decompiling, graphing, debugging e scripting. Il framework supporta inoltre un'ampia varietà di \textit{instruction set} relativi a differenti architetture di processore e numerosi formati eseguibili.
+Il framework di SRE adottato è Ghidra \cite{nsa2026docs}, sviluppato e mantenuto dal Research Directorate della National Security Agency (NSA) e distribuito come progetto open source secondo la Apache License 2.0. L'ambiente Ghidra, offre una suite ricca di strumenti per l'analisi binaria del codice compilato, tra cui disassembly, decompiling, graphing, debugging e scripting. Il framework supporta inoltre un'ampia varietà di \emph{instruction set} relativi a differenti architetture di processore e numerosi formati eseguibili.
 
 % Platform independent
 % Cite NSA \footnote{\url{https://github.com/nationalsecurityagency/ghidra}}
@@ -138,7 +138,7 @@ Il server MCP del software \texttt{ghidra-mcp} è implementato mediante il modul
 
 % In modalità standard, il server rende disponibili tutti i gruppi di tool; tuttavia, considerata l'ampiezza del catalogo, il software può essere eseguito anche in modalità \emph{lazy}, caricando inizialmente solo i gruppi di tool principali. Gli altri gruppi possono essere individuati e successivamente caricati o rimossi durante l'esecuzione da parte del LLM, in base alle necessità.
 
-% Il modulo supporta sia il trasporto \textit{stdio}, sia il trasporto \textit{Streamable HTTP}.
+% Il modulo supporta sia il trasporto \emph{stdio}, sia il trasporto \emph{Streamable HTTP}.
 
 % \texttt{search_tools}, \texttt{list_tool_groups}, \texttt{load_tool_group}, \texttt{unload_tool_group} e \texttt{check_tools}
 
@@ -168,14 +168,14 @@ L'immagine così definita viene utilizzata per creare il container della sandbox
 
 \subsection{\sandmcpserver{}} % 5.4.2
 
-Il server MCP del \sandbox{} ha il compito di interagire con l'ambiente ed esporne le funzionalità attraverso tool MCP. Per la sua implementazione è stata utilizzata la libreria Python \textit{FastMCP} \cite{prefect2026fastmcp}. Il server espone quindi un insieme di tool organizzati in due principali categorie:
+Il server MCP del \sandbox{} ha il compito di interagire con l'ambiente ed esporne le funzionalità attraverso tool MCP. Per la sua implementazione è stata utilizzata la libreria Python \emph{FastMCP} \cite{prefect2026fastmcp}. Il server espone quindi un insieme di tool organizzati in due principali categorie:
 
-% L'interazione con il container viene gestita attraverso la libreria \textit{Docker SDK for Python} (https://docker-py.readthedocs.io).
+% L'interazione con il container viene gestita attraverso la libreria \texttt{Docker SDK for Python} (https://docker-py.readthedocs.io).
 
 % Durante l'inizializzazione del server viene verificata la disponibilità del container della sandbox e, qualora questo non risulti in esecuzione, viene avviato automaticamente.
 
 \begin{description}
-    \item[File System:] i tool \texttt{list\_files}, \texttt{read\_file} e \texttt{write\_file} permettono di creare, consultare e modificare i file presenti nell'ambiente della sandbox. Ogni operazione prevede inoltre una gestione degli errori, così da fornire un'informazione esplicita in caso di esecuzione non riuscita.
+    \item[File System:] i tool \texttt{list\_files}, \texttt{read\_file} e \texttt{write\_file} permettono di creare, consultare e modificare i file presenti nell'ambiente della sandbox. Ogni operazione prevede inoltre la gestione degli errori, così da fornire un'informazione esplicita in caso di esecuzione non riuscita.
 
     \item[Execution:] il tool \texttt{execute\_python\_file} consente di eseguire file Python all'interno del container, imponendo un limite temporale all'esecuzione. Il tool \texttt{execute\_command} permette invece di eseguire comandi della shell. Prima dell'esecuzione viene effettuato un controllo di sicurezza sui comandi richiesti per prevenire operazioni potenzialmente pericolose, come tentativi di privilege escalation, o aperture di nuove shell. In entrambi i casi, il risultato dell'esecuzione viene restituito in forma strutturata, includendo \texttt{exit code}, \texttt{stdout} e \texttt{stderr}.
 
@@ -184,11 +184,11 @@ Il server MCP del \sandbox{} ha il compito di interagire con l'ambiente ed espor
 
 \section{\textsc{MCP Client}} % 5.5
 
-Per i due MCP client, \sandmcpclient{} e \textsc{Ghidra MCP Client}, è stata definita una classe di base comune, \texttt{BaseMCPClient}, responsabile dell'instaurazione e del mantenimento della connessione con il rispettivo MCP server mediante il metodo di trasporto \textit{stdio}. La classe espone i due metodi fondamentali per l'interazione con il server, \texttt{list\_tools} per la consultazione dei tool disponibili e \texttt{call\_tool} per la loro invocazione. La classe \texttt{BaseMCPClient} viene ulteriormente estesa da \texttt{LLMMCPClient}, che introduce il livello di integrazione con il LLM. In particolare, i tool esposti dai server MCP vengono convertiti nel formato utilizzato dal meccanismo di \textit{function calling} delle OpenAI API \cite{openai2026apidocs}, includendo le informazioni relative al nome, alla descrizione e ai parametri richiesti.
+Per i due MCP client, \sandmcpclient{} e \sremcpclient{}, è stata definita una classe di base comune, \texttt{BaseMCPClient}, responsabile dell'instaurazione e del mantenimento della connessione con il rispettivo MCP server mediante il metodo di trasporto \emph{stdio}. La classe espone i due metodi fondamentali per l'interazione con il server, \texttt{list\_tools} per la consultazione dei tool disponibili e \texttt{call\_tool} per la loro invocazione. La classe \texttt{BaseMCPClient} viene ulteriormente estesa da \texttt{LLMMCPClient}, che introduce il livello di integrazione con il LLM. In particolare, i tool esposti dai server MCP vengono convertiti nel formato utilizzato dal meccanismo di \emph{function calling} delle OpenAI API \cite{openai2026apidocs}, includendo le informazioni relative al nome, alla descrizione e ai parametri richiesti.
 
 % \texttt{LLMMCPClient} si interpone tra la gestione della connessione MCP e le implementazioni specifiche dei singoli client.
 
-% Il ciclo di vita della connessione viene gestito attraverso un contesto asincrono, all'interno del quale viene inizializzata una \texttt{ClientSession} fornita dal \textit{Python MCP SDK} (https://py.sdk.modelcontextprotocol.io/)
+% Il ciclo di vita della connessione viene gestito attraverso un contesto asincrono, all'interno del quale viene inizializzata una \texttt{ClientSession} fornita dal \texttt{Python MCP SDK} (https://py.sdk.modelcontextprotocol.io/)
 
 % \subsection{LLM-MCP Client} % 5.5.1 Tool Parsing
 
@@ -200,13 +200,13 @@ Entrambi i client specifici estendono quindi \texttt{LLMMCPClient}, ereditandone
 
 A completamento di questa struttura, una classe dedicata fornisce un meccanismo per la registrazione dei client MCP e dei relativi tool. Essa consente di assegnare opzionalmente ai nomi dei tool un \emph{namespace}, identificando il client MCP con un prefisso, e di selezionare solo un sottoinsieme dei tool disponibili. I tool non selezionati vengono così esclusi dall'insieme di quelli esposti al LLM. % LLMMCPRegistration
 
-% Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP, semplificando l'integrazione con il LLM. I tool forniti dagli ambienti di analisi possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \textit{tool calling} previsto.
+% Nel complesso, queste componenti costituiscono un livello di astrazione comune per i diversi client MCP, semplificando l'integrazione con il LLM. I tool forniti dagli ambienti di analisi possono così essere esposti in modo uniforme e utilizzati attraverso il meccanismo di \emph{tool calling} previsto.
 
 \section{\llm{}} \label{sec:llm} % 5.6
 
 % \subsection{Server} % 5.6.1
 
-Il LLM utilizzato dall'applicazione viene eseguito tramite un'istanza esterna di \emph{vLLM} \cite{vllm2026vllm}, un framework open source progettato per l'inferenza e il \textit{serving} di LLM. Il server vLLM gestisce sia l'esecuzione del modello, sia le richieste di inferenza provenienti dal sistema, esponendo un'interfaccia standardizzata compatibile con le API OpenAI.
+Il LLM utilizzato dall'applicazione viene eseguito tramite un'istanza esterna di \emph{vLLM} \cite{vllm2026vllm}, un framework open source progettato per l'inferenza e il \emph{serving} di LLM. Il server vLLM gestisce sia l'esecuzione del modello, sia le richieste di inferenza provenienti dal sistema, esponendo un'interfaccia standardizzata compatibile con le API OpenAI.
 
 % https://docs.vllm.ai/en/stable/serving/online_serving/openai_compatible_server/
 
@@ -219,7 +219,7 @@ Il \llmclient{} è il componente utilizzato dai moduli \sreagent{} e \codeagent{
 
 % Il \texttt{LLM Client} si occupa quindi anche dell'invocazione dei tool, inoltrando ciascuna tool call al client MCP corrispondente e recuperandone il risultato.
 
-Il componente permette inoltre di specificare il livello di ragionamento per il LLM e di configurare i \emph{sampling parameters}. Questi ultimi sono i parametri di campionamento, ovvero le variabili utilizzate per controllare le caratteristiche della generazione del testo, tra cui rientrano \texttt{temperature}, \texttt{top\_p}, \texttt{top\_k}, \texttt{min\_p}, \texttt{presence\_penalty}, \texttt{frequency\_penalty} e \texttt{repetition\_penalty}.
+Il componente permette inoltre di specificare il livello di ragionamento per il LLM e di configurare i \emph{sampling parameters}. Questi ultimi sono i parametri di campionamento, ovvero le variabili utilizzate per controllare le caratteristiche della generazione del testo, tra cui \texttt{temperature}, \texttt{top\_p}, \texttt{top\_k}, \texttt{min\_p}, \texttt{presence\_penalty}, \texttt{frequency\_penalty} e \texttt{repetition\_penalty}.
 
 % È inoltre possibile scegliere la modalità di ragionamento del LLM, abilitandola o disabilitandola tramite \texttt{preserve\_thinking} e specificandone il livello mediante \texttt{reasoning\_effort}.
 
@@ -230,7 +230,9 @@ Sono quindi messi a disposizione metodi per effettuare richieste singole al LLM,
 % Le richieste possono essere effettuate con o senza l'utilizzo dei tool.
 % I parametri di campionamento, così come eventuali altri parametri supportati dal client, possono inoltre essere specificati o sovrascritti per la singola richiesta.
 
-Infine, il componente fornisce la struttura di base su cui vengono realizzati gli agentic loop utilizzati dal \sreagent{}. Tale struttura prevede un ciclo iterativo che gestisce autonomamente lo stato della conversazione, invocando il LLM, eseguendo le tool call e inserendo nel contesto i risultati ottenuti, fino al raggiungimento dell'obiettivo. L'implementazione segue il paradigma ReAct \cite{yao2023react}, alternando le fasi di ragionamento e di azione e preservando la \emph{Chain of Thought} sviluppata dal LLM.
+% Infine, il componente fornisce la struttura di base su cui vengono realizzati gli agentic loop utilizzati dal \sreagent{}. 
+
+Infine, il componente fornisce la struttura portante alla base degli agentic loop del \sreagent{}. Tale struttura prevede un ciclo iterativo che gestisce autonomamente lo stato della conversazione, invocando il LLM, eseguendo le tool call e inserendo nel contesto i risultati ottenuti, fino al raggiungimento dell'obiettivo. L'implementazione segue il paradigma ReAct \cite{yao2023react}, alternando le fasi di ragionamento e di azione e preservando la \emph{Chain of Thought} sviluppata dal LLM.
 
 % Questa è realizzata mediante un ciclo iterativo che gestisce autonomamente lo stato della conversazione, l'invocazione del LLM, l'esecuzione dei tool e l'inserimento nel contesto dei risultati ottenuti, proseguendo l'elaborazione fino al raggiungimento dell'obiettivo. L'implementazione segue il paradigma ReAct \cite{yao2023react}, alternando le fasi di ragionamento e di azione, preservando il ragionamento prodotto dal LLM, affidando al modello la selezione dei tool ed eseguendo sequenzialmente le tool call.
 
@@ -238,7 +240,7 @@ All'interno del ciclo di esecuzione non sono stati introdotti meccanismi di comp
 
 \subsubsection{Logging}
 
-A supporto dell'esecuzione dell'agente, sono state implementate anche le funzionalità di logging richieste dalla progettazione, secondo due modalità complementari. La prima è orientata alla conservazione completa dell'esecuzione e raccoglie l'intera cronologia di conversazione, producendo un output strutturato conforme al formato utilizzato dalle OpenAI API \cite{openai2026apidocs}. La seconda modalità è focalizzata alla consultazione dell'utente e presenta una sintesi leggibile dell'esecuzione. In particolare, vengono riportati il prompt iniziale e, per ogni passo, il ragionamento, le tool call e le risposte prodotte dal LLM, escludendo i risultati restituiti dai tool, così da mantenere il focus sulla catena di ragionamento del LLM.
+A supporto dell'esecuzione dell'agente, sono state implementate anche le funzionalità di logging richieste dalla progettazione, secondo due modalità complementari. La prima è orientata alla conservazione completa dell'esecuzione e raccoglie l'intera cronologia di conversazione, producendo un output strutturato conforme al formato utilizzato dalle OpenAI API \cite{openai2026apidocs}. La seconda modalità è focalizzata alla consultazione dell'utente e presenta una sintesi leggibile dell'esecuzione. In particolare, vengono riportati il prompt iniziale e, per ogni passo, il ragionamento, le tool call e le risposte prodotte dal LLM, escludendo i risultati restituiti dai tool, così da mantenere l'attenzione sulla catena di ragionamento del LLM.
 
 % includendo in particolare le tool call effettuate e i relativi risultati. La struttura adottata permette quindi di analizzare oppure importare e continuare a elaborare successivamente la singola esecuzione.
 
@@ -252,7 +254,7 @@ Come individuato già durante l'analisi dei requisiti nel \Cref{chap:problema}, 
 
 JSON Schema risulta particolarmente indicato per questa finalità per due motivi. Il primo è l'immediatezza con cui è possibile verificare, mediante un \emph{validator}, la conformità di un documento JSON, denominato \emph{instance}, rispetto a uno schema, confrontando automaticamente la struttura e i contenuti dell'istanza con i vincoli dello schema. Il secondo riguarda il suo valore come forma di documentazione, poiché fornisce una descrizione esplicita della struttura e dei vincoli dei dati, comprensibile sia da un essere umano sia da un LLM.
 
-% JSON Schema risulta particolarmente adatto a questa finalità per due motivi. Il primo è la possibilità di verificare la conformità di un documento JSON, denominato \textit{instance}, rispetto a uno schema mediante un \textit{validator}, confrontando automaticamente la struttura e i contenuti dell'istanza con i vincoli definiti nello schema. Il secondo riguarda il suo utilizzo come forma di documentazione, visto che fornisce una descrizione esplicita della struttura e dei vincoli dei dati, comprensibile sia da un umano, sia da un LLM.
+% JSON Schema risulta particolarmente adatto a questa finalità per due motivi. Il primo è la possibilità di verificare la conformità di un documento JSON, denominato \emph{instance}, rispetto a uno schema mediante un \emph{validator}, confrontando automaticamente la struttura e i contenuti dell'istanza con i vincoli definiti nello schema. Il secondo riguarda il suo utilizzo come forma di documentazione, visto che fornisce una descrizione esplicita della struttura e dei vincoli dei dati, comprensibile sia da un umano, sia da un LLM.
 
 \subsection{Classificazione dei messaggi} % 5.7.1
 
@@ -285,13 +287,13 @@ La tipologia \texttt{Attack} è quella caratterizzata dalla struttura più artic
 
 Lo schema include anche un array dedicato alle informazioni relative agli indirizzi IP coinvolti negli attacchi, che può rimanere vuoto qualora non siano disponibili ulteriori informazioni sui bersagli. Per ciascun indirizzo è possibile memorizzare dati relativi alla sua localizzazione e alla rete di appartenenza.
 
-In particolare, lo schema consente di rappresentare informazioni geografiche a diversi livelli, oltre a dati di geolocalizzazione quali latitudine, longitudine e \textit{timezone}. Sono quindi previste informazioni sulla rete di appartenenza dell'indirizzo IP, con la relativa notazione CIDR e i principali attributi dell'\textit{Autonomous System} (AS), quali numero identificativo (ASN), nome e dominio. Lo schema include infine informazioni relative alla risoluzione DNS e altri eventuali metadati associati all'indirizzo.
+In particolare, lo schema consente di rappresentare informazioni geografiche a diversi livelli, oltre a dati di geolocalizzazione quali latitudine, longitudine e \emph{timezone}. Sono quindi previste informazioni sulla rete di appartenenza dell'indirizzo IP, con la relativa notazione CIDR e i principali attributi dell'\emph{Autonomous System} (AS), quali numero identificativo (ASN), nome e dominio. Lo schema include infine informazioni relative alla risoluzione DNS e altri eventuali metadati associati all'indirizzo.
 
 % (dal continente fino alla città)
 
 % \subsubsection{IP Lookup}
 
-L'arricchimento dei dati relativi agli indirizzi IP deve essere gestito dai singoli \capture{}; tuttavia, per evitare la duplicazione del codice e garantire uniformità nelle modalità di recupero delle informazioni, questa funzionalità è stata centralizzata in un componente dedicato, \texttt{IPLookup}, condiviso tra i diversi moduli e richiamabile quando necessario. Il modulo implementa una classe progettata per estrarre le informazioni associate agli indirizzi IP da un insieme di database locali in formato \texttt{.mmdb} (\textit{MaxMind DB}), quali i database \emph{IPinfo Lite} \cite{ipinfo2026lite} e \emph{GeoLite2} \cite{maxmind2026geo}, nelle varianti \emph{City}, \emph{Country} e \emph{ASN}, distribuiti gratuitamente, secondo le relative condizioni di licenza \cite{ipinfo2026lite, maxmind2026geo}.
+L'arricchimento dei dati relativi agli indirizzi IP deve essere gestito dai singoli \capture{}; tuttavia, per evitare la duplicazione del codice e garantire uniformità nelle modalità di recupero delle informazioni, questa funzionalità è stata centralizzata in un componente dedicato, \texttt{IPLookup}, condiviso tra i diversi moduli e richiamabile quando necessario. Il modulo implementa una classe progettata per estrarre le informazioni associate agli indirizzi IP da un insieme di database locali in formato \emph{MaxMind DB}, quali i database \emph{IPinfo Lite} \cite{ipinfo2026lite} e \emph{GeoLite2} \cite{maxmind2026geo}, nelle varianti \emph{City}, \emph{Country} e \emph{ASN}, distribuiti gratuitamente, secondo le relative condizioni di licenza \cite{ipinfo2026lite, maxmind2026geo}.
 
 % Il modulo \texttt{IPLookup} implementa una classe progettata per interrogare database locali in formato \texttt{.mmdb} (\emph{MaxMind DB}), quali i database \emph{IPinfo Lite} \footnote{\url{https://ipinfo.io/developers/ipinfo-lite-database}} e \emph{GeoLite2}, nelle varianti \emph{City}, \emph{Country} e \emph{ASN} \footnote{\url{https://dev.maxmind.com/geoip/docs/databases/}}, così da estrarre le informazioni associate agli indirizzi IP. L'interazione con questi dataset avviene tramite l'apposita libreria Python \emph{maxminddb} \footnote{\url{https://maxminddb.readthedocs.io/en/latest/}}, mentre i database sono aggiornati frequentemente e distribuiti gratuitamente, secondo le relative condizioni di licenza \footnote{\url{https://ipinfo.io/developers/ipinfo-lite-database} (CC BY-SA 4.0)} \footnote{\url{https://www.maxmind.com/en/geolite/eula} (EULA con CC BY-SA 4.0)}.
 
@@ -307,7 +309,7 @@ L'arricchimento dei dati relativi agli indirizzi IP deve essere gestito dai sing
 
 % \subsection{Aggiornamento BotNetInterface} % 5.8.0
 
-% Come suggerito durante la fase di progettazione, per separare le responsabilità relative alla cattura e all'elaborazione dei messaggi vengono utilizzati due file distinti, dedicati rispettivamente alla fase di cattura e a quella di parsing dei messaggi secondo il \textsc{MessageSchema}. Il punto di ingresso principale è il \textsc{BotNet Module}, che implementa la \texttt{BotNetInterface}.
+% Come suggerito durante la fase di progettazione, per separare le responsabilità relative alla cattura e all'elaborazione dei messaggi vengono utilizzati due file distinti, dedicati rispettivamente alla fase di cattura e a quella di parsing dei messaggi secondo il \schema{}. Il punto di ingresso principale è il \botnet{}, che implementa la \interface{}.
 
 % Come suggerito durante la fase di descrizione del \codeagent{}, per separare le responsabilità relative alla cattura e all'elaborazione dei messaggi il \capture{} è strutturato due moduli distinti, dedicati rispettivamente alla fase di cattura e a quella di parsing dei messaggi secondo il \schema{}. Il punto di ingresso principale è il modulo \botnet{}, che implementa la \interface{}.
 
@@ -317,7 +319,7 @@ Per rappresentare a livello di codice la classificazione dei messaggi viene util
 
 % Enumerazione Python (https://docs.python.org/3/library/enum.html)
 
-Infine, dal momento che il primo modulo utilizza funzionalità di logging, mentre il secondo dipende dalla classe centralizzata \texttt{IPLookup}, alla \interface{} è stato aggiunto un costruttore che permette di fornire tali oggetti già durante l'inizializzazione.
+Infine, dal momento che il primo modulo utilizza funzionalità di logging e che il secondo dipende dalla classe centralizzata \texttt{IPLookup}, alla \interface{} è stato aggiunto un costruttore che permette di fornire tali oggetti già durante l'inizializzazione.
 
 % Istruzioni su come consultare l'interfaccia completa sono riportate nell'\Cref{app:b}.
 
@@ -339,18 +341,18 @@ Il template del modulo \botnet{} fornisce un'esempio di implementazione dei meto
     
     \item[Metodo \texttt{connect}:] stabilisce la connessione con l'endpoint C\&C e con il metodo \texttt{authentication} avvia la sequenza di inizializzazione prevista dal protocollo. Questa fase permette al modulo di registrarsi presso il server di C\&C, simulando il comportamento del dispositivo di una potenziale vittima.
     
-    \item[Metodo \texttt{sniff}:] rimane in ascolto dei dati provenienti dall'endpoint C\&C e gestisce, quando previsto, l'invio periodico dei messaggi di keepalive tramite il metodo \texttt{heartbeat}. I dati ricevuti vengono eventualmente sottoposti a un pre-processing tramite \texttt{preprocess\_stream} e sono successivamente aggiunti al buffer. Da quest'ultimo, tramite \texttt{extract\_packets}, sono estratti i pacchetti, che possono essere decodificati o decifrati tramite \texttt{decode\_packet}. Dai pacchetti elaborati vengono estratti i singoli messaggi mediante \texttt{extract\_messages}, per poi essere classificati secondo il \texttt{MessageType} tramite \texttt{get\_message\_type}. Inoltre, quando previsto dal protocollo, \texttt{handle\_message} permette di eseguire l'azione attesa dal server, in risposta al messaggio ricevuto, come ad esempio l'invio di un acknowledgment. Il parsing del contenuto del messaggio viene invece demandato al \parser{} tramite il metodo \texttt{parse\_message}, che produce un dizionario Python, successivamente restituito tramite \texttt{yield}. L'uso dei dizionari garantisce una compatibilità nativa e immediata con il formato JSON, poiché entrambi condividono la stessa struttura basata su coppie chiave-valore.
+    \item[Metodo \texttt{sniff}:] rimane in ascolto dei dati provenienti dall'endpoint C\&C e gestisce, quando previsto, l'invio periodico dei messaggi di keepalive tramite il metodo \texttt{heartbeat}. I dati ricevuti vengono eventualmente sottoposti a un pre-processing tramite \texttt{preprocess\_stream} e sono successivamente aggiunti al buffer. Da quest'ultimo, tramite \texttt{extract\_packets}, sono estratti i pacchetti, che possono essere decodificati o decifrati tramite \texttt{decode\_packet}. Dai pacchetti elaborati vengono estratti i singoli messaggi mediante \texttt{extract\_messages}, per poi essere classificati secondo il \texttt{MessageType} tramite \texttt{get\_message\_type}. Inoltre, quando previsto dal protocollo, \texttt{handle\_message} permette di eseguire l'azione attesa dal server, in risposta al messaggio ricevuto, come ad esempio l'invio di un acknowledgment. Il parsing del contenuto del messaggio viene demandato al modulo \parser{} tramite il metodo \texttt{parse\_message}, che produce un dizionario Python, successivamente restituito tramite \texttt{yield}. L'uso dei dizionari garantisce una compatibilità nativa e immediata con il formato JSON, poiché entrambi condividono la stessa struttura basata su coppie chiave-valore.
     
     % \texttt{json.dumps} (https://docs.python.org/3/library/json.html).
 \end{description}
 
-Per rendere il template del modulo direttamente utilizzabile dal \codeagent{}, tutti i metodi sono accompagnati da \textit{docstring} che ne descrivono il contratto, il comportamento atteso e le operazioni che devono essere implementate. In questo modo, nei prompt forniti al LLM è sufficiente riportare una descrizione generale del modulo, senza dover specificare nuovamente tutti i dettagli tecnici.
+Per rendere il template del modulo direttamente utilizzabile dal \codeagent{}, tutti i metodi sono accompagnati da \emph{docstring} che ne descrivono il contratto, il comportamento atteso e le operazioni che devono essere implementate. In questo modo, nei prompt forniti al LLM è sufficiente riportare una descrizione generale del modulo, senza dover specificare nuovamente tutti i dettagli tecnici.
 
 % Nel template sono inoltre esplicitamente indicati gli eventi per i quali è previsto il logging, realizzato con l'omonima libreria Python \footnote{\url{https://docs.python.org/3/library/logging.html}}, così da mantenere coerente anche questo aspetto nella versione finale del modulo.
 
 Una caratteristica particolare del template è la definizione dei metodi ausiliari con un'implementazione di base minimale. Questa scelta permette di esplicitare al LLM quali funzionalità sono opzionali e dipendono dallo specifico protocollo in esame: quando una determinata funzionalità è prevista, il relativo metodo dovrà essere sovrascritto con la logica specifica; in caso contrario, l'implementazione di base del template può essere mantenuta invariata.
 
-% Una caratteristica particolare del template è l'implementazione dei metodi ausiliari mediante la keyword \texttt{pass}, utilizzata come \textit{placeholder}, oppure restituendo invariati gli oggetti ricevuti. Questa scelta permette di esplicitare al LLM quali funzionalità sono opzionali e dipendenti dallo specifico protocollo: se una determinata funzionalità è prevista dal protocollo, allora il relativo metodo dovrà essere sovrascritto implementandone la logica specifica; in caso contrario, il comportamento predefinito del template può essere mantenuto invariato.
+% Una caratteristica particolare del template è l'implementazione dei metodi ausiliari mediante la keyword \texttt{pass}, utilizzata come \emph{placeholder}, oppure restituendo invariati gli oggetti ricevuti. Questa scelta permette di esplicitare al LLM quali funzionalità sono opzionali e dipendenti dallo specifico protocollo: se una determinata funzionalità è prevista dal protocollo, allora il relativo metodo dovrà essere sovrascritto implementandone la logica specifica; in caso contrario, il comportamento predefinito del template può essere mantenuto invariato.
 
 % Minimale: keyword \texttt{pass}, utilizzata come \emph{placeholder}, oppure restituendo invariati gli oggetti ricevuti.
 
@@ -366,68 +368,38 @@ L'implementazione di \texttt{parse\_message} proposta estrae inizialmente le inf
 
 % Anche per il template del \parser{} valgono gli stessi principi già adottati per il template di \botnet{} in merito alle descrizioni tramite docstring e alle modalità di implementazione.
 
-Anche il template del \parser{} segue gli stessi principi adottati per quello precedente, sia nella descrizione dei metodi tramite docstring, sia nelle modalità di implementazione.
+Anche il template del modulo \parser{} segue gli stessi principi adottati per quello precedente, sia nella descrizione dei metodi tramite docstring, sia nelle modalità di implementazione.
 
 \section{\prompt{}} \label{sec:prompt} % 5.9 (Prompt Engineering)
 
 In questa sezione vengono presentati i prompt utilizzati nei due componenti principali del sistema, ossia il \sreagent{}, con le macro-attività \renaming{} e \reversing{}, e il \codeagent{}.
 
-% In questa sezione vengono presentati i prompt utilizzati nei due componenti principali del sistema, ossia il \textsc{SRE Agent}, per le attività di \textit{Renaming} e \textit{Reversing}, e il \textsc{Code Agent}.
-
-% Per ciascuna di queste attività vengono dapprima descritti il \textit{System Prompt} e successivamente gli \textit{User Prompt} specifici. I prompt completi sono riportati nelle appendici.
+% Per ciascuna di queste attività vengono dapprima descritti il \emph{System Prompt} e successivamente gli \emph{User Prompt} specifici. I prompt completi sono riportati nelle appendici.
 
 Per aggiungere dinamicamente ai prompt tutte le informazioni necessarie viene utilizzato un meccanismo di \emph{context injection}, basato su \emph{placeholder} che possono essere sostituiti con il contenuto richiesto. Questo meccanismo viene utilizzato sia per i materiali di riferimento forniti al \codeagent{}, sia, nel caso del \sreagent{}, per includere, quando disponibile, il contenuto della \kb{}.
 
 \subsection{\renaming{}} % 5.9.1
 
-Il system prompt definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria, con particolare attenzione alla ricostruzione della logica di programmi stripped e al renaming delle funzioni. Richiede di identificare sistematicamente lo scopo delle funzioni, ricostruirne le relazioni e proporre nomi coerenti sulla base di evidenze verificabili. Il prompt stabilisce inoltre l'utilizzo delle funzionalità di analisi statica del \textsc{SRE Framework}, sfruttando informazioni quali disassembly, decompilazione e cross-reference per supportare le decisioni di ridenominazione.
+Il system prompt assegna al LLM il ruolo di analista di malware specializzato in SRE e analisi binaria, con particolare attenzione alla ricostruzione della logica di binari stripped e alla rinomina delle funzioni. Richiede di identificare sistematicamente lo scopo delle funzioni, ricostruirne le relazioni e proporre nomi coerenti sulla base di evidenze verificabili. Il prompt stabilisce inoltre l'utilizzo delle funzionalità di analisi statica del \sreframework{}, sfruttando soprattutto la decompilazione e lo studio delle \emph{cross-reference} per supportare le decisioni di rinomina.
 
-L'user prompt della \textsc{Start Mode} definisce il compito di ridenominazione delle funzioni all'interno di un binario stripped, partendo dall'identificazione della funzione \texttt{main} e procedendo ricorsivamente a partire da essa. L'attività principale consiste nel ridenominare le funzioni e, quando necessario, anche i parametri delle funzioni e le variabili locali, così da facilitare le successive attività di analisi. Il prompt suggerisce quindi i tool da utilizzare per effettuare le ridenominazioni. Infine, richiede di basare le ridenominazioni sulle evidenze raccolte durante l'analisi, riportando il ragionamento seguito e il relativo livello di confidenza in un breve output che riepiloga le attività svolte.
+L'user prompt della \textsc{Start Mode} definisce il compito di ridenominazione delle funzioni all'interno di un binario stripped, partendo dall'identificazione della funzione \texttt{main}, per poi procedere ricorsivamente. L'attività principale consiste appunto nel rinominare le funzioni e, quando possibile, anche i parametri delle funzioni e le variabili locali, così da facilitare le successive analisi. Il prompt continua menzionando i tool MCP da utilizzare per effettuare le ridenominazioni. Infine, richiede ancora una volta di basare le ridenominazioni sulle evidenze raccolte durante l'analisi, riportando il ragionamento seguito e facendo un riepilogo delle attività svolte all'interno di un breve report.
+
+% (Livello di confidenza)
 
 L'user prompt della \textsc{Continue Mode} definisce il compito di verificare e migliorare le ridenominazioni già effettuate su funzioni, parametri e variabili, individuando quelle inesatte e correggendole quando necessario. Il prompt richiede inoltre di identificare ulteriori opportunità di ridenominazione, cercando sempre di privilegiare gli elementi che hanno un impatto maggiore sulla comprensione del malware ed evitando di introdurre nomi potenzialmente fuorvianti. Rimangono invariate rispetto al prompt precedente le indicazioni relative ai tool, ai principi di analisi e all'output da produrre.
 
-\iffalse
-\begin{description}
-    \item[System Prompt.] Definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria, con particolare attenzione alla ricostruzione della logica di programmi stripped e al renaming delle funzioni. Richiede di identificare sistematicamente lo scopo delle funzioni, ricostruirne le relazioni e proporre nomi coerenti sulla base di evidenze verificabili. Il prompt stabilisce inoltre l'utilizzo delle funzionalità di analisi statica del \textsc{SRE Framework}, sfruttando informazioni quali disassembly, decompilazione e cross-reference per supportare le decisioni di ridenominazione.
-    
-    \item[Start Prompt.] Definisce il compito di ridenominazione delle funzioni all'interno di un binario stripped, partendo dall'identificazione della funzione \texttt{main} e procedendo ricorsivamente a partire da essa. L'attività principale consiste nel ridenominare le funzioni e, quando necessario, anche i parametri delle funzioni e le variabili locali, così da facilitare le successive attività di analisi. Il prompt suggerisce quindi i tool da utilizzare per effettuare le ridenominazioni. Infine, richiede di basare le ridenominazioni sulle evidenze raccolte durante l'analisi, riportando il ragionamento seguito e il relativo livello di confidenza in un breve output che riepiloga le attività svolte.
-    
-    \item[Continue Prompt.] Definisce il compito di verificare e migliorare le ridenominazioni già effettuate su funzioni, parametri e variabili, individuando quelle inesatte e correggendole quando necessario. Il prompt richiede inoltre di identificare ulteriori opportunità di ridenominazione, cercando sempre di privilegiare gli elementi che hanno un impatto maggiore sulla comprensione del malware ed evitando di introdurre nomi potenzialmente fuorvianti. Rimangono invariate rispetto al prompt precedente le indicazioni relative ai tool, ai principi di analisi e all'output da produrre.
-\end{description}
-\fi
-
 \subsection{\reversing{}} % 5.9.2
 
-Il system prompt definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria. Richiede di produrre risultati tecnici rigorosi, precisi e verificabili, basando ogni conclusione su evidenze direttamente osservabili nel binario e indicando esplicitamente il livello di confidenza tra fatto verificato, ipotesi analitica e informazione sconosciuta. Il prompt stabilisce inoltre l'utilizzo combinato delle funzionalità di analisi statica del \textsc{SRE Framework} e degli strumenti disponibili all'interno della \textsc{Sandbox} per validare ipotesi, estrarre informazioni, analizzare dati offuscati e automatizzare attività ripetitive.
+Il system prompt assegna al LLM il ruolo di analista di malware specializzato in SRE e analisi binaria. Richiede di produrre risultati tecnici rigorosi, precisi e verificabili, basando ogni conclusione sulle evidenze osservabili nel binario e indicando esplicitamente il livello di confidenza associato, distinguendo tra fatti verificati, ipotesi e informazioni sconosciute. Il prompt stabilisce l'uso combinato delle funzionalità di analisi statica del \sreframework{} e degli strumenti disponibili nel \sandbox{} per validare ipotesi, estrarre informazioni, analizzare dati offuscati e automatizzare attività ripetitive.
 
-L'user prompt della \textsc{Transport Analysis} definisce il compito di analizzare e documentare il \textit{Transport Layer} del malware, con particolare attenzione al recupero dell'infrastruttura C\&C e all'inizializzazione della connessione. Il prompt richiede di ricostruire le modalità con cui vengono ottenuti l'indirizzo e la porta del server C\&C, incluse eventuali tecniche di offuscamento, cifratura o l'utilizzo di una tabella di stringhe, e di descrivere il relativo protocollo e ciclo di connessione. Infine, richiede di produrre una specifica tecnica completa, sufficientemente dettagliata per la comprensione umana e direttamente utilizzabile per la successiva implementazione.
+L'user prompt della \textsc{Transport Analysis} definisce il compito di analizzare e documentare il \emph{Transport Layer} del malware, con particolare attenzione all'individuazione dei meccanismi e dei protocolli utilizzati per raggiungere l'infrastruttura C\&C e alla creazione del canale di comunicazione. Il prompt richiede di determinare le modalità con cui vengono contattati gli endpoint, inclusi indirizzi, porte e domini, considerando eventuali tecniche di offuscamento, cifratura e recupero delle stringhe. Infine, indica di produrre una specifica tecnica completa, sufficientemente dettagliata per la comprensione umana e direttamente utilizzabile per la successiva implementazione del \capture{}.
 
-L'user prompt della \textsc{Communication Analysis} definisce il compito di analizzare e documentare il \textit{Communication Layer} del malware, con particolare attenzione alle fasi di autenticazione e instaurazione della sessione C\&C e al successivo ciclo di elaborazione dei comandi. Il prompt richiede di individuare e ricostruire i meccanismi di autenticazione e crittografia, il formato e il parsing dei messaggi, la gestione dei comandi e le modalità di mantenimento della sessione.  Le indicazioni relative agli standard di analisi e alla struttura e al contenuto dell'output rimangono invariate.
-
-\iffalse
-\begin{description}
-    \item[System Prompt.] Definisce il ruolo del LLM come analista di malware specializzato in SRE e analisi binaria. Richiede di produrre risultati tecnici rigorosi, precisi e verificabili, basando ogni conclusione su evidenze direttamente osservabili nel binario e indicando esplicitamente il livello di confidenza tra fatto verificato, ipotesi analitica e informazione sconosciuta. Il prompt stabilisce inoltre l'utilizzo combinato delle funzionalità di analisi statica del \textsc{SRE Framework} e degli strumenti disponibili all'interno della \textsc{Sandbox} per validare ipotesi, estrarre informazioni, analizzare dati offuscati e automatizzare attività ripetitive.
-    \item[Transport Prompt.] Definisce il compito di analizzare e documentare il \textit{Transport Layer} del malware, con particolare attenzione al recupero dell'infrastruttura C\&C e all'inizializzazione della connessione. Il prompt richiede di ricostruire le modalità con cui vengono ottenuti l'indirizzo e la porta del server C\&C, incluse eventuali tecniche di offuscamento, cifratura o l'utilizzo di una tabella di stringhe, e di descrivere il relativo protocollo e ciclo di connessione. Infine, richiede di produrre una specifica tecnica completa, sufficientemente dettagliata per la comprensione umana e direttamente utilizzabile per la successiva implementazione.
-    \item[Communication Prompt.] Definisce il compito di analizzare e documentare il \textit{Communication Layer} del malware, con particolare attenzione alle fasi di autenticazione e instaurazione della sessione C\&C e al successivo ciclo di elaborazione dei comandi. Il prompt richiede di individuare e ricostruire i meccanismi di autenticazione e crittografia, il formato e il parsing dei messaggi, la gestione dei comandi e le modalità di mantenimento della sessione.  Le indicazioni relative agli standard di analisi e alla struttura e al contenuto dell'output rimangono invariate.
-\end{description}
-\fi
+L'user prompt della \textsc{Communication Analysis} definisce il compito di analizzare e documentare il \emph{Communication Layer} del malware, con particolare attenzione alle fasi di autenticazione, instaurazione della sessione C\&C e al successivo ciclo di elaborazione dei comandi. Il prompt richiede di individuare e ricostruire i meccanismi di autenticazione e crittografia utilizzati, il formato e le tecniche di parsing dei messaggi, la gestione dei comandi e le modalità di mantenimento della sessione. Le indicazioni relative agli standard di analisi, alla struttura e al contenuto dell'output rimangono invariate.
 
 \subsection{\codeagent{}} % 5.9.3
 
-Il system prompt definisce il ruolo del LLM come agente specializzato nella generazione di codice Python per moduli di sicurezza di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti. Il prompt descrive inoltre le modalità di estrazione delle informazioni a partire dalla documentazione fornita e stabilisce gli standard di implementazione e qualità del codice da seguire. In particolare, richiede l'utilizzo di Python 3.11+, l'adozione di buone pratiche di sviluppo, con la produzione di codice chiaro, oltre a una gestione adeguata delle eccezioni e del logging.
+Il system prompt assegna al LLM il ruolo di agente specializzato nella generazione di codice Python per moduli di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti, definendo inoltre le modalità di estrazione delle informazioni dalla documentazione e i criteri di implementazione del codice. In particolare, stabilisce l'utilizzo di Python 3.11 o versioni successive, l'adozione di buone pratiche di sviluppo, un'adeguata gestione delle eccezioni e del logging.
 
-L'user prompt per il modulo \botnet{} definisce il compito di generazione del modulo di cattura, specificando che l'implementazione deve essere contenuta in un singolo file e deve ricostruire i layer di comunicazione e trasporto della botnet. Il prompt fornisce quindi i materiali di riferimento, ciascuno affiancato da una breve descrizione: la \texttt{BotNetInterface}, i \texttt{SRE Reports}, il template del \texttt{BotNet Module} e l'enumerazione \texttt{MessageType}. Vengono successivamente definiti i requisiti per l'implementazione dei metodi \texttt{connect} e \texttt{sniff}, specificando in generale il comportamento atteso. Infine, si richiede di rispettare il template esistente e di implementare esclusivamente le funzionalità previste dalla specifica, escludendo qualsiasi comportamento offensivo e restituendo in output il file completo.
+L'user prompt per il modulo \botnet{} definisce il compito di generazione del modulo di cattura dei messaggi, specificando che l'implementazione deve essere contenuta in un singolo file e deve ricostruire i layer di trasporto e comunicazione della botnet. Il prompt fornisce quindi i materiali di riferimento: la \interface{}, i \report{}, il template del modulo e l'enumerazione \texttt{Message Type}, ciascuno affiancato da una breve descrizione. Vengono successivamente definiti i requisiti per l'implementazione dei metodi \texttt{connect} e \texttt{sniff}, specificando in generale il comportamento atteso. Infine, si richiede di rispettare il template esistente e di implementare esclusivamente le funzionalità necessarie, escludendo qualsiasi comportamento offensivo e restituendo in output il file completo.
 
-L'user prompt per il modulo \parser{}, che segue la generazione del modulo \botnet{}, si limita a estendere i materiali di riferimento con il \texttt{MessageSchema} e il template del \texttt{MessageParser}. Il compito definito è la generazione del modulo di parsing, il cui punto di ingresso è rappresentato dal metodo \texttt{parse\_message}, responsabile di indirizzare i messaggi verso i parser specifici. Viene inoltre richiesto di utilizzare il tipo di messaggio generico \texttt{Command} come \textit{fallback} in caso di errore durante il parsing. Anche in questo caso, il prompt richiede il rispetto del template, delle richieste definite e del formato di output previsto.
-
-\iffalse
-\begin{description}
-    \item[System Prompt.] Definisce il ruolo del LLM come agente specializzato nella generazione di codice Python per moduli di sicurezza di rete. Richiede la produzione di codice completo ed eseguibile, conforme alle specifiche, alle informazioni e ai template forniti. Il prompt descrive inoltre le modalità di estrazione delle informazioni a partire dalla documentazione fornita e stabilisce gli standard di implementazione e qualità del codice da seguire. In particolare, richiede l'utilizzo di Python 3.11+, l'adozione di buone pratiche di sviluppo, con la produzione di codice chiaro, oltre a una gestione adeguata delle eccezioni e del logging.
-
-    \item[BotNet Prompt.] Definisce il compito di generazione del modulo di cattura, specificando che l'implementazione deve essere contenuta in un singolo file e deve ricostruire i layer di comunicazione e trasporto della botnet. Il prompt fornisce quindi i materiali di riferimento, ciascuno affiancato da una breve descrizione: la \texttt{BotNetInterface}, i \texttt{SRE Reports}, il template del \texttt{BotNet Module} e l'enumerazione \texttt{MessageType}. Vengono successivamente definiti i requisiti per l'implementazione dei metodi \texttt{connect} e \texttt{sniff}, specificando in generale il comportamento atteso. Infine, si richiede di rispettare il template esistente e di implementare esclusivamente le funzionalità previste dalla specifica, escludendo qualsiasi comportamento offensivo e restituendo in output il file completo.
-
-    \item[MessageParser Prompt.] Poiché questa generazione segue quella del \texttt{BotNet Module}, il prompt si limita a estendere i materiali di riferimento con il \texttt{MessageSchema} e il template del \texttt{MessageParser}. Il compito definito è la generazione del modulo di parsing, il cui punto di ingresso è rappresentato dal metodo \texttt{parse\_message}, responsabile di indirizzare i messaggi verso i parser specifici. Viene inoltre richiesto di utilizzare il tipo di messaggio generico \texttt{Command} come \textit{fallback} in caso di errore durante il parsing. Anche in questo caso, il prompt richiede il rispetto del template, delle richieste definite e del formato di output previsto.
-    
-    % \texttt{IPSchema} viene escluso in quanto non necessario per il \texttt{MessageSchema}
-\end{description}
-\fi
+L'user prompt per la generazione del modulo \parser{}, che segue quella del modulo \botnet{}, si limita a estendere i materiali di riferimento con il \schema{} e il relativo template. Il compito definito è la generazione del modulo di parsing, il cui punto di ingresso è rappresentato dal metodo \texttt{parse\_message}, responsabile di indirizzare i messaggi verso i parser specifici. Viene inoltre indicato di utilizzare il tipo di messaggio generico \texttt{Command} come \emph{fallback} in caso di errore durante il parsing. Anche in questo caso, il prompt richiede il rispetto del template e del formato di output previsto.

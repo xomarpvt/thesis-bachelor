@@ -10,9 +10,9 @@
     \hline
     \emph{stripped} & $\{0,20\}$ &  Indica che il binario è stato sottoposto al processo di stripping, con la conseguente rimozione di informazioni simboliche quali nomi di funzioni, parametri e variabili. \\
     \hline
-    \emph{obfuscated\_cc} & $[0,10]$ & Quantifica il livello di offuscamento degli endpoint di C\&C, considerando le modalità di memorizzazione e recupero, che possono variare da valori presenti in chiaro a valori cifrati, offuscati o recuperati dinamicamente a runtime. \\
+    \emph{obfuscated\_cc} & $[0,10]$ & Quantifica il livello di offuscamento degli endpoint C\&C, considerando le modalità di memorizzazione e recupero, che possono variare da valori presenti in chiaro a valori cifrati, offuscati o recuperati dinamicamente a runtime. \\
     \hline
-    \emph{dns\_other\_cc} & $\{0,5\}$ & Indica che la risoluzione dell'endpoint di C\&C avviene tramite DNS o coinvolge altri meccanismi di risoluzione complessi. \\
+    \emph{dns\_other\_cc} & $\{0,5\}$ & Indica che la risoluzione dell'endpoint C\&C avviene tramite DNS o coinvolge altri meccanismi di risoluzione complessi. \\
     \hline
     \emph{enc\_str} & $[0,10]$ & Quantifica il livello di offuscamento della tabella delle stringhe, quando questa è presente, passando dalla memorizzazione in chiaro all'utilizzo di meccanismi di cifratura o offuscamento più complessi. \\
     \hline
@@ -24,7 +24,7 @@
     \hline
     \emph{enc\_conn} & $\{0,10\}$ & Indica che il malware utilizza un algoritmo di cifratura per cifrare e decifrare le comunicazioni. \\
     \hline
-    \emph{dyn\_att} & $\{0,20\}$ & Indica che il malware registra dinamicamente, a runtime, alcuni metodi di attacco. \\
+    \emph{dyn\_att} & $\{0,20\}$ & Indica che il malware registra dinamicamente, a runtime, i metodi di attacco. \\
     \hline
     \emph{non\_std\_parsing} & $\{0,10\}$ & Indica che per il parsing dei comandi C\&C ricevuti il malware utilizza dei metodi che non sono tipici della famiglia di appartenenza. \\
     \hline
@@ -44,7 +44,7 @@
     \hline
     \textbf{Criterio} & \textbf{Score} & \textbf{Descrizione} \\
     \hline
-    \emph{host\_info} & $[0,10]$ & 	Misura il grado di successo nel recupero delle informazioni relative all'endpoint di C\&C contattato dal malware, quali indirizzo IP, hostname e porta. \\
+    \emph{host\_info} & $[0,10]$ & 	Misura il grado di successo nel recupero delle informazioni relative all'endpoint C\&C contattato dal malware, quali indirizzo IP, hostname e porta. \\
     \hline
     \emph{crypto\_obfuscation} & $[0,15]$ & Misura il grado di recupero dei meccanismi di cifratura e offuscamento utilizzati dal malware, includendo sia il funzionamento della cifratura del traffico sia l'algoritmo di decifratura e il contenuto originale della tabella delle stringhe; in caso di assenza, valuta la corretta conferma della stessa. \\
     \hline
