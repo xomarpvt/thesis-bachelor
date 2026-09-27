@@ -310,7 +310,9 @@ Come anticipato, i dati raccolti consentono di analizzare la relazione tra la co
 % Formalizzazione delle ipotesi: \(H_0 : \rho \geq 0\) \(H_1 : \rho < 0\)
 % Livello di significatività: \(\alpha=0.05\)
 
-Per la valutazione dell'ipotesi, l'analisi viene condotta separatamente per ciascun LLM. In primo luogo, viene realizzato un grafico a dispersione, riportato in \Cref{fig:scatter_plot}, al fine di rappresentare graficamente la relazione tra il \emph{Complexity Score} e il \emph{Reversing Score}. Successivamente, per verificare la presenza di una relazione lineare, viene calcolato il coefficiente di correlazione di Pearson, mentre per verificare l'esistenza di una relazione monotona, si utilizza il coefficiente di correlazione di Kendall. Poiché l'ipotesi formulata è direzionale e prevede un'associazione negativa, per entrambi i coefficienti viene testata un'ipotesi alternativa unilaterale, assumendo un livello di significatività pari a $\alpha=0.05$. I valori dei coefficienti e dei relativi \emph{p-value} sono riportati in \Cref{tab:correlation_scores}.
+% Per la valutazione dell’ipotesi, l'analisi viene condotta separatamente per ciascun LLM.
+
+Per la valutazione dell'ipotesi, si procede all'analisi dei dati relativi a ciascun LLM. In primo luogo, viene realizzato un grafico a dispersione, riportato in \Cref{fig:scatter_plot}, al fine di rappresentare graficamente la relazione tra il \emph{Complexity Score} e il \emph{Reversing Score}. Successivamente, per verificare la presenza di una relazione lineare, viene calcolato il coefficiente di correlazione di Pearson, mentre per verificare l'esistenza di una relazione monotona, si utilizza il coefficiente di correlazione di Kendall. Poiché l'ipotesi formulata è direzionale e prevede un'associazione negativa, per entrambi i coefficienti viene testata un'ipotesi alternativa unilaterale, assumendo un livello di significatività pari a $\alpha=0.05$. I valori dei coefficienti e dei relativi \emph{p-value} sono riportati in \Cref{tab:correlation_scores}.
 
 \begin{figure}[t]
     \centering

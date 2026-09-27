@@ -1,4 +1,4 @@
-\chapter{Prima appendice} \label{app:llm}
+\chapter{LLM e inferenza} \label{app:llm}
 
 Come anticipato nel \Cref{chap:valutazione} il LLM in esecuzione su cluster GPU di UNIUD, con a disposizione diverse GPU NVIDIA H100 Tensor Core, basate sull'architettura NVIDIA Hopper e ciascuna con $80 \; GB$ di High Bandwidth Memory 3.
 
@@ -7,9 +7,9 @@ Per qwen check è stato usato checkpoint ufficiale quantizzazione FP8, che sta a
 Per Deepseek LLM ufficiale che ha una rappresentazione mixed precision FP4/FP8, con pesi del LLM insieme a KV cache che occupa 4 GPU, si ha il full 1M context.
 
 \begin{description}
-    \item[Qwen 3.6-27B \cite{alibaba2026qwen3.6-27b}.] Sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con 27 miliardi di parametri. Presenta una finestra di contesto nativa di 262.144 token (256K), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
+    \item[Qwen 3.6-27B \cite{alibaba2026qwen3.6-27b}.] Sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con $27$ miliardi di parametri. Presenta una finestra di contesto nativa di $262.144$ token ($256k$), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
 
-    \item[DeepSeek V4-Flash Preview \cite{deepseekai2026deepseekv4}.] Sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali 13 miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
+    \item[DeepSeek V4-Flash Preview \cite{deepseekai2026deepseekv4}.] Sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali $13$ miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
 \end{description}
 
 La \Cref{fig:vllm_recipes} riporta le configurazioni di vLLM usate per i due LLM. La \Cref{tab:sampling_parameters} riporta i parametri di campionamento scelti. Nota: deepseek, durante il thinking gli ignora, usando $1.00$ per la temperature e $1.00$ per top p. Per il thinking qwen solo attivato. deepseek ha none, low, high e max, usato max
@@ -102,50 +102,37 @@ enable-chunked-prefill: true
     \label{tab:sampling_parameters}
 \end{table}
 
-\chapter{Idea} \label{app:idea}
+\chapter{Risorse, artefatti e risultati} \label{app:risorse}
 
-\begin{minipage}{\textwidth}
-%\singlespacing % Opzionale: per stringere l'interlinea dell'albero se usi interlinea 1.5 nella tesi
-\dirtree{%
-.1 thesis-bachelor/.
-.2 thesis\_paviotti.pdf \dots{} \begin{tiny}PDF tesi\end{tiny}.
-.2 thesis/ \dots{} \begin{tiny}Cartella contenente i file sorgente della tesi in LaTeX\end{tiny}.
-.3 main.tex \dots{} \begin{tiny}File principale di compilazione\end{tiny}.
-.3 chapters/ \dots{} \begin{tiny}Cartella contenente i singoli capitoli (.tex)\end{tiny}.
-.3 bibliography.bib \dots{} \begin{tiny}File delle citazioni e fonti bibliografiche\end{tiny}.
-.2 project/ \dots{} \begin{tiny}Cartella contenente gli artefatti del sistema software\end{tiny}.
-.3 knowledge\_base/ \dots{} \begin{tiny}File documentali di contesto per il modello\end{tiny}.
-.3 prompt/ \dots{} \begin{tiny}Testi dei prompt ingegnerizzati\end{tiny}.
-.3 schema/ \dots{} \begin{tiny}Schema JSON per la validazione strutturale dell'output\end{tiny}.
-.3 templates/ \dots{} \begin{tiny}Modelli di codice e pipeline logica principale\end{tiny}.
-.3 risultati/ \dots{} \begin{tiny}File di log e output delle sessioni di test\end{tiny}.
-}
-\end{minipage}
+\section{Contenuto e struttura del repository}
 
-\iffalse
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    filecolor=black,      
-    urlcolor=blue,
-}
-\fi
+A completamento delle informazioni presentate nella tesi, è stata predisposta una repository \emph{GitHub} che raccoglie una selezione delle risorse utilizzate e prodotte nel corso del lavoro, scelte in quanto significative per documentarne lo sviluppo e i risultati ottenuti. Al suo interno è presente una copia digitale della tesi in formato PDF, corrispondente al documento presentato, oltre a tre cartelle il cui contenuto è descritto di seguito.
 
-\vspace{3cm}
+% L'intenzione era quella di includere i file completi, ma non è stato possibile.
 
-\noindent
-\begin{minipage}{0.7\textwidth}
-    \textbf{Collegamento Web:} \\
-    \url{https://github.com/xomarpvt/thesis-bachelor}
-    
-    \vspace{0.3cm}
-    %\textit{Nota: La repository è strutturata pubblicamente per garantire la trasparenza metodologica degli artefatti e del testo sorgente.}
-\end{minipage}
-\begin{minipage}{0.3\textwidth}
-    \begin{center}
-        % Genera un QR code di 2.5 centimetri di lato
-        \qrcode[height=2.5cm]{https://github.com/xomarpvt/thesis-bachelor} \\
-        \vspace{0.1cm}
-        %\begin{tiny}\textsc{Scansiona per aprire}\end{tiny}
-    \end{center}
-\end{minipage}
+La cartella \texttt{project\_artifacts} mette a disposizione nella loro forma completa i principali artefatti relativi all'implementazione, che nel \Cref{chap:implementazione} sono stati descritti nei passaggi più rilevanti o in sintesi. Tra di essi rientrano la definizione finale della \interface{} e i \templates{} utilizzati dal \codeagent{}. Questi includono le implementazioni di riferimento del modulo \botnet{} e del modulo \parser{}, che al suo interno include anche l'enumerazione \texttt{Message Type}. Viene quindi riportato il JSON Schema completo del \schema{}, accompagnato dal \emph{subschema} \textsc{IP Schema}, utilizzato per rappresentare le informazioni relative agli indirizzi IP dei bersagli degli attacchi. È inoltre presente l'implementazione della classe \texttt{IP Lookup}, utilizzata dai \capture{} per demandare la popolazione dei campi dello \textsc{IP Schema}. Vengono poi inclusi i \prompt{}, organizzati secondo la stessa struttura utilizzata nella trattazione della \Cref{sec:prompt}. Infine, è presente un file che elenca il sottoinsieme dei tool MCP di analisi statica del codice esposti dal \sreframework{} e utilizzati nella presente implementazione, oltre al \emph{Dockerfile} e al codice Python necessario alla creazione del container destinato al \sandbox{}.
+
+% i tool MCP sono a loro volta un sottoinsieme delle funzionalità del \sreframework{}, quelle offerte dal plugin ghidra-mcp.
+
+La seconda cartella, \texttt{experimental\_setup}, raccoglie le risorse che definiscono il contesto e le condizioni adottate nella fase sperimentale. Essa contiene innanzitutto il file \texttt{malware\_samples.md}, che riporta l'elenco dei campioni considerati e le relative informazioni principali. Il contenuto è analogo a quello presentato nella \Cref{tab:malware_samples}, ma include anche i collegamenti URL ai report corrispondenti ai campioni su MalwareBazaar e VirusTotal. Queste piattaforme online forniscono informazioni di \emph{threat intelligence} relative ai campioni e, in particolare, MalwareBazaar consente anche di scaricarli. Nella medesima cartella è presente la \emph{YARA rule} utilizzata dal \classifier{} per il riconoscimento della famiglia Mirai, insieme al file di \kb{} relativo alla stessa famiglia, realizzato dall'esperto di cybersecurity e utilizzato come conoscenza aggiuntiva dal \sreagent{}. Sono state infine incluse anche le configurazioni di vLLM e i sampling parameters usati per i LLM, già indicate nella \Cref{app:llm}.
+
+La cartella \texttt{experimental\_results} raccoglie tutti i risultati delle esecuzioni effettuate nel corso della fase sperimentale e utilizzati per le valutazioni presentate nel \Cref{chap:valutazione}. Per ciascun campione è presente una cartella dedicata, ulteriormente suddivisa in base al LLM impiegato, Q3627 o DS4FP. Per ogni combinazione di campione e LLM sono riportati i \report{}, i \logs{} e il \capture{} prodotto dal sistema. I \report{} comprendono gli output delle attività di \textsc{Transport Analysis} e \textsc{Communication Analysis} della \reversing{}; per i campioni stripped sono inoltre presenti i report sintetici prodotti dai due agentic loop dedicati alla \renaming{}. Sono inoltre raccolti i \logs{} corrispondenti alle attività svolte dal LLM del \sreagent{}, sia sotto forma di conversazioni complete in formato JSON, sia in formato semistrutturato, più facilmente consultabile. Infine, per ciascuna esecuzione è riportato il \capture{} prodotto dal \codeagent{}, con il modulo principale \botnet{} contenuto in un file denominato secondo la convenzione \texttt{sample\_name.py} e il modulo \parser{} nel file \texttt{parser.py}.
+
+% Il \codeagent{} non ha bisogno di \logs{} visto che grazie agli output la verifica è immediata.
+
+\section{Accesso alla repository}
+
+La repository \emph{GitHub} è accessibile al seguente indirizzo:
+
+\begin{center}
+    \url{\repository}
+\end{center}
+
+Per un accesso più immediato, è possibile utilizzare anche il codice QR riportato nella \Cref{fig:qr_repository}.
+
+\begin{figure}[h]
+    \centering
+    \qrcode[height=3.0cm]{\repository}
+    \caption[QR code per l'accesso alla repository]{QR code per l'accesso alla repository \emph{GitHub}.}
+    \label{fig:qr_repository}
+\end{figure}
