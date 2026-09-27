@@ -78,7 +78,7 @@
     \emph{schema\_validation} & $\{0,15\}$ & Verifica che i dati prodotti dal modulo siano conformi al JSON Schema \schema{}, rispettandone la struttura, i campi previsti, i relativi tipi e gli ulteriori vincoli specificati. \\
     % Misura la conformità dei dati prodotti dal modulo, rappresentati come dizionari Python, al JSON Schema \schema{}, verificando il rispetto della struttura prevista, dei campi obbligatori e opzionali, dei relativi tipi e degli ulteriori vincoli specificati. \\
     \hline
-    \emph{protocol\_conformance} & $[0,20]$ & Misura il grado con cui i moduli \botnet{} e \parser{} riproducono correttamente il comportamento del protocollo descritto nei \report{}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
+    \emph{protocol\_conformance} & $[0,20]$ & Misura il grado con cui i moduli \botnet{} e \parser{} riproducono correttamente il comportamento del protocollo di C\&C descritto nei \report{}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
     \hline
     \emph{human\_independence} & $[0,40]$ & Misura la capacità del modulo generato di raggiungere autonomamente il comportamento atteso, senza richiedere modifiche o correzioni manuali da parte dell'umano. \\
     \hline
@@ -228,12 +228,12 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
         & \emph{Ren.}
         & N/A & N/A
         & N/A & N/A
-        & $19:46$ & $09:06$
+        & $18:46$ & $09:06$
         & $14:38$ & $09:30$
         & $19:05$ & $09:53$ \\
         & \emph{Rev.}
         & $13:10$ & $04:55$
-        & $31:23$ & $16:00$
+        & $30:23$ & $16:00$
         & $14:37$ & $11:58$
         & $15:46$ & $14:03$
         & $26:22$ & $14:55$ \\
@@ -246,8 +246,8 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
         \cmidrule(lr){2-2} \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12}
         & \emph{Totale}
         & $14:16$ & $05:46$
-        & $35:50$ & $17:14$
-        & $40:58$ & $22:08$
+        & $34:50$ & $17:14$
+        & $39:58$ & $22:08$
         & $35:29$ & $24:47$
         & $48:46$ & $25:40$ \\
         \bottomrule
@@ -385,7 +385,6 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
 }%
 %</module-scores>
 
-
 %<*correlation-scores>
 \renewcommand{\arraystretch}{1.25}
 \setlength{\tabcolsep}{12pt}
@@ -403,3 +402,39 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
     \bottomrule
 \end{tabular}
 %</correlation-scores>
+
+%<*sampling-parameters>
+\renewcommand{\arraystretch}{1.35}
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+\setlength{\tabcolsep}{7.5pt}
+\begin{tabularx}{\tablewidth}{Xccccccc}
+    \toprule
+    \textbf{Agente} & {\emph{temperature}} & {\emph{top\_p}} & {\emph{top\_k}} & {\emph{min\_p}} & \makecell{{\emph{presence}}\\{\emph{penalty}}} & \makecell{{\emph{frequency}}\\{\emph{penalty}}} & \makecell{{\emph{repetition}}\\{\emph{penalty}}} \\
+    \midrule
+    \sreagent{}  & $0.80$ & $0.95$ & $40$ & $0.00$ & $0.00$ & $0.00$ & $1.00$ \\
+    \codeagent{} & $0.60$ & $0.90$ & $20$ & $0.00$ & $0.00$ & $0.00$ & $1.00$ \\
+    \bottomrule
+\end{tabularx}
+%</sampling-parameters>
+
+\iffalse
+
+sampling-parameters-vertical
+
+\renewcommand{\arraystretch}{1.25}
+% \setlength{\tabcolsep}{18pt}
+\begin{tabularx}{\tablewidth}{l>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+    \toprule
+    \textbf{Parametro di campionamento} & \sreagent{} & \codeagent{} \\
+    \midrule
+    \emph{temperature}          & $0.80$ & $0.60$ \\
+    \emph{top\_p}               & $0.95$ & $0.90$ \\
+    \emph{top\_k}               & $40$   & $20$   \\
+    \emph{min\_p}               & $0.00$ & $0.00$ \\
+    \emph{presence\_penalty}    & $0.00$ & $0.00$ \\
+    \emph{frequency\_penalty}   & $0.00$ & $0.00$ \\
+    \emph{repetition\_penalty}  & $1.00$ & $1.00$ \\
+    \bottomrule
+\end{tabularx}
+
+\fi

@@ -1,23 +1,24 @@
 \chapter{LLM e inferenza} \label{app:llm}
 
-Come anticipato nel \Cref{chap:valutazione} il LLM in esecuzione su cluster GPU di UNIUD, con a disposizione diverse GPU NVIDIA H100 Tensor Core, basate sull'architettura NVIDIA Hopper e ciascuna con $80 \; GB$ di High Bandwidth Memory 3.
+Come anticipato nel \Cref{chap:valutazione}, i LLM utilizzati per le valutazioni sperimentali del sistema sono stati eseguiti sul GPU
+cluster dell'Università degli Studi di Udine, dotato di diverse GPU NVIDIA H100 Tensor Core basate sull'architettura NVIDIA Hopper, ciascuna con $80\; GB$ di memoria HBM3 e una larghezza di banda superiore a $3\; TB/s$ \cite{nvidia2024datasheet}.
 
-Per qwen check è stato usato checkpoint ufficiale quantizzazione FP8, che sta ampiamente in una GPU h100
+\section{LLM e configurazione dell'inferenza}
 
-Per Deepseek LLM ufficiale che ha una rappresentazione mixed precision FP4/FP8, con pesi del LLM insieme a KV cache che occupa 4 GPU, si ha il full 1M context.
+Le principali caratteristiche dei due LLM utilizzati, Q3627 e DS4FP, vengono descritte di seguito.
 
 \begin{description}
-    \item[Qwen 3.6-27B \cite{alibaba2026qwen3.6-27b}.] Sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con $27$ miliardi di parametri. Presenta una finestra di contesto nativa di $262.144$ token ($256k$), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
+    \item[Qwen 3.6-27B \normalfont(Q3627, \cite{alibaba2026qwen3.6-27b}):] sviluppato dal Qwen Team di Alibaba e appartenente alla famiglia Qwen 3.6, è stato rilasciato il 22 aprile 2026 con pesi aperti e licenza Apache 2.0. Il modello integra nativamente funzionalità multimodali, supportando in input anche immagini e video, ed è caratterizzato da un'architettura densa con $27$ miliardi di parametri. Presenta una finestra di contesto nativa di $262.144$ token ($256k$), estendibile fino a circa un milione di token. Rispetto alle generazioni precedenti, introduce significativi miglioramenti nelle attività agentiche, con particolare riferimento allo sviluppo software, e nelle capacità di ragionamento.
 
-    \item[DeepSeek V4-Flash Preview \cite{deepseekai2026deepseekv4}.] Sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali $13$ miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
+    \item[DeepSeek-V4-Flash Preview \normalfont(DS4FP, \cite{deepseekai2026deepseekv4}):] sviluppato da DeepSeek e appartenente alla famiglia DeepSeek-V4, è stato rilasciato il 24 aprile 2026 in versione preview come modello con pesi aperti e licenza MIT. Adotta un'architettura di tipo \emph{Mixture-of-Experts} (MoE), con circa 284 miliardi di parametri complessivi, dei quali $13$ miliardi vengono attivati per ciascun token. Il modello supporta una finestra di contesto fino a un milione di token ed è progettato per offrire elevate capacità di ragionamento e un efficace utilizzo in scenari agentici, con prestazioni simili alla variante V4-Pro nei compiti meno complessi.
 \end{description}
 
-La \Cref{fig:vllm_recipes} riporta le configurazioni di vLLM usate per i due LLM. La \Cref{tab:sampling_parameters} riporta i parametri di campionamento scelti. Nota: deepseek, durante il thinking gli ignora, usando $1.00$ per la temperature e $1.00$ per top p. Per il thinking qwen solo attivato. deepseek ha none, low, high e max, usato max
+Per Q3627 è stata utilizzata la versione ufficiale quantizzata in FP8, sufficientemente compatta da consentirne l'esecuzione su una singola GPU NVIDIA H100. Per DS4FP è stato invece impiegato il modello ufficiale in \emph{mixed precision} FP4/FP8. In quest'ultimo caso, considerando congiuntamente l'occupazione dei pesi del LLM e della KV cache, l'esecuzione richiede quattro GPU, permettendo al contempo di sfruttare l'intera finestra di contesto, pari a $1$ milione di token. La \Cref{fig:vllm_recipes} riporta le configurazioni di vLLM \cite{vllm2026vllm}, denominate \emph{vLLM recipe}, adottate per il deployment dei due LLM.
 
 \renewcommand{\topfraction}{0.80}  % Alloca al massimo l'80/100 della pagina per i float.
 \renewcommand{\textfraction}{0.20} % Alloca almeno il 20/100 della pagina per il testo.
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.45\textwidth}
         \centering
@@ -81,48 +82,44 @@ enable-chunked-prefill: true
     \label{fig:vllm_recipes}
 \end{figure}
 
+\section{Parametri di campionamento}
+
+In funzione delle caratteristiche delle attività svolte dal \sreagent{} e dal \codeagent{}, sono state definite a priori due configurazioni dei parametri di campionamento, riportate nella \Cref{tab:sampling_parameters}. Per il primo agente è stata proposta una configurazione contraddistinta da maggiore variabilità, coerente con la natura delle attività di analisi e SRE, mentre per il secondo sono stati utilizzati valori più conservativi, considerata la specificità della generazione del codice. Queste scelte non costituiscono una valutazione sperimentale dei parametri, dal momento che non è stato condotta uno studio comparativo volto alla loro ottimizzazione. Inoltre, i valori impostati non corrispondono necessariamente a quelli effettivamente utilizzati durante l'inferenza, in quanto la loro gestione varia a seconda del LLM considerato.
+
+Per Q3627, i cui parametri raccomandati sono simili a quelli proposti, sono stati mantenuti i valori della \Cref{tab:sampling_parameters}, con la \emph{Thinking Mode} attivata, senza poter specificare un livello di \emph{reasoning effort}, in quanto non previsto per questo modello. Per DS4FP è stato impostato il livello più alto di \emph{reasoning effort} disponibile, pari a \emph{max}, e, in \emph{Thinking Mode}, i parametri \emph{temperature}, \emph{presence\_penalty} e \emph{frequency\_penalty} non hanno effetto, mentre \emph{top\_p} è vincolato all'intervallo $[0.95,1.00]$. Non sono state quindi introdotte configurazioni specifiche per il modello, mantenendo i valori riportati nella \Cref{tab:sampling_parameters}.
+
 \begin{table}[t]
     \centering
-    \renewcommand{\arraystretch}{1.25}
-    % \setlength{\tabcolsep}{18pt}
-    \begin{tabularx}{\tablewidth}{l>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
-        \toprule
-        \textbf{Parametro di campionamento} & \sreagent{} & \codeagent{} \\
-        \midrule
-        \emph{temperature}          & $0.80$ & $0.60$ \\
-        \emph{top\_p}               & $0.95$ & $0.90$ \\
-        \emph{top\_k}               & $40$   & $20$   \\
-        \emph{min\_p}               & $0.00$ & $0.00$ \\
-        \emph{presence\_penalty}    & $0.00$ & $0.00$ \\
-        \emph{frequency\_penalty}   & $0.00$ & $0.00$ \\
-        \emph{repetition\_penalty}  & $1.00$ & $1.00$ \\
-        \bottomrule
-    \end{tabularx}
-    \caption[Parametri di campionamento dei \llm{}]{Parametri di campionamento utilizzati dai \llm{} nel \sreagent{} e nel \codeagent{}.}
+    \ExecuteMetaData[chapters/TAB.tex]{sampling-parameters}
+    \caption[Parametri di campionamento definiti]{Parametri di campionamento definiti per il \sreagent{} e il \codeagent{}.}
     \label{tab:sampling_parameters}
 \end{table}
 
 \chapter{Risorse, artefatti e risultati} \label{app:risorse}
 
+A completamento delle informazioni presentate nella tesi, è stato predisposto un \emph{repository GitHub} che raccoglie le principali risorse utilizzate e prodotte nel corso del lavoro, scelte in quanto significative per documentarne lo sviluppo e i risultati ottenuti.
+
+% (una selezione delle risorse)
+
 \section{Contenuto e struttura del repository}
 
-A completamento delle informazioni presentate nella tesi, è stata predisposta una repository \emph{GitHub} che raccoglie una selezione delle risorse utilizzate e prodotte nel corso del lavoro, scelte in quanto significative per documentarne lo sviluppo e i risultati ottenuti. Al suo interno è presente una copia digitale della tesi in formato PDF, corrispondente al documento presentato, oltre a tre cartelle il cui contenuto è descritto di seguito.
+All'interno del repository è presente una copia digitale della tesi in formato PDF, corrispondente al documento presentato, oltre a tre cartelle il cui contenuto è descritto di seguito.
 
 % L'intenzione era quella di includere i file completi, ma non è stato possibile.
 
-La cartella \texttt{project\_artifacts} mette a disposizione nella loro forma completa i principali artefatti relativi all'implementazione, che nel \Cref{chap:implementazione} sono stati descritti nei passaggi più rilevanti o in sintesi. Tra di essi rientrano la definizione finale della \interface{} e i \templates{} utilizzati dal \codeagent{}. Questi includono le implementazioni di riferimento del modulo \botnet{} e del modulo \parser{}, che al suo interno include anche l'enumerazione \texttt{Message Type}. Viene quindi riportato il JSON Schema completo del \schema{}, accompagnato dal \emph{subschema} \textsc{IP Schema}, utilizzato per rappresentare le informazioni relative agli indirizzi IP dei bersagli degli attacchi. È inoltre presente l'implementazione della classe \texttt{IP Lookup}, utilizzata dai \capture{} per demandare la popolazione dei campi dello \textsc{IP Schema}. Vengono poi inclusi i \prompt{}, organizzati secondo la stessa struttura utilizzata nella trattazione della \Cref{sec:prompt}. Infine, è presente un file che elenca il sottoinsieme dei tool MCP di analisi statica del codice esposti dal \sreframework{} e utilizzati nella presente implementazione, oltre al \emph{Dockerfile} e al codice Python necessario alla creazione del container destinato al \sandbox{}.
+La cartella \texttt{project\_artifacts} mette a disposizione, nella loro forma completa, gli artefatti prodotti nell'ambito dell'implementazione, che nel \Cref{chap:implementazione} sono stati descritti nei passaggi più importanti o solamente in sintesi. Tra di essi rientrano la definizione finale della \interface{} e i \templates{} utilizzati dal \codeagent{}. Questi includono le implementazioni di riferimento del modulo \botnet{} e del modulo \parser{}, che comprende anche l'enumerazione \texttt{Message Type}. Viene quindi riportato il JSON Schema completo che definisce il \schema{}, accompagnato dal \emph{subschema} \textsc{IP Schema}, utilizzato per rappresentare le informazioni relative agli indirizzi IP dei bersagli degli attacchi. È inoltre presente l'implementazione della classe \texttt{IP Lookup}, attraverso la quale i \capture{} possono effettuare la popolazione dei campi dell'\textsc{IP Schema}. Viene poi presentato il \prompt{}, al cui interno sono riuniti tutti i system prompt e gli user prompt utilizzati, organizzati secondo la stessa struttura seguita nella trattazione della \Cref{sec:prompt}. Infine, è presente un file che elenca il sottoinsieme dei tool MCP di analisi statica del codice esposti dal \sreframework{} e utilizzati nella presente implementazione, oltre al \emph{Dockerfile} e al codice Python necessario alla creazione del container destinato al \sandbox{}.
 
 % i tool MCP sono a loro volta un sottoinsieme delle funzionalità del \sreframework{}, quelle offerte dal plugin ghidra-mcp.
 
-La seconda cartella, \texttt{experimental\_setup}, raccoglie le risorse che definiscono il contesto e le condizioni adottate nella fase sperimentale. Essa contiene innanzitutto il file \texttt{malware\_samples.md}, che riporta l'elenco dei campioni considerati e le relative informazioni principali. Il contenuto è analogo a quello presentato nella \Cref{tab:malware_samples}, ma include anche i collegamenti URL ai report corrispondenti ai campioni su MalwareBazaar e VirusTotal. Queste piattaforme online forniscono informazioni di \emph{threat intelligence} relative ai campioni e, in particolare, MalwareBazaar consente anche di scaricarli. Nella medesima cartella è presente la \emph{YARA rule} utilizzata dal \classifier{} per il riconoscimento della famiglia Mirai, insieme al file di \kb{} relativo alla stessa famiglia, realizzato dall'esperto di cybersecurity e utilizzato come conoscenza aggiuntiva dal \sreagent{}. Sono state infine incluse anche le configurazioni di vLLM e i sampling parameters usati per i LLM, già indicate nella \Cref{app:llm}.
+La cartella \texttt{experimental\_setup} raccoglie le risorse utilizzate come riferimento per la preparazione e l'impostazione della fase sperimentale descritta nel \Cref{chap:valutazione}. Essa contiene innanzitutto il file \texttt{malware\_samples.md}, che riporta l'elenco dei campioni considerati e le relative informazioni principali. Il contenuto riprende quello presentato nella \Cref{tab:malware_samples}, integrandolo con i collegamenti URL ai report dei campioni disponibili su MalwareBazaar \cite{malwarebazaar2026browse} e VirusTotal \cite{virustotal2026vt}. Le due piattaforme forniscono ulteriori informazioni di \emph{threat intelligence} relative ai campioni; MalwareBazaar offre inoltre la possibilità di scaricarli. Nella medesima cartella è presente la \emph{YARA rule} utilizzata dal \classifier{} per il riconoscimento della famiglia Mirai, insieme al file della \kb{} relativo alla stessa famiglia, realizzato dall'esperto di cybersecurity e utilizzato come conoscenza aggiuntiva dal \sreagent{}. Sono infine incluse le configurazioni di vLLM e i sampling parameters utilizzati per i LLM, già documentati nell'\Cref{app:llm}.
 
-La cartella \texttt{experimental\_results} raccoglie tutti i risultati delle esecuzioni effettuate nel corso della fase sperimentale e utilizzati per le valutazioni presentate nel \Cref{chap:valutazione}. Per ciascun campione è presente una cartella dedicata, ulteriormente suddivisa in base al LLM impiegato, Q3627 o DS4FP. Per ogni combinazione di campione e LLM sono riportati i \report{}, i \logs{} e il \capture{} prodotto dal sistema. I \report{} comprendono gli output delle attività di \textsc{Transport Analysis} e \textsc{Communication Analysis} della \reversing{}; per i campioni stripped sono inoltre presenti i report sintetici prodotti dai due agentic loop dedicati alla \renaming{}. Sono inoltre raccolti i \logs{} corrispondenti alle attività svolte dal LLM del \sreagent{}, sia sotto forma di conversazioni complete in formato JSON, sia in formato semistrutturato, più facilmente consultabile. Infine, per ciascuna esecuzione è riportato il \capture{} prodotto dal \codeagent{}, con il modulo principale \botnet{} contenuto in un file denominato secondo la convenzione \texttt{sample\_name.py} e il modulo \parser{} nel file \texttt{parser.py}.
+La cartella \texttt{experimental\_results} raccoglie tutti i risultati delle esecuzioni effettuate nel corso della fase sperimentale e utilizzati per le valutazioni presentate nel \Cref{chap:valutazione}. Per ciascun campione è presente una cartella dedicata, al cui interno i risultati sono organizzati in base al LLM impiegato, Q3627 o DS4FP. Per ogni combinazione di campione e LLM sono riportati i \report{}, i \logs{} e il \capture{} prodotto dal sistema. I \report{} comprendono gli output delle attività di \textsc{Transport Analysis} e \textsc{Communication Analysis} della \reversing{}; per i campioni stripped sono inoltre presenti i report sintetici prodotti dai due agentic loop dedicati alla \renaming{}. A questi si aggiungono i \logs{} corrispondenti alle attività svolte dal LLM nel \sreagent{}, sia sotto forma di conversazioni complete in formato JSON, sia in un formato semistrutturato, più facilmente consultabile. Infine, per ciascuna esecuzione è riportato il \capture{} prodotto dal \codeagent{}, con il modulo principale \botnet{} contenuto in un file denominato secondo la convenzione \texttt{sample\_name.py} e con il modulo \parser{} nel file \texttt{parser.py}.
 
 % Il \codeagent{} non ha bisogno di \logs{} visto che grazie agli output la verifica è immediata.
 
-\section{Accesso alla repository}
+\section{Accesso al repository}
 
-La repository \emph{GitHub} è accessibile al seguente indirizzo:
+Il repository \emph{GitHub} è accessibile al seguente URL:
 
 \begin{center}
     \url{\repository}
@@ -130,9 +127,11 @@ La repository \emph{GitHub} è accessibile al seguente indirizzo:
 
 Per un accesso più immediato, è possibile utilizzare anche il codice QR riportato nella \Cref{fig:qr_repository}.
 
+\vspace{18pt}
+
 \begin{figure}[h]
     \centering
     \qrcode[height=3.0cm]{\repository}
-    \caption[QR code per l'accesso alla repository]{QR code per l'accesso alla repository \emph{GitHub}.}
+    \caption[QR code per l'accesso al repository]{QR code per l'accesso al repository \emph{GitHub}.}
     \label{fig:qr_repository}
 \end{figure}
