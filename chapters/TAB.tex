@@ -404,12 +404,12 @@ Metriche di qualità del codice e stilistiche non considerate singolarmente:
 %</correlation-scores>
 
 %<*sampling-parameters>
-\renewcommand{\arraystretch}{1.35}
+\renewcommand{\arraystretch}{1.25}
 \renewcommand{\tabularxcolumn}[1]{m{#1}}
-\setlength{\tabcolsep}{7.5pt}
+\setlength{\tabcolsep}{6pt}
 \begin{tabularx}{\tablewidth}{Xccccccc}
     \toprule
-    \textbf{Agente} & {\emph{temperature}} & {\emph{top\_p}} & {\emph{top\_k}} & {\emph{min\_p}} & \makecell{{\emph{presence}}\\{\emph{penalty}}} & \makecell{{\emph{frequency}}\\{\emph{penalty}}} & \makecell{{\emph{repetition}}\\{\emph{penalty}}} \\
+    \textbf{Agente} & {\texttt{temperature}} & {\texttt{top\_p}} & {\texttt{top\_k}} & {\texttt{min\_p}} & \makecell{{\texttt{presence}}\\{\texttt{penalty}}} & \makecell{{\texttt{frequency}}\\{\texttt{penalty}}} & \makecell{{\texttt{repetition}}\\{\texttt{penalty}}} \\
     \midrule
     \sreagent{}  & $0.80$ & $0.95$ & $40$ & $0.00$ & $0.00$ & $0.00$ & $1.00$ \\
     \codeagent{} & $0.60$ & $0.90$ & $20$ & $0.00$ & $0.00$ & $0.00$ & $1.00$ \\
