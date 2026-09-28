@@ -123,7 +123,7 @@ La fase centrale è dunque costituita dalle attività di SRE svolte dal \sreagen
 
 Infine, i \report{} vengono passati al \codeagent{}, che carica i \templates{}, lo schema dei messaggi e le istruzioni operative dal \prompt{}. Il \llm{} dell'agente utilizza questa serie di informazioni per generare gli elementi necessari a costruire il \capture{} di cattura delle comunicazioni, che corrisponde all'output finale del sistema.
 
-\section{Interazioni di \emph{tool calling}} % 4.4
+\section{Interazioni di tool calling} % 4.4
 
 Considerata la rilevanza del meccanismo di \emph{tool calling} nell'architettura proposta e il suo frequente impiego durante l'attività di SRE, risulta utile fornire una rappresentazione più dettagliata delle interazioni che avvengono tra il \sreagent{} e gli ambienti di analisi mediante il protocollo MCP. I diagrammi dei componenti e delle attività precedenti non consentono di cogliere pienamente la natura di tali interazioni, per cui si ricorre a un diagramma di sequenza, ispirato alla corrispondente notazione UML \cite{omg2017uml}, che permette di descrivere come diversi componenti interagiscono tra loro nel corso del tempo, rappresentando lo scambio di messaggi e l'ordine temporale degli eventi. % Capitolo 17, 17.8 (relativo a una determinata interazione)
 

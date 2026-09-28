@@ -16,7 +16,7 @@ Una \emph{botnet} \cite{silva2013botnets} è una rete di host compromessi, detti
 
 Dal punto di vista degli attaccanti, le botnet rappresentano uno strumento estremamente redditizio, poiché consentono di ottenere un ritorno economico attraverso lo sfruttamento dei dispositivi compromessi. Una volta infettati, tali dispositivi possono essere impiegati simultaneamente per eseguire attività malevole su larga scala, generando danni economici per utenti, aziende e Internet Service Provider (ISP). Le botnet possono fungere da infrastruttura per numerose attività criminali online, tra cui invio di spam, distribuzione di malware, furto di informazioni e attacchi \emph{Distributed Denial of Service} (DDoS). Tra queste, gli attacchi DDoS rappresentano uno degli utilizzi più diffusi, poiché consentono di sfruttare la capacità trasmissiva complessiva dei dispositivi compromessi per sovraccaricare il bersaglio e rendere i suoi servizi indisponibili. % frodi informatiche,
 
-\subsection{Architettura} % 2.1.1
+\subsection{Architettura delle botnet} % 2.1.1
 
 Il componente fondamentale di una botnet è l'infrastruttura \emph{Command-and-Control} (C\&C) \cite{silva2013botnets}, che permette la comunicazione tra il botmaster e i bot compromessi, coordinandone le attività. Attraverso il canale C\&C vengono trasmessi i comandi che i bot interpretano ed eseguono sul dispositivo infetto. % Capitolo 2.3
 
@@ -73,7 +73,7 @@ Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, 
     \label{fig:botnet_topologies}
 \end{figure}
 
-\subsection{Ciclo di vita} % 2.1.2
+\subsection{Ciclo di vita delle botnet} % 2.1.2
 
 Secondo il modello proposto in \cite{silva2013botnets} e rappresentato in \Cref{fig:botnet_lifecycle}, il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi, realizzate secondo modalità differenti in funzione dell'architettura C\&C adottata:
 
@@ -222,7 +222,7 @@ L'architettura alla base dei moderni LLM è il \emph{Transformer}, introdotto da
 
 % A ciascun token viene associata una rappresentazione numerica, detta \emph{embedding}, che ne cattura le caratteristiche semantiche e linguistiche.
 
-Questa architettura, combinata con la natura \emph{general-purpose} dei LLM, li rende utilizzabili per un ampio insieme di compiti \cite{dhamani2026genai}. Tra le attività più comuni rientrano la conversazione in linguaggio naturale, la risposta a domande, la classificazione del testo, la traduzione automatica e il riassunto. I LLM vengono inoltre impiegati per attività più complesse, come la generazione di codice, la produzione di contenuti testuali e l'esecuzione di compiti di ragionamento basati sulle informazioni fornite. 
+Questa architettura, combinata con la natura \emph{general-purpose} dei LLM, li rende utilizzabili per un ampio insieme di compiti \cite{li2024fundamental, dhamani2026genai}. Tra le attività più comuni rientrano la conversazione in linguaggio naturale, la risposta a domande, la classificazione del testo, la traduzione automatica e il riassunto. I LLM vengono inoltre impiegati per attività più complesse, come la generazione di codice, la produzione di contenuti testuali e l'esecuzione di compiti di ragionamento basati sulle informazioni fornite.
 
 % Large Language Models (LLMs) are transformer-based neural networks trained on vast text corpora using self- and semi-supervised methods [20], [21]. Modern LLMs, typically using decoder-only architectures [22], excel at general-purpose language generation. Initially, task adaptation required finetuning. Today, prompt engineering guides model behavior through carefully designed input prompts, leveraging pretrained knowledge without retraining [23]. This has proven efficient and often comparable to fine-tuning for large models. \cite{basque2026decompiling}
 % \cite{dhamani2026genai} Capitolo 1.4
