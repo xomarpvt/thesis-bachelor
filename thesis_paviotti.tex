@@ -76,7 +76,102 @@
 \usepackage{subcaption}
 %% qrcode: permette di generare codici QR direttamente all'interno del documento.
 \usepackage{qrcode}
+%% biblatex: gestisce la bibliografia e le citazioni bibliografiche tramite Biber.
+\usepackage[
+    backend=biber,
+    style=numeric,
+    language=italian,
+    sorting=none,
+    maxcitenames=1,
+    minbibnames=5,
+    maxbibnames=10
+]{biblatex}
+%% xurl: permette di andare a capo automaticamente all'interno degli URL.
+\usepackage{xurl}
 
+\addbibresource{thud.bib}
+
+\defbibheading{bibliography}[\bibname]{%
+    \chapter*{#1}%
+    \markboth{Bibliografia}{Bibliografia}%
+}
+
+\AtEveryBibitem{%
+    \ifentrytype{article}{%
+        \clearfield{issn}%
+        \clearfield{note}%
+        \clearlist{language}%
+        \iffieldundef{doi}{}{%
+            \clearfield{url}%
+            \clearfield{urlyear}%
+            \clearfield{urlmonth}%
+            \clearfield{urlday}%
+        }%
+    }{}%
+    \ifentrytype{book}{%
+        \clearlist{location}%
+        \clearfield{series}%
+        \clearfield{number}%
+        \clearfield{origdate}%
+        \clearfield{doi}%
+        \clearfield{urldate}%
+        \clearfield{note}%
+        \clearfield{pagetotal}%
+    }{}%
+    \ifentrytype{report}{%
+        \clearlist{location}%
+        \clearfield{isbn}%
+        \clearfield{pagetotal}%
+        \clearfield{note}%
+        \clearfield{urldate}%
+        \iffieldundef{doi}{}{%
+            \clearfield{url}%
+            \clearfield{urlyear}%
+            \clearfield{urlmonth}%
+            \clearfield{urlday}%
+        }%
+    }{}%
+    \ifentrytype{online}{%
+        \clearfield{doi}%
+        \clearlist{language}%
+        \clearfield{isbn}%
+        \clearfield{issn}%
+        \clearfield{note}%
+    }{}%
+    \ifentrytype{misc}{%
+        \clearlist{location}%
+        \clearfield{isbn}%
+        \iffieldundef{doi}{}{%
+            \clearfield{url}%
+            \clearfield{urlyear}%
+            \clearfield{urlmonth}%
+            \clearfield{urlday}%
+        }%
+        \clearfield{note}%
+    }{}%
+    \ifentrytype{inproceedings}{%
+        \clearlist{location}%
+        \clearlist{organization}%
+        \clearfield{venue}%
+        \clearfield{eventdate}%
+        \clearname{editor}%
+        \clearfield{series}%
+        \clearfield{number}%
+        \clearfield{isbn}%
+        \clearfield{issn}%
+        \iffieldundef{doi}{}{%
+            \clearfield{url}%
+            \clearfield{urlyear}%
+            \clearfield{urlmonth}%
+            \clearfield{urlday}%
+        }%
+        \clearfield{note}%
+        \clearfield{eprint}%
+    }{}%
+    \iffieldequalstr{entrykey}{silva2013botnets}
+        {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus 2\fontdimen4\font\relax}
+    {}%
+}
 
 \newcommand{\system}{\textsc{BotScope}}
 \newcommand{\capture}{\textsc{Capture Module}}
@@ -182,24 +277,13 @@
 %\lipsum[1]
 
 %% Bibliografia (praticamente obbligatoria)
-\bibliographystyle{plain_\languagename}%% Carica l'omonimo file .bst, dove \languagename è la lingua attiva.
+%% \bibliographystyle{plain_\languagename}%% Carica l'omonimo file .bst, dove \languagename è la lingua attiva.
 %% Nel caso in cui si usi un file .bib (consigliato)
-\bibliography{thud}
+%% \bibliography{thud}
 %% Nel caso di bibliografia manuale, usare l'environment thebibliography.
 
 %% Bibliografia BibLatex
-% \usepackage[
-%     backend=biber,
-%     style=numeric,
-%     sorting=none
-% ]{biblatex}
-% \addbibresource{thud.bib}
-% \defbibheading{bibliography}[\bibname]{%
-%     \chapter*{#1}%
-%     \markboth{Bibliografia}{Bibliografia}%
-% }
-% \usepackage{xurl}
-% \printbibliography
+\printbibliography
 
 %% Per l'indice analitico, usare il pacchetto makeidx (o analogo).
 

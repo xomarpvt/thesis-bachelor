@@ -26,11 +26,13 @@ Per realizzare tale comunicazione possono essere impiegati diversi protocolli di
 
 L'architettura dell'infrastruttura C\&C influenza direttamente la robustezza e la capacità di sopravvivenza della botnet. Le architetture possono essere ricondotte principalmente a tre modelli \cite{silva2013botnets, hachem2011topology}: centralizzato, distribuito e ibrido. % Capitolo 2.6, Pagina 3
 
-Nel \emph{centralized C\&C model}, il botmaster individua uno o più host che fungono da server C\&C e costituiscono il punto di contatto per i bot compromessi, secondo tre principali configurazioni topologiche. La topologia a \emph{stella singola} prevede un unico server C\&C al quale si collegano tutti i bot, secondo un'organizzazione analoga al modello \emph{client-server} (\Cref{fig:botnet_topologies_a}).La topologia a \emph{stella multi-server} utilizza invece più server C\&C interconnessi, tra i quali vengono distribuiti i bot, favorendo una maggiore ridondanza e scalabilità dell'infrastruttura (\Cref{fig:botnet_topologies_b}). Infine, la topologia \emph{gerarchica} prevede che alcuni bot assumano la funzione di \emph{proxy server}, fungendo da intermediari tra gli altri bot e i server C\&C, riducendo il numero di bot che conoscono direttamente l'indirizzo del server C\&C (\Cref{fig:botnet_topologies_c}).
+Nel \emph{centralized C\&C model}, il botmaster individua uno o più host che fungono da server C\&C e costituiscono il punto di contatto per i bot compromessi, secondo tre principali configurazioni topologiche. La topologia a \emph{stella singola} prevede un unico server C\&C al quale si collegano tutti i bot, secondo un'organizzazione analoga al modello \emph{client-server} (\Cref{fig:botnet_topologies_a}). La topologia a \emph{stella multi-server} utilizza invece più server C\&C interconnessi, tra i quali vengono distribuiti i bot, favorendo una maggiore ridondanza e scalabilità dell'infrastruttura (\Cref{fig:botnet_topologies_b}). Infine, la topologia \emph{gerarchica} prevede che alcuni bot assumano la funzione di \emph{proxy server}, fungendo da intermediari tra gli altri bot e i server C\&C, riducendo il numero di bot che conoscono direttamente l'indirizzo del server C\&C (\Cref{fig:botnet_topologies_c}).
 
 % Il C\&C server può essere una macchina compromessa o un provider legittimo. Ovviamente i protocolli sui canali di comunicazioni sono protetti per evitare l'eavesdropping. Il modello centralizzato è quello più utilizzato grazie alla sua semplicità di implementazione e ridotta latenza, con gli svantaggi di facilità di detection e compromissione.
 
-Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, tipicamente basata su reti \emph{peer-to-peer} (P2P), dove non esiste un server C\&C centrale, i bot comunicano tra loro e il botmaster impartisce i comandi collegandosi a un nodo qualsiasi della rete (\Cref{fig:botnet_topologies_d}). Sebbene questo modello sia generalmente più complesso da realizzare, l'infrastruttura è più resistente alle attività di rilevamento e smantellamento. Infine, l'\emph{hybrid C\&C model} combina, secondo diversi approcci, elementi dei modelli centralizzato e distribuito, spesso assegnando ruoli differenti ai nodi. % l'assenza di un punto centrale di controllo elimina un singolo punto di fallimento. 
+Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, tipicamente basata su reti \emph{peer-to-peer} (P2P), dove non esiste un server C\&C centrale, i bot comunicano tra loro e il botmaster impartisce i comandi collegandosi a un nodo qualsiasi della rete (\Cref{fig:botnet_topologies_d}). Sebbene questo modello sia generalmente più complesso da realizzare, l'infrastruttura è più resistente alle attività di rilevamento e smantellamento.
+
+Infine, l'\emph{hybrid C\&C model} combina, secondo diversi approcci, elementi dei modelli centralizzato e distribuito, spesso assegnando ruoli differenti ai nodi. % l'assenza di un punto centrale di controllo elimina un singolo punto di fallimento. 
 
 % Le principali topologie associate ai modelli centralizzato e distribuito sono illustrate nella \Cref{fig:botnet_topology}.
 
@@ -75,7 +77,7 @@ Il \emph{distributed C\&C model} adotta invece un'architettura decentralizzata, 
 
 \subsection{Ciclo di vita delle botnet} % 2.1.2
 
-Secondo il modello proposto in \cite{silva2013botnets} e rappresentato in \Cref{fig:botnet_lifecycle}, il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi, realizzate secondo modalità differenti in funzione dell'architettura C\&C adottata:
+Secondo il modello proposto da \textcite{silva2013botnets} e rappresentato in \Cref{fig:botnet_lifecycle}, il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi, realizzate secondo modalità differenti in funzione dell'architettura C\&C adottata:
 
 % Il ciclo di vita di una botnet può essere generalmente suddiviso in cinque fasi, la cui implementazione può variare in funzione dell'architettura C\&C adottata, secondo il modello proposto in \cite{silva2013botnets}: % Capitolo 2.4
 
@@ -130,8 +132,8 @@ Una volta completato con successo il login, Mirai invia al report server l'indir
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.65\textwidth]{img/mirai_operation.pdf}
-    \caption[Schema di funzionamento della botnet Mirai]{
-        Schema di funzionamento della botnet Mirai. Adattata da \cite{antonakakis2017mirai}.
+    \caption[Schema di funzionamento della botnet \emph{Mirai}]{
+        Schema di funzionamento della botnet \emph{Mirai}. Adattata da \cite{antonakakis2017mirai}.
     }
     \label{fig:mirai_operation}
 \end{figure}
@@ -142,9 +144,9 @@ Sebbene Mirai continui a essere impiegata, oggi il principale rischio, come già
 
 \begin{description}
     \item[\textbf{Hajime} \normalfont(2016):] utilizza una blacklist per escludere determinati indirizzi IP dagli attacchi, supporta l'aggiornamento di funzionalità e adotta una comunicazione peer-to-peer, basata su BitTorrent.
-    \item[\textbf{Satori} \normalfont(2017):] per la sua diffusione sfrutta vulnerabilità del protocollo \emph{Universal Plug and Play} (UPnP) presenti in router Huawei e dispositivi basati sul Realtek SDK, senza ricorrere allo scanning. Da Satori è derivata a sua volta \emph{Coin Robber}, che sfrutta vulnerabilità di Claymore Miner per il furto di criptovalute.
+    \item[\textbf{Satori} \normalfont(2017):] per la sua diffusione sfrutta vulnerabilità del protocollo Universal Plug and Play (UPnP) presenti in router Huawei e dispositivi basati sul Realtek SDK, senza ricorrere allo scanning. Da Satori è derivata a sua volta \emph{Coin Robber}, che sfrutta vulnerabilità di Claymore Miner per il furto di criptovalute.
     \item[\textbf{IoT Reaper} \normalfont(2018):] sfrutta vulnerabilità note nei servizi HTTP dei dispositivi IoT e, a differenza della connessione C\&C persistente di Mirai, effettua periodicamente richieste HTTP non cifrate. % utilizza il linguaggio Lua
-    \item[\textbf{Mozi} \normalfont(2019):] combina caratteristiche di Gafgyt, Mirai e IoT Reaper, adottando un'architettura peer-to-peer, gestita con un protocollo basato su Distributed Hash Table (DHT), che viene utilizzato per la comunicazione tra i nodi e per veicolare payload malevoli, rendendo più difficile il loro rilevamento.
+    \item[\textbf{Mozi} \normalfont(2019):] combina caratteristiche di Gafgyt, Mirai e IoT Reaper, adottando un'architettura peer-to-peer, gestita con un protocollo basato su Distributed Hash Table (DHT). Questo viene utilizzato per la comunicazione tra i nodi e per veicolare payload malevoli, rendendo più difficile il loro rilevamento.
     % \item Pink (2021): è stata riconosciuta come la prima botnet IoT che presenta una topologia ibrida, combinando un server C\&C centralizzato con un'architettura di rete decentralizzata. I principali bersagli sono i router con fibra ottica e oltre che per gli attacchi DDoS è stata protagonista di attacchi di inserimento di annunci all'interno di siti web HTTP. (non è variante Mirai).
 \end{description}
 
@@ -295,7 +297,7 @@ Dal punto di vista dei livelli di comunicazione, il \emph{data layer} definisce 
     \label{fig:mcp_architecture}
 \end{figure}
 
-\section{Reverse engineering assistito} % 2.4
+\section{Software Reverse Engineering assistito} % 2.4
 
 \subsection{LLM nella binary analysis} % 2.4.1
 
@@ -396,7 +398,7 @@ A questo scopo, sono emerse soluzioni specializzate, come quelle presentate di s
 
 La crescente diffusione del coinvolgimento dei LLM nelle attività di SRE evidenzia come lo stato dell'arte della ricerca si stia progressivamente orientando verso l'integrazione di tali modelli all'interno del flusso di lavoro dei reverse engineer. % la ricerca scientifica e le prospettive future del settore
 
-In questo contesto, tra il 2024 e il 2025, Basque et al. \cite{basque2026srellmstudy} hanno condotto il primo studio sistematico volto a comprendere come i LLM possano collaborare con i reverse engineer durante le attività di SRE. Lo studio ha esaminato le modalità con cui i LLM vengono integrati nel processo di analisi, il loro impatto sul flusso di lavoro dei reverse engineer e la percezione del loro utilizzo.
+In questo contesto, tra il 2024 e il 2025, \textcite{basque2026srellmstudy} hanno condotto il primo studio sistematico volto a comprendere come i LLM possano collaborare con i reverse engineer durante le attività di SRE. Lo studio ha esaminato le modalità con cui i LLM vengono integrati nel processo di analisi, il loro impatto sul flusso di lavoro dei reverse engineer e la percezione del loro utilizzo.
 
 % Dopo un sondaggio preliminare che ha permesso di filtrare il pool di candidati.
 
@@ -424,7 +426,7 @@ Lo studio evidenzia dunque che, in assenza di un avanzamento tecnologico nell'am
 
 Tuttavia, è fondamentale sottolineare che tale conclusione sia stata formulata considerando una modalità di interazione basata su assistenti conversazionali e sullo stato dell'arte della GenAI precedente alle più recenti evoluzioni. La diffusione, tra il 2025 e il 2026, dei sistemi agentici basati su LLM ha contribuito ad affermare un paradigma di interazione differente, nel quale il modello può pianificare autonomamente le attività da svolgere, utilizzare strumenti e modificare le proprie azioni in base ai risultati ottenuti. Questo approccio può modificare il ruolo dei LLM nel SRE, spostandolo da una funzione prevalentemente assistiva a forme di collaborazione caratterizzate da una maggiore autonomia.
 
-Proprio in questa direzione si sviluppa il lavoro di Radey et al. \cite{radey2026challenges}, che analizza le capacità tecniche dei sistemi agentici applicati al SRE e propone una classificazione basata sulle modalità di analisi adottate. Gli autori distinguono tra \emph{static analysis agents}, che si concentrano prevalentemente sull'analisi statica del codice decompilato, e \emph{hybrid agents}, che combinano attività di analisi statica e dinamica. Un'ulteriore distinzione riguarda il grado di autonomia con cui i sistemi operano. Nei sistemi \emph{human-in-the-loop}, il reverse engineer mantiene un ruolo attivo nel processo, verificando le azioni dell'agente e garantendo che l'analisi venga svolta in sicurezza. Nei sistemi autonomi, invece, gli agenti possono condurre autonomamente il processo di analisi, coordinandosi e comunicando tra loro senza un intervento umano diretto.
+Proprio in questa direzione si sviluppa il lavoro di \textcite{radey2026challenges}, che analizza le capacità tecniche dei sistemi agentici applicati al SRE e propone una classificazione basata sulle modalità di analisi adottate. Gli autori distinguono tra \emph{static analysis agents}, che si concentrano prevalentemente sull'analisi statica del codice decompilato, e \emph{hybrid agents}, che combinano attività di analisi statica e dinamica. Un'ulteriore distinzione riguarda il grado di autonomia con cui i sistemi operano. Nei sistemi \emph{human-in-the-loop}, il reverse engineer mantiene un ruolo attivo nel processo, verificando le azioni dell'agente e garantendo che l'analisi venga svolta in sicurezza. Nei sistemi autonomi, invece, gli agenti possono condurre autonomamente il processo di analisi, coordinandosi e comunicando tra loro senza un intervento umano diretto.
 
 % L'analisi dinamica non viene considerata da sola, ma viene unita con quella statica. Questo perché l'analisi dinamica rimane più difficile da scalare rispetto a quella statica e i componenti interattivi e adattivi dell'analisi dinamica la rendono più difficile da eseguire indipendentemente da un umano per un LLM.
 
