@@ -10,9 +10,9 @@
     \hline
     \emph{stripped} & $\{0,20\}$ &  Indica che il binario è stato sottoposto al processo di stripping, con la conseguente rimozione di informazioni simboliche quali nomi di funzioni, parametri e variabili. \\
     \hline
-    \emph{obfuscated\_cc} & $[0,10]$ & Quantifica il livello di offuscamento degli endpoint C\&C, considerando le modalità di memorizzazione e recupero, che possono variare da valori presenti in chiaro a valori cifrati, offuscati o recuperati dinamicamente a runtime. \\
+    \emph{obfuscated\_cc} & $[0,10]$ & Quantifica il livello di offuscamento del C\&C endpoint, considerando le modalità di memorizzazione e recupero, che possono variare da valori presenti in chiaro a valori cifrati, offuscati o recuperati dinamicamente a runtime. \\
     \hline
-    \emph{dns\_other\_cc} & $\{0,5\}$ & Indica che la risoluzione dell'endpoint C\&C avviene tramite DNS o coinvolge altri meccanismi di risoluzione complessi. \\
+    \emph{dns\_other\_cc} & $\{0,5\}$ & Indica che la risoluzione del C\&C endpoint avviene tramite DNS o coinvolge altri meccanismi di risoluzione complessi. \\
     \hline
     \emph{enc\_str} & $[0,10]$ & Quantifica il livello di offuscamento della tabella delle stringhe, quando questa è presente, passando dalla memorizzazione in chiaro all'utilizzo di meccanismi di cifratura o offuscamento più complessi. \\
     \hline
@@ -26,9 +26,9 @@
     \hline
     \emph{dyn\_att} & $\{0,20\}$ & Indica che il malware registra dinamicamente, a runtime, i metodi di attacco. \\
     \hline
-    \emph{non\_std\_parsing} & $\{0,10\}$ & Indica che per il parsing dei comandi C\&C ricevuti il malware utilizza dei metodi che non sono tipici della famiglia di appartenenza. \\
+    \emph{non\_std\_parsing} & $\{0,10\}$ & Indica che per il parsing dei comandi ricevuti il malware utilizza dei metodi che non sono tipici della famiglia di appartenenza. \\
     \hline
-    \emph{has\_response} & $\{0,10\}$ & Indica che il malware risponde ai comandi C\&C ricevuti. \\
+    \emph{has\_response} & $\{0,10\}$ & Indica che il malware risponde ai comandi ricevuti. \\
     \hline
     \emph{heartbeat} & $[0,10]$ & Quantifica la complessità del meccanismo di heartbeat utilizzato dal malware, che può variare da una semplice comunicazione periodica a meccanismi più complessi basati su challenge-response. \\
     \hline
@@ -44,9 +44,9 @@
     \hline
     \textbf{Criterio} & \textbf{Score} & \textbf{Descrizione} \\
     \hline
-    \emph{host\_info} & $[0,10]$ & 	Misura il grado di successo nel recupero delle informazioni relative all'endpoint C\&C contattato dal malware, quali indirizzo IP, hostname e porta. \\
+    \emph{host\_info} & $[0,10]$ & 	Misura il grado di successo nel recupero delle informazioni relative al C\&C endpoint contattato dal malware, quali indirizzo IP, hostname e porta. \\
     \hline
-    \emph{crypto\_obfuscation} & $[0,15]$ & Misura il grado di recupero dei meccanismi di cifratura e offuscamento utilizzati dal malware, includendo sia il funzionamento della cifratura del traffico sia l'algoritmo di decifratura e il contenuto originale della tabella delle stringhe; in caso di assenza, valuta la corretta conferma della stessa. \\
+    \emph{crypto\_obfuscation} & $[0,15]$ & Misura il grado di recupero dei meccanismi di cifratura e offuscamento utilizzati dal malware, includendo sia il funzionamento della cifratura del traffico sia l'algoritmo di decifratura e il contenuto originale della tabella delle stringhe; in caso di loro assenza, valuta la corretta conferma della stessa. \\
     \hline
     \emph{protocol\_parsing} & $[0,20]$ & Misura il grado di identificazione e ricostruzione del protocollo di comunicazione utilizzato dal malware, considerando il formato dei pacchetti e la logica di parsing e framing. \\
     \hline
@@ -54,7 +54,7 @@
     \hline
     \emph{payload\_capabilities} & $[0,20]$ & Misura il grado di individuazione e corretta associazione delle procedure di attacco alle rispettive funzionalità e ai payload utilizzati dal malware. \\
     \hline
-    \emph{cc\_lifecycle} & $[0,20]$ & Misura il grado di ricostruzione del ciclo di vita della comunicazione C\&C, con riferimento alla gestione degli acknowledgment dei messaggi ricevuti, alla trasmissione di feedback al C\&C, alla gestione dei fallimenti di connessione, ai meccanismi di riconnessione e alle procedure di arresto del malware. \\
+    \emph{cc\_lifecycle} & $[0,10]$ & Misura il grado di ricostruzione del ciclo di vita della comunicazione C\&C, con riferimento alla gestione degli acknowledgment dei messaggi ricevuti, alla trasmissione di feedback al C\&C, alla gestione dei fallimenti di connessione, ai meccanismi di riconnessione e alle procedure di arresto del malware. \\
     \hline
     \emph{consistency\_reliability} & $[0,10]$ & Misura il grado di coerenza delle informazioni riportate nei \report{}, penalizzando la presenza di informazioni contraddittorie o incoerenti, anche quando le stesse risultano corrette in altre parti della documentazione. \\
     \hline
@@ -70,7 +70,7 @@
     \hline
     \textbf{Criterio} & \textbf{Score} & \textbf{Descrizione} \\
     \hline
-    \emph{syntax\_correctness} & $\{0,10\}$ & Verifica che il codice sia sintatticamente valido e che non presenti errori di compilazione o di importazione tali da impedirne il caricamento nell'ambiente di esecuzione previsto. \\
+    \emph{syntax\_correctness} & $\{0,10\}$ & Verifica che il codice sia sintatticamente valido e che non presenti errori di compilazione o di importazione tali da impedirne il caricamento nell'ambiente operativo previsto. \\
     \hline
     \emph{architectural\_adherence} & $\{0,15\}$ & Verifica che il modulo \botnet{} sia conforme al contratto definito dalla \interface{}, accertando che implementi i metodi richiesti (\texttt{connect} e \texttt{sniff}), e che deleghi il parsing dei messaggi al modulo \parser{}. \\
     % e che utilizzi il metodo \texttt{parse\_message} del modulo \parser{} per il parsing dei messaggi. \\
@@ -78,7 +78,7 @@
     \emph{schema\_validation} & $\{0,15\}$ & Verifica che i dati prodotti dal modulo siano conformi al JSON Schema \schema{}, rispettandone la struttura, i campi previsti, i relativi tipi e gli ulteriori vincoli specificati. \\
     % Misura la conformità dei dati prodotti dal modulo, rappresentati come dizionari Python, al JSON Schema \schema{}, verificando il rispetto della struttura prevista, dei campi obbligatori e opzionali, dei relativi tipi e degli ulteriori vincoli specificati. \\
     \hline
-    \emph{protocol\_conformance} & $[0,20]$ & Misura il grado con cui i moduli \botnet{} e \parser{} riproducono correttamente il comportamento del protocollo di C\&C descritto nei \report{}, verificando che le informazioni estratte dal report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
+    \emph{protocol\_conformance} & $[0,20]$ & Misura il grado con cui i moduli \botnet{} e \parser{} riproducono correttamente il comportamento del protocollo di C\&C descritto nei \report{}, verificando che le informazioni estratte dai report siano state interpretate e tradotte adeguatamente nella logica dei moduli. \\
     \hline
     \emph{human\_independence} & $[0,40]$ & Misura la capacità del modulo generato di raggiungere autonomamente il comportamento atteso, senza richiedere modifiche o correzioni manuali da parte dell'umano. \\
     \hline
