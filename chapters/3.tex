@@ -106,7 +106,7 @@ Dopo aver definito gli obiettivi del sistema e le sue caratteristiche principali
 
 \subsection{Proprietà del \capture{}} % 3.2.2
 
-Al fine di favorire una semplice integrazione del sistema all'interno di workflow esterni già esistenti e pipeline di automazione più ampie, è necessario che ogni \capture{} sia conforme a un insieme di proprietà prestabilite. Tali vincoli sono stati pertanto identificati e definiti durante l'analisi dei requisiti, anticipandone la formalizzazione rispetto alle successive fasi di progettazione e implementazione.
+Al fine di favorire una semplice integrazione del sistema all'interno di \emph{workflow} esterni già esistenti e pipeline di automazione più ampie, è necessario che ogni \capture{} sia conforme a un insieme di proprietà prestabilite. Tali vincoli sono stati pertanto identificati e definiti durante l'analisi dei requisiti, anticipandone la formalizzazione rispetto alle successive fasi di progettazione e implementazione.
 
 Si è deciso quindi di fissare un linguaggio di programmazione per i \capture{}, al fine di garantire l'uniformità dei moduli, scegliendo a questo proposito Python, in virtù di due motivi principali. Il primo è l'ampio utilizzo del linguaggio nell'ambito della cybersecurity e della \emph{Network Forensics} \cite{oconnor2012python}, grazie alla disponibilità di un vasto ecosistema di librerie e strumenti dedicati all'analisi e all'elaborazione dei dati di rete. Il secondo riguarda la disponibilità di costrutti avanzati, come i generatori \cite{ramalho2022yield}, che consentono di elaborare progressivamente i messaggi C\&C secondo un modello \emph{lazy}, permettendo così di gestirne il flusso in modo efficiente anche durante la cattura del traffico di rete in tempo reale.
 

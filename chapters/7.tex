@@ -2,7 +2,7 @@
 
 \section{Sintesi del lavoro}
 
-L'evoluzione dei malware, con riferimento alla progressiva diffusione delle botnet nell'ecosistema IoT, e il rapido sviluppo dei Large Language Model, unitamente alla loro crescente adozione in un'ampia varietà di applicazioni, costituiscono due fenomeni rilevanti che, seppur afferenti a contesti diversi, rivestono un ruolo significativo nel panorama dell'informatica contemporanea. Proprio dall'incontro di queste due tendenze prende forma il presente lavoro, che esplora l'impiego dei LLM nell'analisi del malware e nella generazione di moduli per la cattura e lo studio delle comunicazioni C\&C delle botnet IoT.
+L'evoluzione dei malware, con riferimento alla progressiva diffusione delle botnet nell'ecosistema IoT, e il rapido sviluppo dei Large Language Model, unitamente alla loro crescente adozione in un'ampia varietà di applicazioni, costituiscono due fenomeni rilevanti che, seppur afferenti a contesti diversi, rivestono un ruolo significativo nel panorama dell'informatica contemporanea. Proprio dall'incontro di queste due tendenze prende forma il presente lavoro, che esplora l'impiego dei LLM nell'analisi del malware e nella generazione di moduli per la cattura e lo studio delle comunicazioni C\&C delle IoT botnet.
 
 % Proprio all'intersezione di queste due tendenze si colloca il presente lavoro
 
@@ -12,7 +12,7 @@ L'evoluzione dei malware, con riferimento alla progressiva diffusione delle botn
 
 % Questo lavoro di tesi ha dimostrato come l'integrazione di LLM possa avvenire in ambienti real time su task specifica ...? con risultati di autonomia ...
 
-% In particolare, il lavoro è partito dallo studio del processo seguito da un esperto di cybersecurity per la realizzazione di moduli dedicati alla cattura delle comunicazioni C\&C delle botnet IoT. 
+% In particolare, il lavoro è partito dallo studio del processo seguito da un esperto di cybersecurity per la realizzazione di moduli dedicati alla cattura delle comunicazioni C\&C delle IoT botnet. 
 
 In particolare, il lavoro è partito dalla caratterizzazione del processo seguito da un esperto di cybersecurity per la realizzazione di tali moduli. L'obiettivo primario era automatizzare, per quanto possibile, le principali fasi di analisi attraverso un sistema facilmente integrabile in altri workflow. Da questa esigenza è nato \system{}, di cui sono stati inizialmente definiti i confini, le responsabilità e i principali artefatti di input e output. La progettazione del sistema ha portato all'organizzazione delle sue funzionalità in tre moduli principali, denominati \classifier{}, \sreagent{} e \codeagent{}, con questi ultimi due basati sulle capacità offerte dai LLM, in particolare quelle di natura agentica.
 
@@ -36,7 +36,7 @@ Una parte di questi riguarda alcune scelte implementative adottate. In particola
 
 % Inoltre, la configurazione adottata per il \sreagent{} ha portato a una presenza di ripetizioni e contraddizioni nei \report{} superiore a quanto atteso.
 
-Le principali limitazioni del lavoro presentato sono, tuttavia, legate ai test svolti. In primo luogo, alcuni dei criteri di valutazione individuati presentano una granularità medio-alta, risultando in certi casi potenzialmente poco indicativi delle carenze riscontrate e non catturando direttamente l'impatto che gli errori e le allucinazioni del LLM introducono sull'analisi. In secondo luogo, le sperimentazioni sono state condotte su un dataset di dimensioni ridotte, con campioni appartenenti a una sola famiglia di botnet IoT. Questi aspetti pregiudicano fortemente la generalizzabilità dei risultati, anche in virtù dei possibili margini di soggettività presenti nella valutazione.
+Le principali limitazioni del lavoro presentato sono, tuttavia, legate ai test svolti. In primo luogo, alcuni dei criteri di valutazione individuati presentano una granularità medio-alta, risultando in certi casi potenzialmente poco indicativi delle carenze riscontrate e non catturando direttamente l'impatto che gli errori e le allucinazioni del LLM introducono sull'analisi. In secondo luogo, le sperimentazioni sono state condotte su un dataset di dimensioni ridotte, con campioni appartenenti a una sola famiglia di IoT botnet. Questi aspetti pregiudicano fortemente la generalizzabilità dei risultati, anche in virtù dei possibili margini di soggettività presenti nella valutazione.
 
 % Alla luce delle limitazioni emerse, l'attività che rimane da svolgere consiste nell'ampliare e rendere più solida la valutazione sperimentale. 
 
@@ -50,7 +50,7 @@ In generale, queste attività permetterebbero di ampliare e rendere più preciso
 
 I risultati ottenuti e le osservazioni formulate fino a questo punto consentono di individuare tre principali direzioni lungo le quali, qualora si decidesse di proseguire o ampliare il lavoro, il sistema \system{} potrà essere ulteriormente sviluppato.
 
-Le tre possibilità considerate presentano una natura abbastanza diversa tra loro, ma non sono mutuamente esclusive. La prima riguarda l'aggiunta all'interno del \sreagent{} di ulteriori funzionalità e strumenti basati sul MCP, sfruttando la modularità offerta dal protocollo. Questo potrebbe tradursi nell'estensione delle capacità del \sandbox{}, nell'inclusione di funzionalità per l'analisi dinamica del \sreframework{}, ma anche nell'integrazione di altri server MCP non originariamente contemplati. Questi potrebbero fornire funzionalità di carattere generale, come la ricerca web, oppure essere specificamente orientati alla cybersecurity, ad esempio per attività di \emph{threat intelligence}.
+Le tre possibilità considerate presentano una natura abbastanza diversa tra loro, ma non sono mutuamente esclusive. La prima riguarda l'aggiunta all'interno del \sreagent{} di ulteriori funzionalità e strumenti basati sul MCP, sfruttando la modularità offerta dal protocollo. Questo potrebbe tradursi nell'estensione delle capacità del \sandbox{}, nell'inclusione di funzionalità per l'analisi dinamica del \sreframework{}, ma anche nell'integrazione di altri server MCP non originariamente contemplati. Questi potrebbero fornire funzionalità di carattere generale, come la ricerca web, oppure essere specificamente orientati alla cybersecurity, ad esempio per attività di threat intelligence.
 
 % Un'ipotesi interessante, che era già stata considerata inizialmente per questo lavoro.
 

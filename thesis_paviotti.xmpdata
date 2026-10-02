@@ -1,4 +1,10 @@
 \Title{Generazione agentica di moduli per la cattura dei comandi delle botnet}
 \Author{Omar Paviotti}
-\Subject{Generazione automatica tramite agentic AI di moduli per la cattura delle comunicazioni Command-and-Control delle botnet}
-\Keywords{botnet{, }malware{, }command and control{, }cybersecurity{, }network security{, }agentic AI}
+\Language{it-IT}
+\Keywords{agentic AI\sep botnet\sep command and control\sep cybersecurity\sep LLM agents}
+\Subject{Tesi di Laurea in Informatica}
+\Publisher{Università degli Studi di Udine}
+\Org{Dipartimento di Scienze Matematiche, Informatiche e Fisiche}
+\Copyrighted{True}
+\Copyright{© 2026 Omar Paviotti. Licensed under CC BY-NC-SA 4.0}
+\CopyrightURL{https://creativecommons.org/licenses/by-nc-sa/4.0/}
